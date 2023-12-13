@@ -6,7 +6,7 @@ import com.example.practice.UserProfileAlice
 import com.example.practice.UserProfileBob
 import com.example.practice.UserProfileEve
 import com.example.practice.data.UserData
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 
 @Composable
 fun UserProfileItem(
@@ -14,7 +14,7 @@ fun UserProfileItem(
     onImageClick: () -> Unit,
     isImagesScreen: Boolean,
     onSaveProfession: (String) -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     when (userProfile.firstName.lowercase()) {
         "bob" -> UserProfileBob(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)

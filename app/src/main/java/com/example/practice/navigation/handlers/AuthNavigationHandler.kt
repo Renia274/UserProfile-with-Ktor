@@ -2,9 +2,9 @@ package com.example.practice.navigation.handlers
 
 import androidx.navigation.NavHostController
 import com.example.practice.navigation.graph.Navigation
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
-class AuthNavigationHandler(private val navController: NavHostController, private val viewModel: UserProfileViewModel) {
+class AuthNavigationHandler(private val navController: NavHostController, private val viewModel: CredentialsViewModel) {
 
     fun navigateToSignUpSignIn() {
         navController.popBackStack()

@@ -16,7 +16,9 @@ import com.example.practice.data.UserData
 import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
@@ -56,10 +58,11 @@ data class Navigation(
 fun NavigationApp() {
 
     val navController = rememberNavController()
-    val viewModel = viewModel<UserProfileViewModel>()
+    val credentialsViewModel = viewModel<CredentialsViewModel>()
+    val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
 
-    val navigationHandler = NavigationHandler(navController, viewModel)
-    val authNavigationHandler = AuthNavigationHandler(navController, viewModel)
+    val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
+    val authNavigationHandler = AuthNavigationHandler(navController, credentialsViewModel)
 
     NavHost(
         navController = navController,
@@ -74,19 +77,19 @@ fun NavigationApp() {
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
-                viewModel = viewModel
+                viewModel = credentialsViewModel
             )
         }
         composable(Navigation.Screen.Recovery.route) {
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
-                viewModel = viewModel
+                viewModel = sharedProfilesViewModel
             )
         }
         composable(Navigation.Auth.Signup.route) {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
-                viewModel = viewModel
+                viewModel = credentialsViewModel
             )
         }
 
@@ -107,7 +110,7 @@ fun NavigationApp() {
                         }
 
                         userProfile?.let {
-                            viewModel.userProfiles = listOf(it)
+                            sharedProfilesViewModel.userProfiles = listOf(it)
                             println("Login Successful")
                             authNavigationHandler.navigateToPinLogin()
                         } ?: run {
@@ -123,7 +126,7 @@ fun NavigationApp() {
                     onBack = {
                         navigationHandler.navigateBack()
                     },
-                    viewModel = viewModel
+                    viewModel = credentialsViewModel
                 )
             }
         }
@@ -131,7 +134,7 @@ fun NavigationApp() {
         composable(Navigation.Auth.PinLogin.route) {
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
-                    viewModel.userProfiles = listOf(userProfile)
+                    sharedProfilesViewModel.userProfiles = listOf(userProfile)
                     navigationHandler.navigateToUserProfile(userProfile.firstName)
                 },
                 onNavigate = { screen: Navigation.Screen -> navigationHandler.navigateTo(screen) },
@@ -147,8 +150,8 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileBob.route) {
             UserProfilesLoading(
-                userProfiles = viewModel.userProfiles,
-                viewModel = viewModel,
+                userProfiles = sharedProfilesViewModel.userProfiles,
+                viewModel = sharedProfilesViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -168,8 +171,8 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileAlice.route) {
             UserProfilesLoading(
-                userProfiles = viewModel.userProfiles,
-                viewModel = viewModel,
+                userProfiles = sharedProfilesViewModel.userProfiles,
+                viewModel = sharedProfilesViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -189,8 +192,8 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileEve.route) {
             UserProfilesLoading(
-                userProfiles = viewModel.userProfiles,
-                viewModel = viewModel,
+                userProfiles = sharedProfilesViewModel.userProfiles,
+                viewModel = sharedProfilesViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -210,12 +213,12 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.Images.route) {
             UserProfilesList(
-                userProfiles = viewModel.userProfiles,
+                userProfiles = sharedProfilesViewModel.userProfiles,
                 onBackNavigate = {
                     navigationHandler.navigateBack()
                 },
                 isImagesScreen = true,
-                viewModel = viewModel
+                viewModel = sharedProfilesViewModel
             )
         }
     }

@@ -2,11 +2,11 @@ package com.example.practice.navigation.handlers
 
 import androidx.navigation.NavHostController
 import com.example.practice.navigation.graph.Navigation
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 
 class NavigationHandler(
     private val navController: NavHostController,
-    private val viewModel: UserProfileViewModel
+    private val viewModel: SharedProfilesViewModel
 ) {
 
     fun navigateToRecovery() {

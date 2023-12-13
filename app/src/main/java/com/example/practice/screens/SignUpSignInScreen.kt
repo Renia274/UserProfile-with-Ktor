@@ -18,13 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 @Composable
 fun SignUpSignInScreen(
     onSignUpClick: () -> Unit,
     onSignInClick: () -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: CredentialsViewModel = hiltViewModel()
 ) {
     // Define the username and password variables
     var username by remember { mutableStateOf("") }

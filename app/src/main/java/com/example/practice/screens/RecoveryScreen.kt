@@ -29,13 +29,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun RecoveryScreen(
     navigateToLogin: () -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
 
     val OverrideFontPadding = PlatformTextStyle(includeFontPadding = false)

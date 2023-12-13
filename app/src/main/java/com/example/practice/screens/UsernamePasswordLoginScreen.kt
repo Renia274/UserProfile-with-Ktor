@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernamePasswordLoginScreen(
@@ -46,7 +46,7 @@ fun UsernamePasswordLoginScreen(
     onLoading: (Boolean) -> Unit,
     onNavigateToRecovery: () -> Unit,
     onBack: () -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: CredentialsViewModel = hiltViewModel()
 ) {
 
     val OverrideFontPadding = PlatformTextStyle(includeFontPadding = false)

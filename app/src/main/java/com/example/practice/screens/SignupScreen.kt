@@ -36,11 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.helpers.isValidEmail
 import com.example.practice.helpers.isValidPassword
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 
 @Composable
-fun SignupScreen(onNavigateToLogin: () -> Unit, viewModel: UserProfileViewModel = hiltViewModel()) {
+fun SignupScreen(onNavigateToLogin: () -> Unit, viewModel: CredentialsViewModel = hiltViewModel()) {
     val h4 = TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,

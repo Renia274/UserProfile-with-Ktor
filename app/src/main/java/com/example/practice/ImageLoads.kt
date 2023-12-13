@@ -27,7 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.data.UserData
 import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
-import com.example.practice.profiles.viewmodel.UserProfileViewModel
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.UserProfileItem
 import kotlinx.coroutines.delay
@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun UserProfilesLoading(
     userProfiles: List<UserData>,
-    viewModel: UserProfileViewModel = hiltViewModel(),
+    viewModel: SharedProfilesViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String
@@ -136,7 +136,7 @@ fun UserProfileBob(
     onImageClick: () -> Unit,
     isImagesScreen: Boolean,
     onSaveProfession: (String) -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var profession by remember { mutableStateOf(userProfile.profession) }
@@ -245,7 +245,7 @@ fun UserProfileAlice(
     onImageClick: () -> Unit,
     isImagesScreen: Boolean,
     onSaveProfession: (String) -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var profession by remember { mutableStateOf(userProfile.profession) }
@@ -353,7 +353,7 @@ fun UserProfileEve(
     onImageClick: () -> Unit,
     isImagesScreen: Boolean,
     onSaveProfession: (String) -> Unit,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var profession by remember { mutableStateOf(userProfile.profession) }
@@ -462,7 +462,7 @@ fun UserProfilesList(
     userProfiles: List<UserData>,
     onBackNavigate: () -> Unit,
     isImagesScreen: Boolean,
-    viewModel: UserProfileViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
