@@ -42,7 +42,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 @Composable
 fun SignupScreen(onNavigateToLogin: () -> Unit, viewModel: CredentialsViewModel = hiltViewModel()) {
     val h4 = TextStyle(
-        fontSize = 18.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary
     )

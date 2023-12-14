@@ -52,11 +52,11 @@ fun PinLoginScreen(
     var pin by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    val OverrideFontPadding = PlatformTextStyle(includeFontPadding = false)
+    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
     val h4 = TextStyle(
         fontSize = 18.sp,
-        platformStyle = OverrideFontPadding
+        platformStyle = overrideFontPadding
     )
 
     val maxPinLength = 6

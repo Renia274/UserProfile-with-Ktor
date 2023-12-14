@@ -91,9 +91,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.0-beta01")
 
 
-
-
-//KTOR
+   //KTOR
     implementation ("io.ktor:ktor-client-logging:1.6.3")
     implementation ("ch.qos.logback:logback-classic:1.2.3")
     implementation ("io.ktor:ktor-client-core:1.6.4")

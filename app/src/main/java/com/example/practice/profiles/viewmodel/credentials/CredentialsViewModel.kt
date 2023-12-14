@@ -26,7 +26,4 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
         } ?: false
     }
 
-    fun getEnteredUsername(): String {
-        return _enteredCredentials.value?.username.orEmpty()
-    }
 }

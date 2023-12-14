@@ -38,10 +38,10 @@ fun RecoveryScreen(
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
 
-    val OverrideFontPadding = PlatformTextStyle(includeFontPadding = false)
+    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
-        fontSize = 18.sp,
-        platformStyle = OverrideFontPadding
+        fontSize = 16.sp,
+        platformStyle = overrideFontPadding
     )
 
     var email by remember { mutableStateOf("") }

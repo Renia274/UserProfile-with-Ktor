@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PostsViewModel @Inject constructor (private val repository: PostsRepository) : ViewModel() {
+class PostsViewModel @Inject constructor(private val repository: PostsRepository) : ViewModel() {
 
     private val _posts = MutableLiveData<List<PostResponse>>()
     val posts: LiveData<List<PostResponse>> get() = _posts
@@ -21,23 +21,34 @@ class PostsViewModel @Inject constructor (private val repository: PostsRepositor
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _searchQuery = MutableLiveData<String>()
+    val searchQuery: LiveData<String> get() = _searchQuery
 
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
-    // fetch posts
     fun fetchPosts() {
         viewModelScope.launch {
             try {
                 val fetchedPosts = repository.getPosts()
-                _posts.value = fetchedPosts
+
+                val filteredPosts = if (_searchQuery.value.isNullOrBlank()) {
+                    fetchedPosts
+                } else {
+                    fetchedPosts.filter { post ->
+                        post.title.contains(_searchQuery.value!!, ignoreCase = true) ||
+                                post.body.contains(_searchQuery.value!!, ignoreCase = true)
+                    }
+                }
+
+                _posts.value = filteredPosts.sortedBy { it.title }
             } catch (e: Exception) {
                 _errorMessage.value = "Error fetching posts: ${e.message}"
             }
         }
     }
 
-
-
-    // create new posts and maintain sorting by title
     fun createPosts(listState: LazyListState) {
         viewModelScope.launch {
             try {
@@ -49,18 +60,11 @@ class PostsViewModel @Inject constructor (private val repository: PostsRepositor
 
                 if (newPost != null) {
                     newPost.id = timestamp.toInt()
-
-                    // Log the key of the new post
                     println("New post key: ${newPost.id}")
-
-                    // Add the new post to the list and maintain sorting by title
                     _posts.value = (_posts.value?.plus(newPost) ?: listOf(newPost))
                         .sortedBy { it.title }
 
-                    // Find the index of the new post in the sorted list
                     val newIndex = _posts.value?.indexOf(newPost) ?: -1
-
-                    // Scroll to the position of the new post in the sorted list
                     listState.scrollToItem(newIndex)
                 }
             } catch (e: Exception) {
@@ -73,25 +77,19 @@ class PostsViewModel @Inject constructor (private val repository: PostsRepositor
         return PostRequest(body = body, title = title, userId = userId)
     }
 
-
     fun updatePost(postId: Int, updatedPost: PostRequest? = null, isDelete: Boolean = false) {
         viewModelScope.launch {
             try {
                 if (isDelete) {
-                    // Delete the post
                     val isDeleted = repository.deletePost(postId)
                     if (isDeleted) {
-                        // Remove the deleted post from the list
                         _posts.value = _posts.value?.filter { it.id != postId }
                     }
                 } else {
-                    // Update the post
                     val updatedResponse = repository.updatePost(postId, updatedPost!!)
                     updatedResponse?.let { updated ->
-                        // Find the index of the post to be updated
                         val index = _posts.value?.indexOfFirst { it.id == postId } ?: -1
                         if (index != -1) {
-                            // Create a new list with the updated post
                             val updatedList = _posts.value!!.toMutableList()
                             updatedList[index] = updated
                             _posts.value = updatedList.toList()
@@ -99,13 +97,10 @@ class PostsViewModel @Inject constructor (private val repository: PostsRepositor
                     }
                 }
             } catch (e: Exception) {
-                // Handle exceptions as needed
                 _errorMessage.value = "Error updating/deleting post: ${e.message}"
             }
         }
     }
-
-
 
     fun deletePost(postId: Int) {
         viewModelScope.launch {
@@ -120,3 +115,6 @@ class PostsViewModel @Inject constructor (private val repository: PostsRepositor
         }
     }
 }
+
+
+

@@ -27,5 +27,8 @@ class PostsRepository @Inject constructor (private val postsService: PostsServic
             false
         }
     }
-}
 
+
+    // search posts
+
+}

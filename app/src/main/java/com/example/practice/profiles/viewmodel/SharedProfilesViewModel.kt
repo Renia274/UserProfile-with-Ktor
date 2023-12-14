@@ -6,11 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.practice.data.UserData
+import com.example.practice.profiles.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SharedProfilesViewModel @Inject constructor() : ViewModel() {
+class SharedProfilesViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
     private val _savedProfessions = MutableLiveData<String>()
     val savedProfessions: LiveData<String>
@@ -27,10 +28,7 @@ class SharedProfilesViewModel @Inject constructor() : ViewModel() {
     var userProfiles: List<UserData> = emptyList()
 
     fun saveProfession(imageResId: Int, profession: String) {
-        val userProfile = userProfiles.find { it.imageResId == imageResId }
-        userProfile?.let {
-            it.savedProfession = profession
-        }
+        userRepository.saveProfession(imageResId, profession)
         _savedProfessions.value = profession
     }
 
