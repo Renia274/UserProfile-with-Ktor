@@ -41,12 +41,12 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernamePasswordLoginScreen(
-    onLoginSuccess: (String, String) -> Unit,
+    onLoginSuccess: (String, String,String,String) -> Unit,
     onLoading: (Boolean) -> Unit,
     onNavigateToRecovery: () -> Unit,
     onBack: () -> Unit,
-    viewModel: CredentialsViewModel = hiltViewModel()) {
-
+    viewModel: CredentialsViewModel = hiltViewModel()
+) {
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
     val h4 = TextStyle(
@@ -61,6 +61,10 @@ fun UsernamePasswordLoginScreen(
     val enteredCredentials by viewModel.enteredCredentials.observeAsState()
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }
     var password by remember { mutableStateOf(enteredCredentials?.password ?: "") }
+
+
+    var updatedUsername by remember { mutableStateOf("") }
+    var updatedPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -145,12 +149,11 @@ fun UsernamePasswordLoginScreen(
                         // Save entered credentials to ViewModel
                         viewModel.setEnteredCredentials(username, password)
 
-
-
                         when (username.lowercase()) {
                             "bob", "alice", "eve" -> {
                                 println("Login Successful for $username")
-                                onLoginSuccess.invoke(username, password)
+                                // Pass both the entered and updated credentials to onLoginSuccess
+                                onLoginSuccess.invoke(username, password, updatedUsername, updatedPassword)
                             }
                             else -> {
                                 println("Invalid username")

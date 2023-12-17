@@ -103,9 +103,9 @@ fun NavigationApp() {
                 LoadingScreen()
             } else {
                 UsernamePasswordLoginScreen(
-                    onLoginSuccess = { username, _ ->
+                    onLoginSuccess = { enteredUsername, _, _, _ ->
                         isLoading = true
-                        val userProfile = when (username.lowercase()) {
+                        val userProfile = when (enteredUsername.lowercase()) {
                             "bob" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
                             "alice" -> UserData("Alice", "Smith", R.drawable.alice_smith)
                             "eve" -> UserData("Eve", "Brown", R.drawable.eve_brown)
@@ -115,7 +115,9 @@ fun NavigationApp() {
                         userProfile?.let {
                             sharedProfilesViewModel.userProfiles = listOf(it)
                             println("Login Successful")
-                            authNavigationHandler.navigateToPinLogin()
+
+                            // Navigating to the Settings screen with entered and updated credentials
+                            navigationHandler.navigateToSettings()
                         } ?: run {
                             println("Invalid username")
                         }
@@ -133,6 +135,25 @@ fun NavigationApp() {
                 )
             }
         }
+
+// Inside your composable function
+        composable(Navigation.Screen.Settings.route) {
+            SettingsScreen(
+                sharedViewModel = sharedProfilesViewModel,
+                credentialsViewModel = credentialsViewModel,
+                onNavigate = { destination ->
+                    when (destination) {
+                        "back" -> navigationHandler.navigateBack()
+                        // Add more cases for other destinations if needed
+                    }
+                },
+                onSaveCredentials = { updatedUsername ->
+                    credentialsViewModel.saveEnteredUsername(username = updatedUsername)
+                }
+            )
+        }
+
+
 
 
         composable(Navigation.Auth.PinLogin.route) {
@@ -240,17 +261,7 @@ fun NavigationApp() {
 
 
         // Inside your composable function
-        composable(Navigation.Screen.Settings.route) {
-            SettingsScreen(
-                sharedViewModel = sharedProfilesViewModel,
-                credentialsViewModel = credentialsViewModel
-            ) { destination->
-                when (destination) {
-                    "back" -> navigationHandler.navigateBack()
 
-                    }
-                }
-            }
         }
 
 

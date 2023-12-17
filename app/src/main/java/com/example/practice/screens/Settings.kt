@@ -50,7 +50,7 @@ fun SettingsScreen(
     sharedViewModel: SharedProfilesViewModel,
     credentialsViewModel: CredentialsViewModel,
     onNavigate: (String) -> Unit,
-
+    onSaveCredentials: (String) -> Unit
 ) {
     var darkMode by remember { mutableStateOf(false) }
     var notificationEnabled by remember { mutableStateOf(false) }
@@ -119,13 +119,7 @@ fun SettingsScreen(
                 isEditable = true,
                 onClearClick = { sharedViewModel.setSignupEmail("") }
             )
-            ProfileField(
-                label = "Password",
-                value = credentialsViewModel.enteredCredentials.value?.password ?: "",
-                onValueChange = { credentialsViewModel.setEnteredCredentials(username = "", password = it) },
-                isEditable = true,
-                onClearClick = { credentialsViewModel.setEnteredCredentials(username = "", password = "") }
-            )
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -142,18 +136,13 @@ fun SettingsScreen(
                 Text("Save Changes")
             }
 
-
-// Confirmation Dialog
             // Confirmation Dialog
             if (showConfirmationDialog) {
                 SaveConfirmationDialog(
                     onConfirm = {
                         val updatedUsername = credentialsViewModel.enteredCredentials.value?.username ?: ""
-                        val updatedPassword = credentialsViewModel.enteredCredentials.value?.password ?: ""
-                        credentialsViewModel.saveEnteredCredentials(updatedUsername, updatedPassword)
-
-
-
+                        // Pass the updated credentials to onLoginSuccess
+                        onSaveCredentials.invoke(updatedUsername)
                         showConfirmationDialog = false
                     },
                     onDismiss = {
@@ -162,7 +151,6 @@ fun SettingsScreen(
                     }
                 )
             }
-
 
             Spacer(modifier = Modifier.height(16.dp))
 

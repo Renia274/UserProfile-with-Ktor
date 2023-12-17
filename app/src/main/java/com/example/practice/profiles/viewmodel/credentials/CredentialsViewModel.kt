@@ -30,10 +30,18 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
 
 
 
+    fun saveEnteredUsername(username: String) {
+        viewModelScope.launch {
+            _enteredCredentials.value = UserCredentials(username, _enteredCredentials.value?.password ?: "")
+        }
+    }
+
     fun saveEnteredCredentials(username: String, password: String) {
         viewModelScope.launch {
             _enteredCredentials.value = UserCredentials(username, password)
         }
     }
+
+
 
 }
