@@ -19,4 +19,4 @@ data class BottomNavItem(
 )
 
 
-data class UserCredentials(val username: String, val password: String)
+data class UserCredentials(val username: String, val password: String,)

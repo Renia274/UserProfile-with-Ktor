@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernamePasswordLoginScreen(
-    onLoginSuccess: (String, String,String,String) -> Unit,
+    onLoginSuccess: (String, String, String, String) -> Unit,
     onLoading: (Boolean) -> Unit,
     onNavigateToRecovery: () -> Unit,
     onBack: () -> Unit,
@@ -57,14 +58,22 @@ fun UsernamePasswordLoginScreen(
     var isLoginSuccessful by remember { mutableStateOf(false) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    // Use entered credentials from ViewModel
+    // Use LiveData to observe changes in entered credentials
     val enteredCredentials by viewModel.enteredCredentials.observeAsState()
+
+    // Use enteredCredentials.value to get the current value
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }
     var password by remember { mutableStateOf(enteredCredentials?.password ?: "") }
 
-
     var updatedUsername by remember { mutableStateOf("") }
     var updatedPassword by remember { mutableStateOf("") }
+
+    LaunchedEffect(enteredCredentials) {
+        enteredCredentials?.let {
+            username = it.username
+            password=it.password
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -150,10 +159,14 @@ fun UsernamePasswordLoginScreen(
                         viewModel.setEnteredCredentials(username, password)
 
                         when (username.lowercase()) {
-                            "bob", "alice", "eve" -> {
+                            "bob", "alice", "eve","bob1" -> {
                                 println("Login Successful for $username")
+                                updatedUsername = username
+                                updatedPassword = password
+
                                 // Pass both the entered and updated credentials to onLoginSuccess
                                 onLoginSuccess.invoke(username, password, updatedUsername, updatedPassword)
+
                             }
                             else -> {
                                 println("Invalid username")
@@ -169,6 +182,7 @@ fun UsernamePasswordLoginScreen(
             ) {
                 Text("Login")
             }
+
             // Forgot Password TextButton
             TextButton(
                 onClick = onNavigateToRecovery,

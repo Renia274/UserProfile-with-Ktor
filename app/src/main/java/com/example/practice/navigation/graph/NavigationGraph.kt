@@ -137,6 +137,7 @@ fun NavigationApp() {
         }
 
 // Inside your composable function
+        // Inside your composable function
         composable(Navigation.Screen.Settings.route) {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
@@ -144,14 +145,18 @@ fun NavigationApp() {
                 onNavigate = { destination ->
                     when (destination) {
                         "back" -> navigationHandler.navigateBack()
-                        // Add more cases for other destinations if needed
                     }
-                },
-                onSaveCredentials = { updatedUsername,updatedPassword ->
-                    credentialsViewModel.saveEnteredCredentials(username = updatedUsername, password = updatedPassword)
                 }
-            )
+            ) { newUsername, newPassword ->
+                // Handle the updated username and password as needed
+                credentialsViewModel.setEnteredCredentials(
+                    username = newUsername,
+                    password = newPassword
+                )
+                authNavigationHandler.navigateToUsernamePasswordLogin()
+            }
         }
+
 
 
 

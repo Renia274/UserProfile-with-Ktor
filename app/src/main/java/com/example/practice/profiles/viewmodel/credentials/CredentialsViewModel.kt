@@ -30,18 +30,23 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
 
 
 
-    fun saveEnteredUsername(username: String) {
+    fun updateCredentials(updatedUsername: String, updatedPassword: String) {
         viewModelScope.launch {
-            _enteredCredentials.value = UserCredentials(username, _enteredCredentials.value?.password ?: "")
+            // Get the current value of _enteredCredentials
+            val currentCredentials = _enteredCredentials.value
+
+            // Update only if the currentCredentials is not null
+            if (currentCredentials != null) {
+                // Create a new UserCredentials object with updated values
+                val updatedCredentials = UserCredentials(
+                    username = updatedUsername,
+                    password = updatedPassword
+                )
+
+                // Set the updated credentials to the LiveData
+                _enteredCredentials.value = updatedCredentials
+            }
         }
     }
-
-    fun saveEnteredCredentials(username: String, password: String) {
-        viewModelScope.launch {
-            _enteredCredentials.value = UserCredentials(username, password)
-        }
-    }
-
-
 
 }

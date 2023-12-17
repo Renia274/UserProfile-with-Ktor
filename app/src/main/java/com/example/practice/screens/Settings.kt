@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,6 +57,12 @@ fun SettingsScreen(
     val context = LocalContext.current
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
+    var rememberedUsernameState by remember { mutableStateOf(credentialsViewModel.enteredCredentials.value?.username ?: "") }
+    var rememberedPasswordState by remember { mutableStateOf(credentialsViewModel.enteredCredentials.value?.password ?: "") }
+
+    // Declare username and password variables
+    var username by remember { mutableStateOf(rememberedUsernameState) }
+    var password by remember { mutableStateOf(rememberedPasswordState) }
 
     Box(
         modifier = Modifier
@@ -115,34 +120,37 @@ fun SettingsScreen(
             )
 
             // Username ProfileField
-            val rememberedUsername by rememberUpdatedState(credentialsViewModel.enteredCredentials.value?.username ?: "")
             ProfileField(
                 label = "Username",
-                value = rememberedUsername,
-                onValueChange = {
-                    // Use the reference for the username in the onValueChange function
-                    credentialsViewModel.setEnteredCredentials(username = it, password = "")
+                value = username,
+                onValueChange = { newValue ->
+                    username = newValue
+                    credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
                 },
                 isEditable = true,
-                onClearClick = { credentialsViewModel.setEnteredCredentials(username = "", password = "") }
+                onClearClick = {
+                    username = ""
+                    credentialsViewModel.setEnteredCredentials(username = "", password = "")
+                }
             )
 
             // Password ProfileField
             ProfileField(
                 label = "Password",
-                value = credentialsViewModel.enteredCredentials.value?.password ?: "",
-                onValueChange = {
-                    // Use the reference for the username directly in the onValueChange function
-                    credentialsViewModel.setEnteredCredentials(username = rememberedUsername, password = it)
+                value = password,
+                onValueChange = { newValue ->
+                    password = newValue
+                    credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
                 },
                 isEditable = true,
-                onClearClick = { credentialsViewModel.setEnteredCredentials(username = "", password = "") }
+                onClearClick = {
+                    password = ""
+                    credentialsViewModel.setEnteredCredentials(username = username, password = "")
+                }
             )
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Save Changes Button
             Button(
                 onClick = {
                     // Show the confirmation dialog before saving changes
@@ -159,10 +167,14 @@ fun SettingsScreen(
             if (showConfirmationDialog) {
                 SaveConfirmationDialog(
                     onConfirm = {
-                        val updatedUsername = rememberedUsername
-                        val updatedPassword = credentialsViewModel.enteredCredentials.value?.password ?: ""
+                        val updatedUsername = username
+                        val updatedPassword = password
                         // Save the updated username and password using the onSaveCredentials function
                         onSaveCredentials.invoke(updatedUsername, updatedPassword)
+
+                        // Call the updateCredentials function in CredentialsViewModel
+                        credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
+
                         showConfirmationDialog = false
                     },
                     onDismiss = {
@@ -171,7 +183,6 @@ fun SettingsScreen(
                     }
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             // Divider above Dark Mode
@@ -264,7 +275,7 @@ fun ProfileField(
     isEditable: Boolean,
     onClearClick: () -> Unit
 ) {
-    val observedValue by rememberUpdatedState(value)
+    val observedValue by mutableStateOf(value)
 
     Column(
         modifier = Modifier
