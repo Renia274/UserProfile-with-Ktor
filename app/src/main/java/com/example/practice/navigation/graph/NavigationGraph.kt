@@ -117,7 +117,7 @@ fun NavigationApp() {
                             println("Login Successful")
 
                             // Navigating to the Settings screen with entered and updated credentials
-                            navigationHandler.navigateToSettings()
+                            authNavigationHandler.navigateToPinLogin()
                         } ?: run {
                             println("Invalid username")
                         }
@@ -147,8 +147,8 @@ fun NavigationApp() {
                         // Add more cases for other destinations if needed
                     }
                 },
-                onSaveCredentials = { updatedUsername ->
-                    credentialsViewModel.saveEnteredUsername(username = updatedUsername)
+                onSaveCredentials = { updatedUsername,updatedPassword ->
+                    credentialsViewModel.saveEnteredCredentials(username = updatedUsername, password = updatedPassword)
                 }
             )
         }
