@@ -17,11 +17,11 @@ import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
-
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
+import com.example.practice.screens.SettingsScreen
 import com.example.practice.screens.SignUpSignInScreen
 import com.example.practice.screens.SignupScreen
 import com.example.practice.screens.SplashScreen
@@ -39,8 +39,9 @@ data class Navigation(
             val UserProfileBob = Screen("userProfileBob")
             val UserProfileAlice = Screen("userProfileAlice")
             val UserProfileEve = Screen("userProfileEve")
-            val Images = Screen("images")
+            val EditProfile = Screen("edit")
             val Recovery = Screen("recovery")
+            val Settings = Screen("settings")
         }
     }
 
@@ -89,10 +90,12 @@ fun NavigationApp() {
         composable(Navigation.Auth.Signup.route) {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
-                viewModel = credentialsViewModel
+                sharedViewModel = sharedProfilesViewModel,
+                credentialsViewModel = credentialsViewModel
             )
         }
 
+        // Inside your composable function
         composable(Navigation.Auth.UsernamePasswordLogin.route) {
             var isLoading by remember { mutableStateOf(false) }
 
@@ -131,6 +134,7 @@ fun NavigationApp() {
             }
         }
 
+
         composable(Navigation.Auth.PinLogin.route) {
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
@@ -144,11 +148,12 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.Posts.route) {
             PostsScreen(onNavigate = {
-                authNavigationHandler.navigateToSignUpSignIn()
+                authNavigationHandler.navigateToPinLogin()
             })
         }
 
         composable(Navigation.Screen.UserProfileBob.route) {
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -157,11 +162,14 @@ fun NavigationApp() {
                 },
                 onNavigate = { destination ->
                     when (destination) {
-                        "images" -> {
-                            navigationHandler.navigateToImages()
+                        "edit" -> {
+                            navigationHandler.navigateToEditProfile()
                         }
                         "back" -> {
                             navigationHandler.navigateBack()
+                        }
+                        "settings"->{
+                            navigationHandler.navigateToSettings()
                         }
                     }
                 },
@@ -170,6 +178,7 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Screen.UserProfileAlice.route) {
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -178,11 +187,14 @@ fun NavigationApp() {
                 },
                 onNavigate = { destination ->
                     when (destination) {
-                        "images" -> {
-                            navigationHandler.navigateToImages()
+                        "edit" -> {
+                            navigationHandler.navigateToEditProfile()
                         }
                         "back" -> {
                             navigationHandler.navigateBack()
+                        }
+                        "settings"->{
+                            navigationHandler.navigateToSettings()
                         }
                     }
                 },
@@ -191,6 +203,7 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Screen.UserProfileEve.route) {
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -199,11 +212,14 @@ fun NavigationApp() {
                 },
                 onNavigate = { destination ->
                     when (destination) {
-                        "images" -> {
-                            navigationHandler.navigateToImages()
+                        "edit" -> {
+                            navigationHandler.navigateToEditProfile()
                         }
                         "back" -> {
                             navigationHandler.navigateBack()
+                        }
+                        "settings"->{
+                            navigationHandler.navigateToSettings()
                         }
                     }
                 },
@@ -211,7 +227,7 @@ fun NavigationApp() {
             )
         }
 
-        composable(Navigation.Screen.Images.route) {
+        composable(Navigation.Screen.EditProfile.route) {
             UserProfilesList(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 onBackNavigate = {
@@ -221,5 +237,25 @@ fun NavigationApp() {
                 viewModel = sharedProfilesViewModel
             )
         }
+
+
+        // Inside your composable function
+        composable(Navigation.Screen.Settings.route) {
+            SettingsScreen(
+                sharedViewModel = sharedProfilesViewModel,
+                credentialsViewModel = credentialsViewModel
+            ) { destination->
+                when (destination) {
+                    "back" -> navigationHandler.navigateBack()
+
+                    }
+                }
+            }
+        }
+
+
+
+
+
     }
-}
+

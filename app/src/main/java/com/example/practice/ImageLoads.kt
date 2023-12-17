@@ -14,12 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,11 +58,25 @@ fun UserProfilesLoading(
         isLoading = false
     }
 
+    // Observe the dark mode value from the view model
+    val darkMode by viewModel.darkMode.observeAsState(false)
+
+    val mainBackgroundColor = if (darkMode) {
+        MaterialTheme.colorScheme.background
+    } else {
+        when (username.lowercase()) {
+            "bob" -> Color.Green
+            "alice" -> Color.LightGray
+            "eve" -> Color.Magenta
+            else -> Color.Gray
+        }
+    }
+
     if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(mainBackgroundColor),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -69,7 +85,7 @@ fun UserProfilesLoading(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(mainBackgroundColor)
         ) {
             Column(
                 modifier = Modifier
@@ -77,7 +93,17 @@ fun UserProfilesLoading(
                     .verticalScroll(rememberScrollState())
             ) {
                 TopAppBar(
-                    title = { Text(username) },
+                    title = {
+                        Text(
+                            text = username,
+                            color = when (username.lowercase()) {
+                                "bob" -> Color.Black
+                                "alice" -> Color.Red
+                                "eve" -> Color.Magenta
+                                else -> Color.Gray
+                            }
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
@@ -117,7 +143,6 @@ fun UserProfilesLoading(
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
-
 
                 BottomNavigationItems(selectedIndexFlow) { navEvent ->
                     navigateTo(navEvent, onBack, onNavigate)
@@ -167,7 +192,7 @@ fun UserProfileBob(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (isImagesScreen && isEditingProfession) {
-            // Render text field for editing profession only on images screen
+            // Render text field for editing profession only edit screen
             OutlinedTextField(
                 value = profession,
                 onValueChange = { newProfession ->
@@ -183,16 +208,16 @@ fun UserProfileBob(
             // Render user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             // Display profession information
@@ -200,8 +225,8 @@ fun UserProfileBob(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Profession: ${userProfile.profession}",
-                    style = TextStyle(fontSize = 14.sp),
-                    color = Color.Red
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
                 )
             }
         }
@@ -220,18 +245,24 @@ fun UserProfileBob(
                         isEditingProfession = false
                         viewModel.saveProfession(userProfile.imageResId, profession)
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
                 ) {
-                    Text("Save Profession")
+                    Text("Save Profession", color = Color.White)
                 }
 
                 Button(
                     onClick = {
                         isEditingProfession = !isEditingProfession
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
                 ) {
-                    Text("Edit Profession")
+                    Text("Edit Profession", color = Color.White)
                 }
             }
         }
@@ -292,16 +323,16 @@ fun UserProfileAlice(
             // Render user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             // Display profession information
@@ -309,8 +340,8 @@ fun UserProfileAlice(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Profession: ${userProfile.profession}",
-                    style = TextStyle(fontSize = 14.sp),
-                    color = Color.Red
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
                 )
             }
         }
@@ -329,18 +360,24 @@ fun UserProfileAlice(
                         isEditingProfession = false
                         viewModel.saveProfession(userProfile.imageResId, profession)
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
                 ) {
-                    Text("Save Profession")
+                    Text("Save Profession", color = Color.White)
                 }
 
                 Button(
                     onClick = {
                         isEditingProfession = !isEditingProfession
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
                 ) {
-                    Text("Edit Profession")
+                    Text("Edit Profession", color = Color.White)
                 }
             }
         }
@@ -400,16 +437,16 @@ fun UserProfileEve(
             // Render user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp),
-                color = Color.Red
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
             )
 
             // Display profession information
@@ -417,8 +454,8 @@ fun UserProfileEve(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Profession: ${userProfile.profession}",
-                    style = TextStyle(fontSize = 14.sp),
-                    color = Color.Red
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
                 )
             }
         }
@@ -437,18 +474,24 @@ fun UserProfileEve(
                         isEditingProfession = false
                         viewModel.saveProfession(userProfile.imageResId, profession)
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
                 ) {
-                    Text("Save Profession")
+                    Text("Save Profession", color = Color.White)
                 }
 
                 Button(
                     onClick = {
                         isEditingProfession = !isEditingProfession
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
                 ) {
-                    Text("Edit Profession")
+                    Text("Edit Profession", color = Color.White)
                 }
             }
         }

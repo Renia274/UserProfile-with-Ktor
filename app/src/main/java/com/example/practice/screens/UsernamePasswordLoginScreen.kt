@@ -33,7 +33,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,8 +45,7 @@ fun UsernamePasswordLoginScreen(
     onLoading: (Boolean) -> Unit,
     onNavigateToRecovery: () -> Unit,
     onBack: () -> Unit,
-    viewModel: CredentialsViewModel = hiltViewModel()
-) {
+    viewModel: CredentialsViewModel = hiltViewModel()) {
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
@@ -94,7 +92,6 @@ fun UsernamePasswordLoginScreen(
                 style = h4,
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -148,6 +145,8 @@ fun UsernamePasswordLoginScreen(
                         // Save entered credentials to ViewModel
                         viewModel.setEnteredCredentials(username, password)
 
+
+
                         when (username.lowercase()) {
                             "bob", "alice", "eve" -> {
                                 println("Login Successful for $username")
@@ -167,7 +166,6 @@ fun UsernamePasswordLoginScreen(
             ) {
                 Text("Login")
             }
-
             // Forgot Password TextButton
             TextButton(
                 onClick = onNavigateToRecovery,

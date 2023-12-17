@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import com.example.practice.R
 import com.example.practice.data.BottomNavItem
-import com.example.practice.navigation.bottom.handler.BottomNavigation
+import com.example.practice.navigation.bottom.handler.BottomNavigationHandler
 import com.example.practice.screens.items.CustomBottomBar
 import kotlinx.coroutines.flow.Flow
 
@@ -14,24 +14,24 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun BottomNavigationItems(
     selectedIndex: Flow<Int>,
-    onNavigate: (BottomNavigation) -> Unit
+    onNavigate: (BottomNavigationHandler) -> Unit
 ) {
-
     val selectedIndexChanged by selectedIndex.collectAsState(initial = 0)
-
 
     CustomBottomBar(
         bottomNavigationItems = listOf(
-            BottomNavItem("", R.drawable.ic__left, "back"),
-            BottomNavItem("", R.drawable.ic___right, "images")
+            BottomNavItem("Main", R.drawable.ic__left, "back", Color.Gray),
+            BottomNavItem("Edit", R.drawable.ic___right, "edit", Color.Gray),
+            BottomNavItem("Settings", R.drawable.ic_settings, "settings", Color.Black)
         ),
         selectedIndex = selectedIndexChanged,
         onItemSelected = { index ->
             when (index) {
-                0 -> onNavigate(BottomNavigation.Back)
-                1 -> onNavigate(BottomNavigation.ShowImages)
+                0 -> onNavigate(BottomNavigationHandler.Back)
+                1 -> onNavigate(BottomNavigationHandler.EditProfile)
+                2 -> onNavigate(BottomNavigationHandler.Settings)
             }
         },
-        backgroundColor = Color.Gray
+        backgroundColor = Color.Yellow
     )
 }

@@ -36,11 +36,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.helpers.isValidEmail
 import com.example.practice.helpers.isValidPassword
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 
 @Composable
-fun SignupScreen(onNavigateToLogin: () -> Unit, viewModel: CredentialsViewModel = hiltViewModel()) {
+fun SignupScreen(
+    onNavigateToLogin: () -> Unit,
+    credentialsViewModel: CredentialsViewModel = hiltViewModel(),
+    sharedViewModel: SharedProfilesViewModel = hiltViewModel()
+) {
     val h4 = TextStyle(
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
@@ -121,8 +126,9 @@ fun SignupScreen(onNavigateToLogin: () -> Unit, viewModel: CredentialsViewModel 
             onClick = {
                 // navigate to login screen upon successful signup
                 if (isValidEmail(email) && isValidPassword(password)) {
-                    // Set entered credentials in the ViewModel
-                    viewModel.setEnteredCredentials(username, password)
+
+                    credentialsViewModel.setEnteredCredentials(username, password)
+                    sharedViewModel.setSignupEmail(email)
 
                     // Navigate to login screen upon successful signup
                     onNavigateToLogin.invoke()

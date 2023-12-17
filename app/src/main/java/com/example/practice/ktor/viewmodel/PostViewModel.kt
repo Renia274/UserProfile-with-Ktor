@@ -22,7 +22,8 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
     val errorMessage: LiveData<String> get() = _errorMessage
 
     private val _searchQuery = MutableLiveData<String>()
-    val searchQuery: LiveData<String> get() = _searchQuery
+
+    //val searchQuery: LiveData<String> get() = _searchQuery
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query

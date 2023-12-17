@@ -25,8 +25,8 @@ class NavigationHandler(
         }
     }
 
-    fun navigateToImages() {
-        navController.navigate(Navigation.Screen.Images.route)
+    fun navigateToEditProfile() {
+        navController.navigate(Navigation.Screen.EditProfile.route)
     }
 
     fun navigateBack() {
@@ -35,6 +35,10 @@ class NavigationHandler(
 
     fun navigateTo(screen: Navigation.Screen) {
         navController.navigate(screen.route)
+    }
+
+    fun navigateToSettings() {
+        navController.navigate(Navigation.Screen.Settings.route)
     }
 
 }

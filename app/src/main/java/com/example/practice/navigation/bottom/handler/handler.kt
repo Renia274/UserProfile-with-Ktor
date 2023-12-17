@@ -1,16 +1,20 @@
 package com.example.practice.navigation.bottom.handler
 
-sealed class BottomNavigation {
-    data object Back : BottomNavigation()
-    data object ShowImages : BottomNavigation()
+sealed class BottomNavigationHandler {
+    data object Back : BottomNavigationHandler()
+    data object EditProfile : BottomNavigationHandler()
+
+    data object Settings: BottomNavigationHandler()
 }
 
-fun navigateTo(navEvent: BottomNavigation, onBack: () -> Unit, onNavigate: (String) -> Unit) {
+fun navigateTo(navEvent: BottomNavigationHandler, onBack: () -> Unit, onNavigate: (String) -> Unit) {
     when (navEvent) {
-        is BottomNavigation.Back -> onBack.invoke()
-        is BottomNavigation.ShowImages -> {
-            onNavigate("images")
+        is BottomNavigationHandler.Back -> onBack.invoke()
+        is BottomNavigationHandler.EditProfile -> {
+            onNavigate("edit")
         }
-        else -> {}
+        is BottomNavigationHandler.Settings -> {
+            onNavigate("settings")
+        }
     }
 }

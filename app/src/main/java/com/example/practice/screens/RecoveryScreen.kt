@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +38,7 @@ fun RecoveryScreen(
     navigateToLogin: () -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
+    val signupEmail by viewModel.signupEmail.observeAsState()
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
@@ -47,6 +49,7 @@ fun RecoveryScreen(
     var email by remember { mutableStateOf("") }
     var isRecoveryEmailSent by remember { mutableStateOf(false) }
     var isDelayComplete by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRecoveryEmailSent) {
         delay(8000)
@@ -86,15 +89,29 @@ fun RecoveryScreen(
 
         Button(
             onClick = {
-                isRecoveryEmailSent = true
-                viewModel.setSignupEmail(email)
-                navigateToLogin.invoke()
+                if (email == signupEmail) {
+                    isRecoveryEmailSent = true
+                    viewModel.setSignupEmail(email)
+                    navigateToLogin.invoke()
+                } else {
+                    // Show an error message If you put different mail that the signup mail
+                    showError = true
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Text("Recover Password")
+        }
+
+        if (showError) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Entered email doesn't match the signup email.",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
 
         if (isRecoveryEmailSent) {

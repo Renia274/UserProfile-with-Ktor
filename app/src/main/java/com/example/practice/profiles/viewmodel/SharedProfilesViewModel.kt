@@ -25,6 +25,10 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     val recoveryEmail: LiveData<String>
         get() = _recoveryEmail
 
+    private val _darkMode = MutableLiveData<Boolean>()
+    val darkMode: LiveData<Boolean>
+        get() = _darkMode
+
     var userProfiles: List<UserData> = emptyList()
 
     fun saveProfession(imageResId: Int, profession: String) {
@@ -39,4 +43,11 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     fun setRecoveryEmail(email: String) {
         _recoveryEmail.value = email
     }
+
+    fun setDarkMode(isDarkMode: Boolean) {
+        _darkMode.value = isDarkMode
+    }
+
+
+
 }
