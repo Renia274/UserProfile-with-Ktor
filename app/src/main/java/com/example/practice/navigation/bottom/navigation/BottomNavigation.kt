@@ -21,8 +21,8 @@ fun BottomNavigationItems(
     CustomBottomBar(
         bottomNavigationItems = listOf(
             BottomNavItem("Main", R.drawable.ic__left, "back", Color.Gray),
-            BottomNavItem("Edit", R.drawable.ic___right, "edit", Color.Gray),
-            BottomNavItem("Settings", R.drawable.ic_settings, "settings", Color.Black)
+            BottomNavItem("Edit", R.drawable.ic___right, "edit", Color.Cyan),
+            BottomNavItem("Settings", R.drawable.ic_settings, "settings", Color.LightGray)
         ),
         selectedIndex = selectedIndexChanged,
         onItemSelected = { index ->
