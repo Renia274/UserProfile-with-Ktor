@@ -18,12 +18,16 @@ class NavigationHandler(
     }
 
     fun navigateToUserProfile(username: String) {
-        when (username) {
-            "Bob" -> navController.navigate(Navigation.Screen.UserProfileBob.route)
-            "Alice" -> navController.navigate(Navigation.Screen.UserProfileAlice.route)
-            "Eve" -> navController.navigate(Navigation.Screen.UserProfileEve.route)
+        when {
+            username.startsWith("Bob", ignoreCase = true) -> navController.navigate(Navigation.Screen.UserProfileBob.route)
+            username.startsWith("Alice", ignoreCase = true) -> navController.navigate(Navigation.Screen.UserProfileAlice.route)
+            username.startsWith("Eve", ignoreCase = true) -> navController.navigate(Navigation.Screen.UserProfileEve.route)
+            else -> {
+                null
+            }
         }
     }
+
 
     fun navigateToEditProfile() {
         navController.navigate(Navigation.Screen.EditProfile.route)

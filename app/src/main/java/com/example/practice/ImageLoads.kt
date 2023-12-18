@@ -98,9 +98,9 @@ fun UserProfilesLoading(
                         Text(
                             text = topAppBarTitle,
                             color = when (username.lowercase()) {
-                                "bob" -> Color.Black
-                                "alice" -> Color.Red
-                                "eve" -> Color.Magenta
+                                "bob" -> Color.Blue
+                                "alice" -> Color.Green
+                                "eve" -> Color.Red
                                 else -> Color.Gray
                             }
                         )
