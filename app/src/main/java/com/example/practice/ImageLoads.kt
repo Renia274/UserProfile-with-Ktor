@@ -43,7 +43,8 @@ fun UserProfilesLoading(
     viewModel: SharedProfilesViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
-    username: String
+    username: String,
+    topAppBarTitle: String
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
     var isShowingImages by remember { mutableStateOf(false) }
@@ -95,7 +96,7 @@ fun UserProfilesLoading(
                 TopAppBar(
                     title = {
                         Text(
-                            text = username,
+                            text = topAppBarTitle,
                             color = when (username.lowercase()) {
                                 "bob" -> Color.Black
                                 "alice" -> Color.Red

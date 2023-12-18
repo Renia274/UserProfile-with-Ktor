@@ -95,7 +95,7 @@ fun NavigationApp() {
             )
         }
 
-        // Inside your composable function
+
         composable(Navigation.Auth.UsernamePasswordLogin.route) {
             var isLoading by remember { mutableStateOf(false) }
 
@@ -105,10 +105,25 @@ fun NavigationApp() {
                 UsernamePasswordLoginScreen(
                     onLoginSuccess = { enteredUsername, _, _, _ ->
                         isLoading = true
-                        val userProfile = when (enteredUsername.lowercase()) {
-                            "bob" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
-                            "alice" -> UserData("Alice", "Smith", R.drawable.alice_smith)
-                            "eve" -> UserData("Eve", "Brown", R.drawable.eve_brown)
+                        val userProfile = when {
+                            enteredUsername.lowercase().startsWith("bob") -> UserData(
+                                "Bob",
+                                "Johnson",
+                                R.drawable.bob_johnson
+                            )
+
+                            enteredUsername.lowercase().startsWith("alice") -> UserData(
+                                "Alice",
+                                "Smith",
+                                R.drawable.alice_smith
+                            )
+
+                            enteredUsername.lowercase().startsWith("eve") -> UserData(
+                                "Eve",
+                                "Brown",
+                                R.drawable.eve_brown
+                            )
+
                             else -> null
                         }
 
@@ -116,7 +131,7 @@ fun NavigationApp() {
                             sharedProfilesViewModel.userProfiles = listOf(it)
                             println("Login Successful")
 
-                            // Navigating to the Settings screen with entered and updated credentials
+                            // Navigating to the PinLogin screen with entered and updated credentials
                             authNavigationHandler.navigateToPinLogin()
                         } ?: run {
                             println("Invalid username")
@@ -136,8 +151,6 @@ fun NavigationApp() {
             }
         }
 
-// Inside your composable function
-        // Inside your composable function
         composable(Navigation.Screen.Settings.route) {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
@@ -191,15 +204,18 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-                        "settings"->{
+
+                        "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
                     }
                 },
-                username = "Bob"
+                username = "Bob",
+                topAppBarTitle = "Bob's Profile"
             )
         }
 
@@ -216,15 +232,18 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-                        "settings"->{
+
+                        "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
                     }
                 },
-                username = "Alice"
+                username = "Alice",
+                topAppBarTitle = "Alice's Profile"
             )
         }
 
@@ -241,15 +260,18 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-                        "settings"->{
+
+                        "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
                     }
                 },
-                username = "Eve"
+                username = "Eve",
+                topAppBarTitle = "Eve's Profile"
             )
         }
 
@@ -264,14 +286,7 @@ fun NavigationApp() {
             )
         }
 
-
-        // Inside your composable function
-
-        }
-
-
-
-
-
     }
+
+}
 

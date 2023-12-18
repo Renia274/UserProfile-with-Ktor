@@ -16,10 +16,14 @@ fun UserProfileItem(
     onSaveProfession: (String) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
-    when (userProfile.firstName.lowercase()) {
-        "bob" -> UserProfileBob(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
-        "alice" -> UserProfileAlice(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
-        "eve" -> UserProfileEve(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
-        else -> UserProfileBob(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
+    val username = userProfile.firstName.lowercase()
+
+    when {
+        username.startsWith("bob") -> UserProfileBob(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
+        username.startsWith("alice")-> UserProfileAlice(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
+        username.startsWith("eve")-> UserProfileEve(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
+        else -> null
+
+
     }
 }
