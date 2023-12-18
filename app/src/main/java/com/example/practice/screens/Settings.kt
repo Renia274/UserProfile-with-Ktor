@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +57,7 @@ fun SettingsScreen(
     var darkMode by remember { mutableStateOf(false) }
     var notificationEnabled by remember { mutableStateOf(false) }
 
+
     val context = LocalContext.current
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
@@ -65,6 +68,14 @@ fun SettingsScreen(
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
+    var savingChanges by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(Unit) {
+        delay(2000)
+        savingChanges = true
+        delay(4000)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -96,33 +107,39 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Display user account information from the view models using fields
+            // Display user account information
             ProfileField(
-                label = "First Name",
+                label = "First Name:",
                 value = sharedViewModel.userProfiles.firstOrNull()?.firstName ?: "",
-                onValueChange = { /* Handle value change if needed */ },
+                onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {}
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
             ProfileField(
-                label = "Last Name",
+                label = "Last Name:",
                 value = sharedViewModel.userProfiles.firstOrNull()?.lastName ?: "",
-                onValueChange = { /* Handle value change if needed */ },
+                onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {}
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             ProfileField(
-                label = "Email",
+                label = "Email:",
                 value = sharedViewModel.signupEmail.value ?: "",
                 onValueChange = { sharedViewModel.setSignupEmail(it) },
                 isEditable = true,
                 onClearClick = { sharedViewModel.setSignupEmail("") }
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Username ProfileField
             ProfileField(
-                label = "Username",
+                label = "Username:",
                 value = username,
                 onValueChange = { newValue ->
                     username = newValue
@@ -135,9 +152,11 @@ fun SettingsScreen(
                 }
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Password ProfileField
             ProfileField(
-                label = "Password",
+                label = "Password:",
                 value = password,
                 onValueChange = { newValue ->
                     password = newValue
@@ -183,7 +202,14 @@ fun SettingsScreen(
                         showConfirmationDialog = false
                     }
                 )
+
+
+                if (savingChanges) {
+                    LoadingScreen()
+                }
             }
+
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Divider above Dark Mode
