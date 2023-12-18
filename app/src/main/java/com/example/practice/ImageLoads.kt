@@ -65,15 +65,15 @@ fun UserProfilesLoading(
     val mainBackgroundColor = if (darkMode) {
         MaterialTheme.colorScheme.background
     } else {
-        when (username.lowercase()) {
-            "bob" -> Color.Green
-            "alice" -> Color.LightGray
-            "eve" -> Color.Magenta
+        when {
+            username.lowercase().startsWith("bob") -> Color.Green
+            username.lowercase().startsWith("alice") -> Color.LightGray
+            username.lowercase().startsWith("eve") -> Color.Magenta
             else -> Color.Gray
         }
     }
 
-    if (isLoading) {
+        if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -97,12 +97,13 @@ fun UserProfilesLoading(
                     title = {
                         Text(
                             text = topAppBarTitle,
-                            color = when (username.lowercase()) {
-                                "bob" -> Color.Blue
-                                "alice" -> Color.Green
-                                "eve" -> Color.Red
+                            color = when {
+                                username.lowercase().startsWith("bob") -> Color.Green
+                                username.lowercase().startsWith("alice") -> Color.LightGray
+                                username.lowercase().startsWith("eve") -> Color.Magenta
                                 else -> Color.Gray
                             }
+
                         )
                     },
                     navigationIcon = {
