@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -54,11 +57,14 @@ fun SettingsScreen(
     onSaveCredentials: (String, String) -> Unit,
 
 ) {
+
+
+    val context = LocalContext.current
+
     var darkMode by remember { mutableStateOf(false) }
     var notificationEnabled by remember { mutableStateOf(false) }
 
 
-    val context = LocalContext.current
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var rememberedUsernameState by remember { mutableStateOf(credentialsViewModel.enteredCredentials.value?.username ?: "") }
@@ -68,14 +74,7 @@ fun SettingsScreen(
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
-    var savingChanges by remember { mutableStateOf(false) }
 
-
-    LaunchedEffect(Unit) {
-        delay(2000)
-        savingChanges = true
-        delay(4000)
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -187,6 +186,7 @@ fun SettingsScreen(
             if (showConfirmationDialog) {
                 SaveConfirmationDialog(
                     onConfirm = {
+
                         val updatedUsername = username
                         val updatedPassword = password
                         // Save the updated username and password using the onSaveCredentials function
@@ -202,18 +202,15 @@ fun SettingsScreen(
                         showConfirmationDialog = false
                     }
                 )
-
-
-                if (savingChanges) {
-                    LoadingScreen()
-                }
             }
 
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Divider above Dark Mode
-            Divider(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
 
             // Title for switches using Spacer
             Spacer(modifier = Modifier.height(16.dp))
@@ -257,30 +254,55 @@ fun SettingsScreen(
                     .fillMaxWidth()
             )
 
-            Divider(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
 
             Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 
+
 @Composable
 fun SaveConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    var isSpinnerVisible by remember { mutableStateOf(false) }
+
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Save Changes") },
-        text = { Text("Are you sure you want to save changes?") },
+        onDismissRequest = {
+            if (!isSpinnerVisible) {
+                onDismiss.invoke()
+            }
+        },
+        title = { Text(if (isSpinnerVisible) "Saving Changes" else "Save Changes") },
+        text = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (isSpinnerVisible) {
+                    LaunchedEffect(isSpinnerVisible) {
+                        delay(2000)
+                        onConfirm.invoke()
+                        isSpinnerVisible = false
+                    }
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp)
+                    )
+                } else {
+                    Text("Are you sure you want to save changes?")
+                }
+            }
+        },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirm.invoke()
+                    isSpinnerVisible = true
                 }
-            ) {
-                Text("Save")
-            }
+            ) { Text("Confirm") }
         },
         dismissButton = {
             TextButton(
@@ -293,6 +315,7 @@ fun SaveConfirmationDialog(
         }
     )
 }
+
 
 @Composable
 fun ProfileField(
