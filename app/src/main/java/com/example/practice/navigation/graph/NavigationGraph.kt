@@ -161,7 +161,6 @@ fun NavigationApp() {
                     }
                 }
             ) { newUsername, newPassword ->
-                // Handle the updated username and password as needed
                 credentialsViewModel.setEnteredCredentials(
                     username = newUsername,
                     password = newPassword
