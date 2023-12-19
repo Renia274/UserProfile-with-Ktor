@@ -83,7 +83,11 @@ fun SettingsScreen(
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
-    var enteredSecurityCode by remember { mutableStateOf(credentialsViewModel.securityCode.value ?: "") }
+    var enteredSecurityCode by remember {
+        mutableStateOf(
+            credentialsViewModel.securityCode.value ?: ""
+        )
+    }
 
 
 
@@ -98,18 +102,15 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        onNavigate("back")
-                    }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+            TopAppBar(title = { Text("Settings") }, navigationIcon = {
+                IconButton(onClick = {
+                    onNavigate("back")
+                }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -123,72 +124,52 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Display user account information
-            ProfileField(
-                label = "First Name:",
+            ProfileField(label = "First Name:",
                 value = sharedViewModel.userProfiles.firstOrNull()?.firstName ?: "",
                 onValueChange = { /* */ },
                 isEditable = false,
-                onClearClick = {}
-            )
+                onClearClick = {})
             Spacer(modifier = Modifier.height(8.dp))
 
-            ProfileField(
-                label = "Last Name:",
+            ProfileField(label = "Last Name:",
                 value = sharedViewModel.userProfiles.firstOrNull()?.lastName ?: "",
                 onValueChange = { /* */ },
                 isEditable = false,
-                onClearClick = {}
-            )
+                onClearClick = {})
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            ProfileField(
-                label = "Email:",
+            ProfileField(label = "Email:",
                 value = sharedViewModel.signupEmail.value ?: "",
                 onValueChange = { sharedViewModel.setSignupEmail(it) },
                 isEditable = true,
-                onClearClick = { sharedViewModel.setSignupEmail("") }
-            )
+                onClearClick = { sharedViewModel.setSignupEmail("") })
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Username ProfileField
-            ProfileField(
-                label = "Username:",
-                value = username,
-                onValueChange = { newValue ->
-                    username = newValue
-                    credentialsViewModel.setEnteredCredentials(
-                        username = newValue,
-                        password = password
-                    )
-                },
-                isEditable = true,
-                onClearClick = {
-                    username = ""
-                    credentialsViewModel.setEnteredCredentials(username = "", password = "")
-                }
-            )
+            ProfileField(label = "Username:", value = username, onValueChange = { newValue ->
+                username = newValue
+                credentialsViewModel.setEnteredCredentials(
+                    username = newValue, password = password
+                )
+            }, isEditable = true, onClearClick = {
+                username = ""
+                credentialsViewModel.setEnteredCredentials(username = "", password = "")
+            })
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Password
-            ProfileField(
-                label = "Password:",
-                value = password,
-                onValueChange = { newValue ->
-                    password = newValue
-                    credentialsViewModel.setEnteredCredentials(
-                        username = username,
-                        password = newValue
-                    )
-                },
-                isEditable = true,
-                onClearClick = {
-                    password = ""
-                    credentialsViewModel.setEnteredCredentials(username = username, password = "")
-                },
-                isPasswordVisible = true
+            ProfileField(label = "Password:", value = password, onValueChange = { newValue ->
+                password = newValue
+                credentialsViewModel.setEnteredCredentials(
+                    username = username, password = newValue
+                )
+            }, isEditable = true, onClearClick = {
+                password = ""
+                credentialsViewModel.setEnteredCredentials(username = username, password = "")
+            }, isPasswordVisible = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -197,8 +178,7 @@ fun SettingsScreen(
                 onClick = {
                     // Show the confirmation dialog before saving changes
                     showConfirmationDialog = true
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
@@ -207,24 +187,21 @@ fun SettingsScreen(
 
             // Confirmation Dialog
             if (showConfirmationDialog) {
-                SaveConfirmationDialog(
-                    onConfirm = {
+                SaveConfirmationDialog(onConfirm = {
 
-                        val updatedUsername = username
-                        val updatedPassword = password
-                        // Save the updated username and password using the onSaveCredentials function
-                        onSaveCredentials.invoke(updatedUsername, updatedPassword)
+                    val updatedUsername = username
+                    val updatedPassword = password
+                    // Save the updated username and password using the onSaveCredentials function
+                    onSaveCredentials.invoke(updatedUsername, updatedPassword)
 
-                        // Call the updateCredentials function in CredentialsViewModel
-                        credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
+                    // Call the updateCredentials function in CredentialsViewModel
+                    credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
 
-                        showConfirmationDialog = false
-                    },
-                    onDismiss = {
-                        // Dismiss the dialog if the user cancels the save operation
-                        showConfirmationDialog = false
-                    }
-                )
+                    showConfirmationDialog = false
+                }, onDismiss = {
+                    // Dismiss the dialog if the user cancels the save operation
+                    showConfirmationDialog = false
+                })
             }
 
             Divider(
@@ -238,8 +215,7 @@ fun SettingsScreen(
             Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
             Spacer(modifier = Modifier.height(16.dp))
 
-            ProfileField(
-                label = "Security Code:",
+            ProfileField(label = "Security Code:",
                 value = enteredSecurityCode,
                 onValueChange = { updatedSecurityCode ->
                     enteredSecurityCode = updatedSecurityCode
@@ -248,8 +224,7 @@ fun SettingsScreen(
                 onClearClick = {
                     enteredSecurityCode = ""
 
-                }
-            )
+                })
 
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -259,8 +234,7 @@ fun SettingsScreen(
                 onClick = {
                     credentialsViewModel.saveSecurityCode(enteredSecurityCode.toString())
                     onNavigate("securityCode")
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
@@ -290,19 +264,14 @@ fun SettingsScreen(
             // Dark Mode with Spacer
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "Dark Mode",
-                style = TextStyle(fontSize = 16.sp),
-                modifier = Modifier.fillMaxWidth()
+                "Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             Switch(
-                checked = darkMode,
-                onCheckedChange = {
+                checked = darkMode, onCheckedChange = {
                     darkMode = it
                     sharedViewModel.setDarkMode(it)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
+                }, modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -315,15 +284,13 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = notificationEnabled,
-                onCheckedChange = {
+                checked = notificationEnabled, onCheckedChange = {
                     notificationEnabled = it
                     if (it) {
                         // Display notification when notifications are enabled
                         Toast.makeText(context, "Notifications are ON", Toast.LENGTH_SHORT).show()
                     }
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             )
@@ -342,56 +309,43 @@ fun SettingsScreen(
 
 @Composable
 fun SaveConfirmationDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onConfirm: () -> Unit, onDismiss: () -> Unit
 ) {
     var isSpinnerVisible by remember { mutableStateOf(false) }
 
-    AlertDialog(
-        onDismissRequest = {
-            if (!isSpinnerVisible) {
-                onDismiss.invoke()
-            }
-        },
-        title = { Text(if (isSpinnerVisible) "Saving Changes" else "Save Changes") },
-        text = {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isSpinnerVisible) {
-                    LaunchedEffect(isSpinnerVisible) {
-                        delay(2000)
-                        onConfirm.invoke()
-                        isSpinnerVisible = false
-                    }
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(32.dp)
-                    )
-                } else {
-                    Text("Are you sure you want to save changes?")
+    AlertDialog(onDismissRequest = {
+        if (!isSpinnerVisible) {
+            onDismiss.invoke()
+        }
+    }, title = { Text(if (isSpinnerVisible) "Saving Changes" else "Save Changes") }, text = {
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isSpinnerVisible) {
+                LaunchedEffect(isSpinnerVisible) {
+                    delay(2000)
+                    onConfirm.invoke()
+                    isSpinnerVisible = false
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    isSpinnerVisible = true
-                }
-            ) { Text("Confirm") }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismiss.invoke()
-                }
-            ) {
-                Text("Cancel")
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp)
+                )
+            } else {
+                Text("Are you sure you want to save changes?")
             }
         }
-    )
+    }, confirmButton = {
+        TextButton(onClick = {
+            isSpinnerVisible = true
+        }) { Text("Confirm") }
+    }, dismissButton = {
+        TextButton(onClick = {
+            onDismiss.invoke()
+        }) {
+            Text("Cancel")
+        }
+    })
 }
-
 
 
 @Composable
@@ -416,37 +370,37 @@ fun ProfileField(
         )
         if (isEditable) {
             val editableState = remember { mutableStateOf(observedValue) }
-            OutlinedTextField(
-                value = editableState.value,
+            OutlinedTextField(value = editableState.value,
                 onValueChange = {
                     editableState.value = it
                     onValueChange(it)
                 },
                 label = { Text(label) },
-                visualTransformation = PasswordVisualTransformation(), // Always use PasswordVisualTransformation
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = if (label.equals("Password", ignoreCase = true)) KeyboardType.Password else KeyboardType.Text
+                    keyboardType = if (label.equals(
+                            "Password", ignoreCase = true
+                        )
+                    ) KeyboardType.Password else KeyboardType.Text
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (label.equals("Password", ignoreCase = true)) {
+                    if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true)) {
                         IconButton(
                             onClick = {
-                                // Toggle password visibility
+                                // Toggle password or security code visibility
                                 onClearClick.invoke()
-                            },
-                            modifier = Modifier.padding(8.dp)
+                            }, modifier = Modifier.padding(8.dp)
                         ) {
                             Icon(
-                                painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show_pin),
-                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                                painter = painterResource(id = if (isPasswordVisible)  R.drawable.ic_show_pin else R.drawable.ic_hide ),
+                                contentDescription = if (isPasswordVisible) "Hide" else "Show"
                             )
                         }
                     }
-                }
-            )
+                })
         } else {
             Text(text = observedValue, style = TextStyle(fontSize = 16.sp))
         }
