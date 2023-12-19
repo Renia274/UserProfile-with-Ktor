@@ -44,7 +44,7 @@ fun SecurityCodeScreen(
 ) {
     var customSecurityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
-    var isSEcurityCodeVisible by remember { mutableStateOf(false) }
+    var isSecurityCodeVisible by remember { mutableStateOf(false) }
 
 
     Column(
@@ -77,24 +77,24 @@ fun SecurityCodeScreen(
             label = { Text("Enter Security Code") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number // Adjust the keyboard type based on your requirements
+                keyboardType = KeyboardType.Number 
             ),
             keyboardActions = KeyboardActions(
                 onDone = {}
             ),
             isError = showError,
             singleLine = true,
-            visualTransformation = if (isSEcurityCodeVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (isSecurityCodeVisible) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             trailingIcon = {
                 IconButton(
-                    onClick = { isSEcurityCodeVisible = !isSEcurityCodeVisible },
+                    onClick = { isSecurityCodeVisible = !isSecurityCodeVisible },
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isSEcurityCodeVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
-                        contentDescription = if (isSEcurityCodeVisible) "Hide security code" else "Show security code"
+                        painter = painterResource(id = if (isSecurityCodeVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                        contentDescription = if (isSecurityCodeVisible) "Hide security code" else "Show security code"
                     )
                 }
             }

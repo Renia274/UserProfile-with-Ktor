@@ -43,6 +43,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
@@ -56,7 +57,7 @@ fun SettingsScreen(
     sharedViewModel: SharedProfilesViewModel,
     credentialsViewModel: CredentialsViewModel,
     onNavigate: (String) -> Unit,
-    onSaveCredentials: (String, String) -> Unit
+    onSaveCredentials: (String, String) -> Unit,
 
     ) {
 
@@ -167,7 +168,7 @@ fun SettingsScreen(
             }, isEditable = true, onClearClick = {
                 password = ""
                 credentialsViewModel.setEnteredCredentials(username = username, password = "")
-            }, isVisible = true
+            }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -230,7 +231,7 @@ fun SettingsScreen(
 
             Button(
                 onClick = {
-                    credentialsViewModel.saveSecurityCode(enteredSecurityCode.toString())
+                    credentialsViewModel.saveSecurityCode(enteredSecurityCode)
                     onNavigate("securityCode")
                 }, modifier = Modifier
                     .fillMaxWidth()
@@ -355,9 +356,10 @@ fun ProfileField(
     onValueChange: (String) -> Unit,
     isEditable: Boolean,
     onClearClick: () -> Unit,
-    isVisible: Boolean = false
+    initiallyVisible: Boolean = false
 ) {
-    val observedValue by mutableStateOf(value)
+    var isVisible by remember { mutableStateOf(initiallyVisible) }
+    val observedValue by remember { mutableStateOf(value) }
 
     Column(
         modifier = Modifier
@@ -370,33 +372,31 @@ fun ProfileField(
         )
         if (isEditable) {
             val editableState = remember { mutableStateOf(observedValue) }
-            OutlinedTextField(value = editableState.value,
+            OutlinedTextField(
+                value = editableState.value,
                 onValueChange = {
                     editableState.value = it
                     onValueChange(it)
                 },
                 label = { Text(label) },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation =
+                if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true))
+                    if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
+                else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = if (label.equals(
-                            "Password", ignoreCase = true
-                        )
-                    ) KeyboardType.Password else KeyboardType.Text
+                    keyboardType = if (label.equals("Password:", ignoreCase = true))
+                        KeyboardType.Password else KeyboardType.Text
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (label.equals(
-                            "Password:",
-                            ignoreCase = true
-                        ) || label.equals("Security Code:", ignoreCase = true)
-                    ) {
+                    if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true)) {
                         IconButton(
                             onClick = {
-                                // Toggle password or security code visibility
+                                isVisible = !isVisible
                                 onClearClick.invoke()
-                            }, modifier = Modifier.padding(8.dp)
+                            },
                         ) {
                             Icon(
                                 painter = painterResource(id = if (isVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
@@ -404,9 +404,11 @@ fun ProfileField(
                             )
                         }
                     }
-                })
+                }
+            )
         } else {
             Text(text = observedValue, style = TextStyle(fontSize = 16.sp))
         }
     }
 }
+
