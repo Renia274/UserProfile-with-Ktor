@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,12 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.R
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import kotlinx.coroutines.delay
@@ -170,7 +172,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password ProfileField
+            // Password
             ProfileField(
                 label = "Password:",
                 value = password,
@@ -185,7 +187,8 @@ fun SettingsScreen(
                 onClearClick = {
                     password = ""
                     credentialsViewModel.setEnteredCredentials(username = username, password = "")
-                }
+                },
+                isPasswordVisible = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -390,13 +393,15 @@ fun SaveConfirmationDialog(
 }
 
 
+
 @Composable
 fun ProfileField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
     isEditable: Boolean,
-    onClearClick: () -> Unit
+    onClearClick: () -> Unit,
+    isPasswordVisible: Boolean = false
 ) {
     val observedValue by mutableStateOf(value)
 
@@ -418,25 +423,26 @@ fun ProfileField(
                     onValueChange(it)
                 },
                 label = { Text(label) },
-                visualTransformation = if (label.equals("Password", ignoreCase = true)) {
-                    // Use PasswordVisualTransformation for the password field
-                    PasswordVisualTransformation()
-                } else {
-                    VisualTransformation.None
-                },
+                visualTransformation = PasswordVisualTransformation(), // Always use PasswordVisualTransformation
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = if (label.equals("Password", ignoreCase = true)) KeyboardType.Password else KeyboardType.Text
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (editableState.value.isNotEmpty()) {
+                    if (label.equals("Password", ignoreCase = true)) {
                         IconButton(
                             onClick = {
-                                editableState.value = ""
+                                // Toggle password visibility
                                 onClearClick.invoke()
                             },
                             modifier = Modifier.padding(8.dp)
                         ) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+                            Icon(
+                                painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show_pin),
+                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            )
                         }
                     }
                 }
@@ -445,6 +451,4 @@ fun ProfileField(
             Text(text = observedValue, style = TextStyle(fontSize = 16.sp))
         }
     }
-
-
 }

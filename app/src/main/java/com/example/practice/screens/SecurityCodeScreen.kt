@@ -1,10 +1,12 @@
 package com.example.practice.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,12 +43,12 @@ fun SecurityCodeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         TopAppBar(
-            title = { Text("Security Code Screen") },
+            title = { Text("Enter your security code") },
             navigationIcon = {
                 IconButton(onClick = { onNavigate("back") }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
@@ -56,6 +58,7 @@ fun SecurityCodeScreen(
                 .fillMaxWidth()
 
         )
+        Spacer(modifier = Modifier.height(64.dp))
 
         TextField(
             value = securityCode,
