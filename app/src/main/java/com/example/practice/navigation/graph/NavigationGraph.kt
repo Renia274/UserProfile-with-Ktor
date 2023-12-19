@@ -21,6 +21,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
+import com.example.practice.screens.SecurityCodeScreen
 import com.example.practice.screens.SettingsScreen
 import com.example.practice.screens.SignUpSignInScreen
 import com.example.practice.screens.SignupScreen
@@ -51,6 +52,7 @@ data class Navigation(
             val Signup = Auth("signup")
             val UsernamePasswordLogin = Auth("usernamePasswordLogin")
             val PinLogin = Auth("pinLogin")
+            val SecurityCode = Auth("securityCode")
         }
     }
 }
@@ -150,7 +152,6 @@ fun NavigationApp() {
                 )
             }
         }
-
         composable(Navigation.Screen.Settings.route) {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
@@ -158,6 +159,10 @@ fun NavigationApp() {
                 onNavigate = { destination ->
                     when (destination) {
                         "back" -> navigationHandler.navigateBack()
+                        "securityCode" -> {
+                            navigationHandler.navigateToSecurityCode()
+
+                        }
                     }
                 }
             ) { newUsername, newPassword ->
@@ -165,11 +170,24 @@ fun NavigationApp() {
                     username = newUsername,
                     password = newPassword
                 )
-                authNavigationHandler.navigateToUsernamePasswordLogin()
             }
         }
 
 
+
+
+
+        composable(Navigation.Auth.SecurityCode.route) {
+            SecurityCodeScreen(
+                viewModel = credentialsViewModel,
+                onNavigate = { destination ->
+                    when (destination) {
+                        "pinLogin" -> authNavigationHandler.navigateToPinLogin()
+                        "back" -> navigationHandler.navigateBack()
+                    }
+                }
+            )
+        }
 
 
 

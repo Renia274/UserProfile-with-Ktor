@@ -17,6 +17,11 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
     val enteredCredentials: LiveData<UserCredentials>
         get() = _enteredCredentials
 
+
+    private val _securityCode = MutableLiveData<String>()
+    val securityCode: LiveData<String>
+        get() = _securityCode
+
     fun setEnteredCredentials(username: String, password: String) {
         _enteredCredentials.value = UserCredentials(username, password)
     }
@@ -27,7 +32,6 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
             it.username == username && it.password == password
         } ?: false
     }
-
 
 
     fun updateCredentials(updatedUsername: String, updatedPassword: String) {
@@ -48,5 +52,15 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+
+
+
+    fun saveSecurityCode(code: String) {
+        viewModelScope.launch {
+            _securityCode.value = code
+        }
+
+    }
+
 
 }

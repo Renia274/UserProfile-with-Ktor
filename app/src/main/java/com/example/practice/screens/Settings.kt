@@ -56,7 +56,7 @@ fun SettingsScreen(
     onNavigate: (String) -> Unit,
     onSaveCredentials: (String, String) -> Unit,
 
-) {
+    ) {
 
 
     val context = LocalContext.current
@@ -65,14 +65,25 @@ fun SettingsScreen(
     var notificationEnabled by remember { mutableStateOf(false) }
 
 
-
     var showConfirmationDialog by remember { mutableStateOf(false) }
-    var rememberedUsernameState by remember { mutableStateOf(credentialsViewModel.enteredCredentials.value?.username ?: "") }
-    var rememberedPasswordState by remember { mutableStateOf(credentialsViewModel.enteredCredentials.value?.password ?: "") }
+    var rememberedUsernameState by remember {
+        mutableStateOf(
+            credentialsViewModel.enteredCredentials.value?.username ?: ""
+        )
+    }
+    var rememberedPasswordState by remember {
+        mutableStateOf(
+            credentialsViewModel.enteredCredentials.value?.password ?: ""
+        )
+    }
 
     // Declare username and password variables
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
+
+    var enteredSecurityCode by remember { mutableStateOf(credentialsViewModel.securityCode.value ?: "") }
+
+
 
 
     Box(
@@ -102,7 +113,10 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Account Information Section
-            Text("Account Information", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+            Text(
+                "Account Information",
+                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -142,7 +156,10 @@ fun SettingsScreen(
                 value = username,
                 onValueChange = { newValue ->
                     username = newValue
-                    credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
+                    credentialsViewModel.setEnteredCredentials(
+                        username = newValue,
+                        password = password
+                    )
                 },
                 isEditable = true,
                 onClearClick = {
@@ -159,7 +176,10 @@ fun SettingsScreen(
                 value = password,
                 onValueChange = { newValue ->
                     password = newValue
-                    credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
+                    credentialsViewModel.setEnteredCredentials(
+                        username = username,
+                        password = newValue
+                    )
                 },
                 isEditable = true,
                 onClearClick = {
@@ -204,13 +224,60 @@ fun SettingsScreen(
                 )
             }
 
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+
+
+            // Security Section
+            Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ProfileField(
+                label = "Security Code:",
+                value = enteredSecurityCode.toString(),
+                onValueChange = { updatedSecurityCode ->
+                    enteredSecurityCode = updatedSecurityCode
+                },
+                isEditable = true,
+                onClearClick = {
+                    enteredSecurityCode = ""
+
+                }
+            )
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Button(
+                onClick = {
+                    credentialsViewModel.saveSecurityCode(enteredSecurityCode.toString())
+                    onNavigate("securityCode")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Save Security Code")
+            }
+
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Divider above Dark Mode
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
 
             // Title for switches using Spacer
             Spacer(modifier = Modifier.height(16.dp))
@@ -219,7 +286,11 @@ fun SettingsScreen(
 
             // Dark Mode with Spacer
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth())
+            Text(
+                "Dark Mode",
+                style = TextStyle(fontSize = 16.sp),
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Switch(
                 checked = darkMode,
@@ -254,9 +325,11 @@ fun SettingsScreen(
                     .fillMaxWidth()
             )
 
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
 
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -372,4 +445,6 @@ fun ProfileField(
             Text(text = observedValue, style = TextStyle(fontSize = 16.sp))
         }
     }
+
+
 }
