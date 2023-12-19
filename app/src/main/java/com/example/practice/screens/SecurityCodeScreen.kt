@@ -42,7 +42,7 @@ fun SecurityCodeScreen(
     onNavigate: (String) -> Unit,
     securityCode: String
 ) {
-    var securityCode by remember { mutableStateOf(securityCode) }
+    var customSecurityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
     var isSEcurityCodeVisible by remember { mutableStateOf(false) }
 
@@ -69,9 +69,9 @@ fun SecurityCodeScreen(
 
 
         TextField(
-            value = securityCode,
+            value = customSecurityCode ,
             onValueChange = {
-                securityCode = it
+                customSecurityCode  = it
                 showError = false
             },
             label = { Text("Enter Security Code") },

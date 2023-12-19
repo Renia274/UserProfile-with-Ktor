@@ -56,7 +56,7 @@ fun SettingsScreen(
     sharedViewModel: SharedProfilesViewModel,
     credentialsViewModel: CredentialsViewModel,
     onNavigate: (String) -> Unit,
-    onSaveCredentials: (String, String) -> Unit,
+    onSaveCredentials: (String, String) -> Unit
 
     ) {
 
