@@ -79,7 +79,7 @@ fun SettingsScreen(
         )
     }
 
-    // Declare username and password variables
+
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
@@ -88,8 +88,6 @@ fun SettingsScreen(
             credentialsViewModel.securityCode.value ?: ""
         )
     }
-
-
 
 
     Box(
@@ -147,7 +145,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Username ProfileField
+            // Username
             ProfileField(label = "Username:", value = username, onValueChange = { newValue ->
                 username = newValue
                 credentialsViewModel.setEnteredCredentials(
@@ -169,7 +167,7 @@ fun SettingsScreen(
             }, isEditable = true, onClearClick = {
                 password = ""
                 credentialsViewModel.setEnteredCredentials(username = username, password = "")
-            }, isPasswordVisible = true
+            }, isVisible = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -249,19 +247,21 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Divider above Dark Mode
+
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
 
-            // Title for switches using Spacer
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Settings", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Dark Mode with Spacer
+            Text("Settings", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Dark Mode
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth()
@@ -355,7 +355,7 @@ fun ProfileField(
     onValueChange: (String) -> Unit,
     isEditable: Boolean,
     onClearClick: () -> Unit,
-    isPasswordVisible: Boolean = false
+    isVisible: Boolean = false
 ) {
     val observedValue by mutableStateOf(value)
 
@@ -387,7 +387,11 @@ fun ProfileField(
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true)) {
+                    if (label.equals(
+                            "Password:",
+                            ignoreCase = true
+                        ) || label.equals("Security Code:", ignoreCase = true)
+                    ) {
                         IconButton(
                             onClick = {
                                 // Toggle password or security code visibility
@@ -395,8 +399,8 @@ fun ProfileField(
                             }, modifier = Modifier.padding(8.dp)
                         ) {
                             Icon(
-                                painter = painterResource(id = if (isPasswordVisible)  R.drawable.ic_show_pin else R.drawable.ic_hide ),
-                                contentDescription = if (isPasswordVisible) "Hide" else "Show"
+                                painter = painterResource(id = if (isVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                                contentDescription = if (isVisible) "Hide" else "Show"
                             )
                         }
                     }

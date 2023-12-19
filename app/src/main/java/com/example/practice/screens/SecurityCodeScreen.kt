@@ -26,8 +26,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +44,8 @@ fun SecurityCodeScreen(
 ) {
     var securityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
+    var isSEcurityCodeVisible by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -60,6 +67,7 @@ fun SecurityCodeScreen(
         )
         Spacer(modifier = Modifier.height(64.dp))
 
+
         TextField(
             value = securityCode,
             onValueChange = {
@@ -68,17 +76,30 @@ fun SecurityCodeScreen(
             },
             label = { Text("Enter Security Code") },
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number // Adjust the keyboard type based on your requirements
             ),
             keyboardActions = KeyboardActions(
                 onDone = {}
             ),
             isError = showError,
             singleLine = true,
+            visualTransformation = if (isSEcurityCodeVisible) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            trailingIcon = {
+                IconButton(
+                    onClick = { isSEcurityCodeVisible = !isSEcurityCodeVisible },
+                ) {
+                    Icon(
+                        painter = painterResource(id = if (isSEcurityCodeVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                        contentDescription = if (isSEcurityCodeVisible) "Hide security code" else "Show security code"
+                    )
+                }
+            }
         )
+
 
         if (showError) {
             Text(

@@ -50,7 +50,7 @@ fun PinLoginScreen(
     onPostNavigate: () -> Unit,
 ) {
     var pin by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isPinVisible by remember { mutableStateOf(false) }
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
@@ -107,7 +107,7 @@ fun PinLoginScreen(
                 }
             },
             label = { Text("Enter PIN") },
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.NumberPassword,
                 imeAction = ImeAction.Done
@@ -118,11 +118,11 @@ fun PinLoginScreen(
                 ) {
                     Spacer(modifier = Modifier.width(4.dp))
                     IconButton(
-                        onClick = { isPasswordVisible = !isPasswordVisible },
+                        onClick = { isPinVisible = !isPinVisible },
                     ) {
                         Icon(
-                            painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_hide else R.drawable.ic_show_pin),
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            painter = painterResource(id = if (isPinVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                            contentDescription = if (isPinVisible) "Hide pin" else "Show pin"
                         )
                     }
                 }
