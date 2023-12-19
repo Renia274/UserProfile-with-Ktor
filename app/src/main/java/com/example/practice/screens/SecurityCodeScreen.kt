@@ -30,7 +30,11 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityCodeScreen(viewModel: CredentialsViewModel, onNavigate: (String) -> Unit,securityCode: String) {
+fun SecurityCodeScreen(
+    viewModel: CredentialsViewModel,
+    onNavigate: (String) -> Unit,
+    securityCode: String
+) {
     var securityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
 
@@ -44,7 +48,7 @@ fun SecurityCodeScreen(viewModel: CredentialsViewModel, onNavigate: (String) -> 
         TopAppBar(
             title = { Text("Security Code Screen") },
             navigationIcon = {
-                IconButton(onClick = { onNavigate("back")}) {
+                IconButton(onClick = { onNavigate("back") }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }
             },
@@ -84,10 +88,16 @@ fun SecurityCodeScreen(viewModel: CredentialsViewModel, onNavigate: (String) -> 
         Button(
             onClick = {
                 if (securityCode.isNotEmpty()) {
-                    viewModel.saveSecurityCode(securityCode)
+                    val savedSecurityCode = viewModel.securityCode.value
+                    if (securityCode == savedSecurityCode) {
+                        viewModel.saveSecurityCode(securityCode)
 
-                    // Navigate to the pinlogin screen
-                    onNavigate.invoke("pinLogin")
+                        // Navigate to the pinlogin screen
+                        onNavigate.invoke("pinLogin")
+                    } else {
+                        showError = true
+                        println("Entered security code does not match the saved one.")
+                    }
                 } else {
                     showError = true
                 }

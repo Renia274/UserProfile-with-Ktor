@@ -237,7 +237,7 @@ fun SettingsScreen(
 
             ProfileField(
                 label = "Security Code:",
-                value = enteredSecurityCode.toString(),
+                value = enteredSecurityCode,
                 onValueChange = { updatedSecurityCode ->
                     enteredSecurityCode = updatedSecurityCode
                 },
