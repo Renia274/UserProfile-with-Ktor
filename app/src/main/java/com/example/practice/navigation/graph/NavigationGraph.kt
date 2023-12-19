@@ -174,9 +174,6 @@ fun NavigationApp() {
         }
 
 
-
-
-
         composable(Navigation.Auth.SecurityCode.route) {
             SecurityCodeScreen(
                 viewModel = credentialsViewModel,
@@ -185,7 +182,8 @@ fun NavigationApp() {
                         "pinLogin" -> authNavigationHandler.navigateToPinLogin()
                         "back" -> navigationHandler.navigateBack()
                     }
-                }
+                },
+                securityCode = credentialsViewModel.securityCode.value ?: ""
             )
         }
 

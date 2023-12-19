@@ -30,8 +30,8 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityCodeScreen(viewModel: CredentialsViewModel, onNavigate: (String) -> Unit) {
-    var securityCode by remember { mutableStateOf("") }
+fun SecurityCodeScreen(viewModel: CredentialsViewModel, onNavigate: (String) -> Unit,securityCode: String) {
+    var securityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
 
     Column(
