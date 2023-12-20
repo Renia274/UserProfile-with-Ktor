@@ -133,7 +133,7 @@ fun NavigationApp() {
                             sharedProfilesViewModel.userProfiles = listOf(it)
                             println("Login Successful")
 
-                            // Navigating to the PinLogin screen with entered and updated credentials
+                            // Navigating to the security code screen
                             authNavigationHandler.navigateToSecurityCode()
                         } ?: run {
                             println("Invalid username")
