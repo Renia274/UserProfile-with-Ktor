@@ -134,7 +134,7 @@ fun NavigationApp() {
                             println("Login Successful")
 
                             // Navigating to the security code screen
-                            authNavigationHandler.navigateToSecurityCode()
+                            authNavigationHandler.navigateToPinLogin()
                         } ?: run {
                             println("Invalid username")
                         }
@@ -179,7 +179,7 @@ fun NavigationApp() {
                 viewModel = credentialsViewModel,
                 onNavigate = { destination ->
                     when (destination) {
-                        "pinLogin" -> authNavigationHandler.navigateToPinLogin()
+                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
                         "back" -> navigationHandler.navigateBack()
                     }
                 },

@@ -1,6 +1,4 @@
 package com.example.practice.screens
-
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,7 +34,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityCodeScreen(
@@ -48,10 +44,6 @@ fun SecurityCodeScreen(
     var customSecurityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
     var isSecurityCodeVisible by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,15 +60,12 @@ fun SecurityCodeScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-
         )
         Spacer(modifier = Modifier.height(64.dp))
-
-
         TextField(
-            value = customSecurityCode,
+            value = customSecurityCode ,
             onValueChange = {
-                customSecurityCode = it
+                customSecurityCode  = it
                 showError = false
             },
             label = { Text("Enter Security Code") },
@@ -104,33 +93,36 @@ fun SecurityCodeScreen(
                 }
             }
         )
-
-
-
-
+        if (showError) {
+            Text(
+                text = "Invalid security code. Please try again.",
+                color = Color.Red,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
         Button(
             onClick = {
-                if (customSecurityCode.isNotEmpty()) {
+                if (securityCode.isNotEmpty()) {
                     val savedSecurityCode = viewModel.securityCode.value
-                    if (customSecurityCode == savedSecurityCode) {
-                        // Security code is valid, save it
-                        viewModel.saveSecurityCode(customSecurityCode)
-                        onNavigate("pinLogin")
+                    if (securityCode == savedSecurityCode) {
+                        viewModel.saveSecurityCode(securityCode)
+                        // Navigate to the login screen
+                        onNavigate.invoke("usernamePasswordLogin")
                     } else {
-
-                        onNavigate("pinLogin")
+                        showError = true
+                        println("Entered security code does not match the saved one.")
                     }
                 } else {
-                    Toast.makeText(context, "The security code is not empty", Toast.LENGTH_SHORT).show()
+                    showError = true
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(8.dp)
                 .padding(8.dp),
             colors = ButtonDefaults.buttonColors(contentColor = Color.Cyan)
         ) {
             Text("Continue")
         }
-
     }
 }
