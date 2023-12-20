@@ -45,8 +45,6 @@ class NavigationHandler(
         navController.navigate(Navigation.Screen.Settings.route)
     }
 
-    fun navigateToSecurityCode(){
-        navController.navigate(Navigation.Auth.SecurityCode.route)
-    }
+
 
 }

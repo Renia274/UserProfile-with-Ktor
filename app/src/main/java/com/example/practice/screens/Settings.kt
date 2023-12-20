@@ -191,6 +191,9 @@ fun SettingsScreen(
                     //update Credentials
                     credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
 
+                    //navigate to login screen
+                    onNavigate("usernamePasswordLogin")
+
                     showConfirmationDialog = false
                 }, onDismiss = {
                     // Dismiss the dialog if the user cancels the save operation
@@ -287,7 +290,7 @@ fun SettingsScreen(
             // Security  switch
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "Enable Notifications",
+                "Enable Security Code",
                 style = TextStyle(fontSize = 16.sp),
                 modifier = Modifier.fillMaxWidth()
             )

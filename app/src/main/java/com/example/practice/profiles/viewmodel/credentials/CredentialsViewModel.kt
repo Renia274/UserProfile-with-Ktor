@@ -53,14 +53,14 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-
-
-    fun saveSecurityCode(code: String) {
-        viewModelScope.launch {
-            _securityCode.value = code
+    fun saveSecurityCode(code: String): Boolean {
+        return try {
+            viewModelScope.launch {
+                _securityCode.value = code
+            }
+            true
+        } catch (e: Exception) {
+            false
         }
-
     }
-
-
 }

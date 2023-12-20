@@ -134,7 +134,7 @@ fun NavigationApp() {
                             println("Login Successful")
 
                             // Navigating to the PinLogin screen with entered and updated credentials
-                            authNavigationHandler.navigateToPinLogin()
+                            authNavigationHandler.navigateToSecurityCode()
                         } ?: run {
                             println("Invalid username")
                         }
@@ -160,7 +160,7 @@ fun NavigationApp() {
                     when (destination) {
                         "back" -> navigationHandler.navigateBack()
                         "securityCode" -> {
-                            navigationHandler.navigateToSecurityCode()
+                            authNavigationHandler.navigateToSecurityCode()
 
                         }
                     }
@@ -199,6 +199,8 @@ fun NavigationApp() {
                 onPostNavigate = { navigationHandler.navigateToPosts() }
             )
         }
+
+
 
         composable(Navigation.Screen.Posts.route) {
             PostsScreen(onNavigate = {

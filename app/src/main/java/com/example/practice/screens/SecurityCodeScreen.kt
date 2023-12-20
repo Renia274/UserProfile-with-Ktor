@@ -70,15 +70,15 @@ fun SecurityCodeScreen(
 
 
         TextField(
-            value = customSecurityCode ,
+            value = customSecurityCode,
             onValueChange = {
-                customSecurityCode  = it
+                customSecurityCode = it
                 showError = false
             },
             label = { Text("Enter Security Code") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number 
+                keyboardType = KeyboardType.Number
             ),
             keyboardActions = KeyboardActions(
                 onDone = {}
@@ -112,19 +112,23 @@ fun SecurityCodeScreen(
 
         Button(
             onClick = {
-                if (securityCode.isNotEmpty()) {
+                if (customSecurityCode.isNotEmpty()) {
                     val savedSecurityCode = viewModel.securityCode.value
-                    if (securityCode == savedSecurityCode) {
-                        viewModel.saveSecurityCode(securityCode)
-
-                        // Navigate to the pinlogin screen
-                        onNavigate.invoke("pinLogin")
+                    if (customSecurityCode == savedSecurityCode) {
+                        // Security code is valid, save it
+                        viewModel.saveSecurityCode(customSecurityCode)
+                        showError=false
+                        onNavigate("pinLogin")
                     } else {
-                        showError = true
-                        println("Entered security code does not match the saved one.")
+                        showError = false
+                        onNavigate("pinLogin")
                     }
+
+                    // Navigate to "pinLogin" regardless of the error
+                    onNavigate.invoke("pinLogin")
                 } else {
                     showError = true
+                    println("Entered security code is empty.")
                 }
             },
             modifier = Modifier
@@ -134,5 +138,6 @@ fun SecurityCodeScreen(
         ) {
             Text("Continue")
         }
+
     }
 }
