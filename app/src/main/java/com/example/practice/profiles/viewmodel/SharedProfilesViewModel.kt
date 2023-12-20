@@ -29,6 +29,10 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     val darkMode: LiveData<Boolean>
         get() = _darkMode
 
+    private val _notificationEnabled = MutableLiveData<Boolean>()
+    val notificationEnabled: LiveData<Boolean>
+        get() = _notificationEnabled
+
     var userProfiles: List<UserData> = emptyList()
 
     fun saveProfession(imageResId: Int, profession: String) {
@@ -46,6 +50,10 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
 
     fun setDarkMode(isDarkMode: Boolean) {
         _darkMode.value = isDarkMode
+    }
+
+    fun setNotificationEnabled(isEnabled: Boolean) {
+        _notificationEnabled.value = isEnabled
     }
 
 
