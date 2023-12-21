@@ -104,54 +104,62 @@ fun NavigationApp() {
             if (isLoading) {
                 LoadingScreen()
             } else {
-                UsernamePasswordLoginScreen(
-                    onLoginSuccess = { enteredUsername, _, _, _ ->
-                        isLoading = true
-                        val userProfile = when {
-                            enteredUsername.lowercase().startsWith("bob") -> UserData(
-                                "Bob",
-                                "Johnson",
-                                R.drawable.bob_johnson
-                            )
+                val securityCodeAvailable = credentialsViewModel.securityCode.value != null
 
-                            enteredUsername.lowercase().startsWith("alice") -> UserData(
-                                "Alice",
-                                "Smith",
-                                R.drawable.alice_smith
-                            )
+                if (securityCodeAvailable) {
+                    // Navigate to PinLogin if security code is available
+                    authNavigationHandler.navigateToPinLogin()
+                }
+                else{
+                    UsernamePasswordLoginScreen(
+                        onLoginSuccess = { enteredUsername, _, _, _ ->
+                            isLoading = true
+                            val userProfile = when {
+                                enteredUsername.lowercase().startsWith("bob") -> UserData(
+                                    "Bob",
+                                    "Johnson",
+                                    R.drawable.bob_johnson
+                                )
 
-                            enteredUsername.lowercase().startsWith("eve") -> UserData(
-                                "Eve",
-                                "Brown",
-                                R.drawable.eve_brown
-                            )
+                                enteredUsername.lowercase().startsWith("alice") -> UserData(
+                                    "Alice",
+                                    "Smith",
+                                    R.drawable.alice_smith
+                                )
 
-                            else -> null
-                        }
+                                enteredUsername.lowercase().startsWith("eve") -> UserData(
+                                    "Eve",
+                                    "Brown",
+                                    R.drawable.eve_brown
+                                )
 
-                        userProfile?.let {
-                            sharedProfilesViewModel.userProfiles = listOf(it)
-                            println("Login Successful")
+                                else -> null
+                            }
 
-                            // Navigating to the security code screen
-                            authNavigationHandler.navigateToPinLogin()
-                        } ?: run {
-                            println("Invalid username")
-                        }
-                    },
-                    onLoading = { loadingState ->
-                        isLoading = loadingState
-                    },
-                    onNavigateToRecovery = {
-                        navigationHandler.navigateToRecovery()
-                    },
-                    onBack = {
-                        navigationHandler.navigateBack()
-                    },
-                    viewModel = credentialsViewModel
-                )
-            }
-        }
+                            userProfile?.let {
+                                sharedProfilesViewModel.userProfiles = listOf(it)
+                                println("Login Successful")
+
+                                // Navigating to the security code screen
+                                authNavigationHandler.navigateToPinLogin()
+                            } ?: run {
+                                println("Invalid username")
+                            }
+                        },
+                        onLoading = { loadingState ->
+                            isLoading = loadingState
+                        },
+                        onNavigateToRecovery = {
+                            navigationHandler.navigateToRecovery()
+                        },
+                        onBack = {
+                            navigationHandler.navigateBack()
+                        },
+                        viewModel = credentialsViewModel
+                    )
+                }
+            }}
+
         composable(Navigation.Screen.Settings.route) {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
@@ -163,6 +171,7 @@ fun NavigationApp() {
                             authNavigationHandler.navigateToSecurityCode()
 
                         }
+                        "usernamePasswordLogin"->authNavigationHandler.navigateToUsernamePasswordLogin()
                     }
                 }
             ) { newUsername, newPassword ->
@@ -175,7 +184,7 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.SecurityCode.route) {
-            SecurityCodeScreen(
+          SecurityCodeScreen(
                 viewModel = credentialsViewModel,
                 onNavigate = { destination ->
                     when (destination) {
@@ -306,4 +315,3 @@ fun NavigationApp() {
     }
 
 }
-

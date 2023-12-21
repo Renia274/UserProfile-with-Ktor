@@ -79,7 +79,11 @@ fun SettingsScreen(
 
     var enteredSecurityCode by remember {
         mutableStateOf(
-            credentialsViewModel.securityCode.value ?: ""
+            if (notificationEnabled) {
+                credentialsViewModel.securityCode.value ?: ""
+            } else {
+                ""
+            }
         )
     }
 
@@ -212,16 +216,18 @@ fun SettingsScreen(
             Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
             Spacer(modifier = Modifier.height(16.dp))
 
-            SettingsField(label = "Security Code:",
-                value = enteredSecurityCode,
+            SettingsField(
+                label = "Security Code:",
+                value = if (isSecurityCodeEditable) enteredSecurityCode else "********", // Show actual code in edit mode, otherwise hide it
                 onValueChange = { updatedSecurityCode ->
                     enteredSecurityCode = updatedSecurityCode
                 },
                 isEditable = isSecurityCodeEditable,
                 onClearClick = {
+                    // Clear the entered security code
                     enteredSecurityCode = ""
-
-                })
+                }
+            )
 
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -302,11 +308,13 @@ fun SettingsScreen(
 
                     sharedViewModel.setNotificationEnabled(newNotificationEnabledState)
 
+
+
                     if (newNotificationEnabledState) {
-                        //  Display a message when security feature is enabled
+                        // Display a message when the security feature is enabled
                         Toast.makeText(context, "Security feature is on", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Display a message when security feature is disabled
+                        // Display a message when the security feature is disabled
                         Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT).show()
                     }
                 },
