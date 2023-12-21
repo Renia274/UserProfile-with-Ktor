@@ -56,7 +56,7 @@ fun SettingsField(
                 },
                 label = { Text(label) },
                 visualTransformation =
-                if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true))
+                if (label.equals("Password:", ignoreCase = true) )
                     if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
                 else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -67,7 +67,7 @@ fun SettingsField(
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (label.equals("Password:", ignoreCase = true) || label.equals("Security Code:", ignoreCase = true)) {
+                    if (label.equals("Password:", ignoreCase = true)) {
                         IconButton(
                             onClick = {
                                 isVisible = !isVisible
