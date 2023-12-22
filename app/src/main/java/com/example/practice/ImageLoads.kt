@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -615,13 +613,13 @@ fun UserProfilesList(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             horizontalArrangement = Arrangement.Center
         ) {
-            items(userProfiles) { userProfile ->
+            userProfiles.forEach { userProfile ->
                 UserProfileItem(
                     userProfile,
                     onEditClick = {},
@@ -632,7 +630,8 @@ fun UserProfilesList(
                     },
                     viewModel = viewModel
                 )
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
@@ -650,6 +649,7 @@ fun UserProfilesList(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
 
 
 
