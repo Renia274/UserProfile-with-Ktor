@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,6 +32,7 @@ import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
+import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.UserProfileItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +49,7 @@ fun UserProfilesLoading(
     topAppBarTitle: String
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
-    var isShowingImages by remember { mutableStateOf(false) }
+    var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
 
     // Provide an initial value for selectedIndex
@@ -73,7 +75,7 @@ fun UserProfilesLoading(
         }
     }
 
-        if (isLoading) {
+    if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -124,11 +126,11 @@ fun UserProfilesLoading(
                 ) {
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    if (selectedIndex in userProfiles.indices && !isShowingImages) {
+                    if (selectedIndex in userProfiles.indices && !isShowingEdit) {
                         UserProfileItem(
                             userProfiles[selectedIndex],
-                            onImageClick = {},
-                            isImagesScreen = isShowingImages,
+                            onEditClick = {},
+                            isEditScreen = isShowingEdit,
                             onSaveProfession = { updatedProfession ->
                                 userProfiles[selectedIndex].profession = updatedProfession
                             },
@@ -138,7 +140,7 @@ fun UserProfilesLoading(
                         UserProfilesList(
                             userProfiles,
                             onBackNavigate = onBack,
-                            isImagesScreen = isShowingImages,
+                            isEditScreen = isShowingEdit,
                             viewModel = viewModel
                         )
                     }
@@ -157,16 +159,18 @@ fun UserProfilesLoading(
 }
 
 
+
 @Composable
 fun UserProfileBob(
     userProfile: UserData,
-    onImageClick: () -> Unit,
-    isImagesScreen: Boolean,
+    onEditClick: () -> Unit,
+    isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
-    var profession by remember { mutableStateOf(userProfile.profession) }
+    var selectedProfession by remember { mutableStateOf(userProfile.profession) }
+    var isDropDownListVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -186,28 +190,55 @@ fun UserProfileBob(
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
                     if (!isEditingProfession) {
-                        onImageClick()
+                        onEditClick()
                     }
                 }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isImagesScreen && isEditingProfession) {
-            // Render text field for editing profession only edit screen
+        if (isEditScreen && isEditingProfession) {
+            // Render text field for editing profession only on images screen
             OutlinedTextField(
-                value = profession,
+                value = selectedProfession,
                 onValueChange = { newProfession ->
-                    profession = newProfession
+                    selectedProfession = newProfession
                 },
                 label = { Text("Enter Profession") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                }
             )
+
+            //DropDownList
+            if (isDropDownListVisible) {
+                DropDownList(
+                    onOptionSelected = {
+                        selectedProfession = it
+                    },
+                    expanded = isDropDownListVisible,
+                    onDismissRequest = {
+                        isDropDownListVisible = false
+                    }
+                )
+            }
         } else {
-            // Render user information
+            // Display user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
                 style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -221,8 +252,7 @@ fun UserProfileBob(
                 style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
                 color = Color.Black
             )
-
-            // Display profession information
+            
             if (userProfile.profession.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -235,53 +265,55 @@ fun UserProfileBob(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on images screen
-        if (isImagesScreen) {
+        // Toggle between editing profession and displaying user information only on EditProfile screen
+        if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
-                    onClick = {
-                        onSaveProfession(profession)
-                        isEditingProfession = false
-                        viewModel.saveProfession(userProfile.imageResId, profession)
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue
-                    )
-                ) {
-                    Text("Save Profession", color = Color.White)
-                }
-
-                Button(
-                    onClick = {
-                        isEditingProfession = !isEditingProfession
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    )
-                ) {
-                    Text("Edit Profession", color = Color.White)
+                if (isEditingProfession) {
+                    Button(
+                        onClick = {
+                            onSaveProfession(selectedProfession)
+                            isEditingProfession = false
+                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Profession", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingProfession = !isEditingProfession
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Profession", color = Color.White)
+                    }
                 }
             }
         }
     }
 }
 
-
 @Composable
 fun UserProfileAlice(
     userProfile: UserData,
-    onImageClick: () -> Unit,
-    isImagesScreen: Boolean,
+    onEditClick: () -> Unit,
+    isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
-    var profession by remember { mutableStateOf(userProfile.profession) }
+    var selectedProfession by remember { mutableStateOf(userProfile.profession) }
+    var isDropDownListVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -301,28 +333,55 @@ fun UserProfileAlice(
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
                     if (!isEditingProfession) {
-                        onImageClick()
+                        onEditClick()
                     }
                 }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isImagesScreen && isEditingProfession) {
+        if (isEditScreen && isEditingProfession) {
             // Render text field for editing profession only on images screen
             OutlinedTextField(
-                value = profession,
+                value = selectedProfession,
                 onValueChange = { newProfession ->
-                    profession = newProfession
+                    selectedProfession = newProfession
                 },
                 label = { Text("Enter Profession") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                }
             )
+
+            //DropDownList
+            if (isDropDownListVisible) {
+                DropDownList(
+                    onOptionSelected = {
+                        selectedProfession = it
+                    },
+                    expanded = isDropDownListVisible,
+                    onDismissRequest = {
+                        isDropDownListVisible = false
+                    }
+                )
+            }
         } else {
-            // Render user information
+            // Display user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
                 style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -337,7 +396,6 @@ fun UserProfileAlice(
                 color = Color.Black
             )
 
-            // Display profession information
             if (userProfile.profession.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -350,36 +408,38 @@ fun UserProfileAlice(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on images screen
-        if (isImagesScreen) {
+        // Toggle between editing profession and displaying user information only on EditProfile screen
+        if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
-                    onClick = {
-                        onSaveProfession(profession)
-                        isEditingProfession = false
-                        viewModel.saveProfession(userProfile.imageResId, profession)
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue
-                    )
-                ) {
-                    Text("Save Profession", color = Color.White)
-                }
-
-                Button(
-                    onClick = {
-                        isEditingProfession = !isEditingProfession
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    )
-                ) {
-                    Text("Edit Profession", color = Color.White)
+                if (isEditingProfession) {
+                    Button(
+                        onClick = {
+                            onSaveProfession(selectedProfession)
+                            isEditingProfession = false
+                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Profession", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingProfession = !isEditingProfession
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Profession", color = Color.White)
+                    }
                 }
             }
         }
@@ -389,13 +449,14 @@ fun UserProfileAlice(
 @Composable
 fun UserProfileEve(
     userProfile: UserData,
-    onImageClick: () -> Unit,
-    isImagesScreen: Boolean,
+    onEditClick: () -> Unit,
+    isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
-    var profession by remember { mutableStateOf(userProfile.profession) }
+    var selectedProfession by remember { mutableStateOf(userProfile.profession) }
+    var isDropDownListVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -415,28 +476,55 @@ fun UserProfileEve(
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
                     if (!isEditingProfession) {
-                        onImageClick()
+                        onEditClick()
                     }
                 }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isImagesScreen && isEditingProfession) {
+        if (isEditScreen && isEditingProfession) {
             // Render text field for editing profession only on images screen
             OutlinedTextField(
-                value = profession,
+                value = selectedProfession,
                 onValueChange = { newProfession ->
-                    profession = newProfession
+                    selectedProfession = newProfession
                 },
                 label = { Text("Enter Profession") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                }
             )
+
+            //DropDownList
+            if (isDropDownListVisible) {
+                DropDownList(
+                    onOptionSelected = {
+                        selectedProfession = it
+                    },
+                    expanded = isDropDownListVisible,
+                    onDismissRequest = {
+                        isDropDownListVisible = false
+                    }
+                )
+            }
         } else {
-            // Render user information
+            // Display user information
             Text(
                 text = "First Name: ${userProfile.firstName}",
                 style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -451,7 +539,6 @@ fun UserProfileEve(
                 color = Color.Black
             )
 
-            // Display profession information
             if (userProfile.profession.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -464,49 +551,50 @@ fun UserProfileEve(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on images screen
-        if (isImagesScreen) {
+        // Toggle between editing profession and displaying user information only on EditProfile screen
+        if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
-                    onClick = {
-                        onSaveProfession(profession)
-                        isEditingProfession = false
-                        viewModel.saveProfession(userProfile.imageResId, profession)
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue
-                    )
-                ) {
-                    Text("Save Profession", color = Color.White)
-                }
-
-                Button(
-                    onClick = {
-                        isEditingProfession = !isEditingProfession
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    )
-                ) {
-                    Text("Edit Profession", color = Color.White)
+                if (isEditingProfession) {
+                    Button(
+                        onClick = {
+                            onSaveProfession(selectedProfession)
+                            isEditingProfession = false
+                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Profession", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingProfession = !isEditingProfession
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Profession", color = Color.White)
+                    }
                 }
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfilesList(
     userProfiles: List<UserData>,
     onBackNavigate: () -> Unit,
-    isImagesScreen: Boolean,
+    isEditScreen: Boolean,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     Column(
@@ -536,8 +624,8 @@ fun UserProfilesList(
             items(userProfiles) { userProfile ->
                 UserProfileItem(
                     userProfile,
-                    onImageClick = {},
-                    isImagesScreen,
+                    onEditClick = {},
+                    isEditScreen,
                     onSaveProfession = { updatedProfession ->
                         userProfile.profession = updatedProfession
                         viewModel.saveProfession(userProfile.imageResId, updatedProfession)

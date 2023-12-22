@@ -11,19 +11,27 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 @Composable
 fun UserProfileItem(
     userProfile: UserData,
-    onImageClick: () -> Unit,
-    isImagesScreen: Boolean,
+    onEditClick: () -> Unit,
+    isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     val username = userProfile.firstName.lowercase()
 
     when {
-        username.startsWith("bob") -> UserProfileBob(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
-        username.startsWith("alice")-> UserProfileAlice(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
-        username.startsWith("eve")-> UserProfileEve(userProfile, onImageClick, isImagesScreen, onSaveProfession, viewModel)
+        username.startsWith("bob") -> {
+            UserProfileBob(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+        }
+
+        username.startsWith("alice") -> {
+            UserProfileAlice(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+        }
+
+        username.startsWith("eve") -> {
+            UserProfileEve(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+        }
+
         else -> null
-
-
     }
 }
+

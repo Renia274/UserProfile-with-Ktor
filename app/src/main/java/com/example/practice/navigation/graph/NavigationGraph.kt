@@ -307,7 +307,7 @@ fun NavigationApp() {
                 onBackNavigate = {
                     navigationHandler.navigateBack()
                 },
-                isImagesScreen = true,
+                isEditScreen = true,
                 viewModel = sharedProfilesViewModel
             )
         }

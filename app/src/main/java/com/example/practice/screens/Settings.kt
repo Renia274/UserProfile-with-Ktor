@@ -20,6 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +42,7 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.items.SaveConfirmationDialog
 import com.example.practice.screens.items.SettingsField
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,8 +54,8 @@ fun SettingsScreen(
 
     ) {
 
-
     val context = LocalContext.current
+
 
     var darkMode by remember { mutableStateOf(false) }
     var notificationEnabled by remember {
@@ -88,6 +93,10 @@ fun SettingsScreen(
     }
 
 
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -112,6 +121,8 @@ fun SettingsScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+
 
             // Account Information Section
             Text(
@@ -216,6 +227,8 @@ fun SettingsScreen(
             Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
             Spacer(modifier = Modifier.height(16.dp))
 
+
+
             SettingsField(
                 label = "Security Code:",
                 value = if (isSecurityCodeEditable) enteredSecurityCode else "********", // Show actual code in edit mode, otherwise hide it
@@ -243,7 +256,12 @@ fun SettingsScreen(
 
                         Toast.makeText(context, "Security Code saved", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Security Code cannot be empty", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                "Security code cannot be empty",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
                     }
                 },
                 modifier = Modifier
@@ -252,6 +270,14 @@ fun SettingsScreen(
             ) {
                 Text("Save Security Code")
             }
+
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .height(64.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -269,8 +295,8 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
             // Dark Mode
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth()
             )
@@ -279,7 +305,6 @@ fun SettingsScreen(
                 checked = darkMode, onCheckedChange = {
                     darkMode = it
                     sharedViewModel.setDarkMode(it)
-
                     if (it) {
                         // Display toast when Dark Mode is turned on
                         Toast.makeText(context, "Dark Mode turned on", Toast.LENGTH_SHORT).show()
@@ -304,11 +329,10 @@ fun SettingsScreen(
                 checked = notificationEnabled,
                 onCheckedChange = { newNotificationEnabledState ->
                     notificationEnabled = newNotificationEnabledState
-                    isSecurityCodeEditable = newNotificationEnabledState // Update the editability of the security code field
+                    isSecurityCodeEditable =
+                        newNotificationEnabledState // Update the editability of the security code field
 
                     sharedViewModel.setNotificationEnabled(newNotificationEnabledState)
-
-
 
                     if (newNotificationEnabledState) {
                         // Display a message when the security feature is enabled

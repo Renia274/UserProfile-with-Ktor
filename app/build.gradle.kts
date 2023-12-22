@@ -109,5 +109,8 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
+//    //snackbar
+//    implementation ("com.google.android.material:compose-material3:1.0.0-alpha01")
+
 
 }
