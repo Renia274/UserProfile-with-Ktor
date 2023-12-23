@@ -1,5 +1,7 @@
 package com.example.practice
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -158,6 +160,7 @@ fun UserProfilesLoading(
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileBob(
     userProfile: UserData,
@@ -170,6 +173,12 @@ fun UserProfileBob(
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    val imageSize by animateDpAsState(
+        targetValue = if (isEditingProfession) 150.dp else 200.dp,
+        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,11 +188,12 @@ fun UserProfileBob(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Use animated size
         Image(
             painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
-                .size(200.dp)
+                .size(imageSize)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
@@ -250,7 +260,7 @@ fun UserProfileBob(
                 style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
                 color = Color.Black
             )
-            
+
             if (userProfile.profession.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -300,7 +310,6 @@ fun UserProfileBob(
         }
     }
 }
-
 @Composable
 fun UserProfileAlice(
     userProfile: UserData,
@@ -313,6 +322,12 @@ fun UserProfileAlice(
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    val imageSize by animateDpAsState(
+        targetValue = if (isEditingProfession) 150.dp else 200.dp,
+        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -322,11 +337,12 @@ fun UserProfileAlice(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Use animated size
         Image(
             painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
-                .size(200.dp)
+                .size(imageSize)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
@@ -456,6 +472,12 @@ fun UserProfileEve(
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    val imageSize by animateDpAsState(
+        targetValue = if (isEditingProfession) 150.dp else 200.dp,
+        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -465,11 +487,12 @@ fun UserProfileEve(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Use animated size
         Image(
             painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
-                .size(200.dp)
+                .size(imageSize)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .clickable {
