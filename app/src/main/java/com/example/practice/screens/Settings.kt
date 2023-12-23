@@ -60,9 +60,9 @@ fun SettingsScreen(
     val context = LocalContext.current
 
     var darkMode by remember { mutableStateOf(false) }
-    var securityEnabled by remember {
+    var notificationEnabled by remember {
         mutableStateOf(
-            sharedViewModel.securityEnabled.value ?: false
+            sharedViewModel.notificationEnabled.value ?: false
         )
     }
     var isSecurityCodeEditable by remember { mutableStateOf(false) }
@@ -84,7 +84,7 @@ fun SettingsScreen(
 
     var enteredSecurityCode by remember {
         mutableStateOf(
-            if (securityEnabled) {
+            if (notificationEnabled) {
                 credentialsViewModel.securityCode.value ?: ""
             } else {
                 ""
@@ -102,8 +102,8 @@ fun SettingsScreen(
                 androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
                     //update the UI based on the lifecycle event
                     darkMode = sharedViewModel.darkMode.value ?: false
-                    securityEnabled = sharedViewModel.securityEnabled.value ?: false
-                    isSecurityCodeEditable = securityEnabled
+                    notificationEnabled = sharedViewModel.notificationEnabled.value ?: false
+                    isSecurityCodeEditable = notificationEnabled
                 }
                 else -> Unit
             }
@@ -344,14 +344,14 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = securityEnabled,
-                onCheckedChange = { newsecurityEnabledState ->
-                    securityEnabled = newsecurityEnabledState
-                    isSecurityCodeEditable = newsecurityEnabledState
+                checked = notificationEnabled,
+                onCheckedChange = { newNotificationEnabledState ->
+                    notificationEnabled = newNotificationEnabledState
+                    isSecurityCodeEditable = newNotificationEnabledState
 
-                    sharedViewModel.setsecurityEnabled(newsecurityEnabledState)
+                    sharedViewModel.setNotificationEnabled(newNotificationEnabledState)
 
-                    if (newsecurityEnabledState) {
+                    if (newNotificationEnabledState) {
                         Toast.makeText(context, "Security feature is on", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT).show()

@@ -29,9 +29,9 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     val darkMode: LiveData<Boolean>
         get() = _darkMode
 
-    private val _securityEnabled = MutableLiveData<Boolean>()
-    val securityEnabled: LiveData<Boolean>
-        get() = _securityEnabled
+    private val _notificationEnabled = MutableLiveData<Boolean>()
+    val notificationEnabled: LiveData<Boolean>
+        get() = _notificationEnabled
 
     var userProfiles: List<UserData> = emptyList()
 
@@ -52,8 +52,8 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
         _darkMode.value = isDarkMode
     }
 
-    fun setsecurityEnabled(isEnabled: Boolean) {
-        _securityEnabled.value = isEnabled
+    fun setNotificationEnabled(isEnabled: Boolean) {
+        _notificationEnabled.value = isEnabled
     }
 
 
