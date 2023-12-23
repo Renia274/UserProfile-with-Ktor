@@ -27,6 +27,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +35,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.items.SaveConfirmationDialog
@@ -51,21 +56,17 @@ fun SettingsScreen(
     credentialsViewModel: CredentialsViewModel,
     onNavigate: (String) -> Unit,
     onSaveCredentials: (String, String) -> Unit,
-
-    ) {
-
+) {
     val context = LocalContext.current
 
-
     var darkMode by remember { mutableStateOf(false) }
-    var notificationEnabled by remember {
+    var securityEnabled by remember {
         mutableStateOf(
-            sharedViewModel.notificationEnabled.value ?: false
+            sharedViewModel.securityEnabled.value ?: false
         )
     }
     var isSecurityCodeEditable by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
-
 
     var rememberedUsernameState by remember {
         mutableStateOf(
@@ -78,13 +79,12 @@ fun SettingsScreen(
         )
     }
 
-
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
     var enteredSecurityCode by remember {
         mutableStateOf(
-            if (notificationEnabled) {
+            if (securityEnabled) {
                 credentialsViewModel.securityCode.value ?: ""
             } else {
                 ""
@@ -92,9 +92,40 @@ fun SettingsScreen(
         )
     }
 
-
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val onEvent: (LifecycleOwner, Lifecycle.Event) -> Unit = { owner, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
+                    //update the UI based on the lifecycle event
+                    darkMode = sharedViewModel.darkMode.value ?: false
+                    securityEnabled = sharedViewModel.securityEnabled.value ?: false
+                    isSecurityCodeEditable = securityEnabled
+                }
+                else -> Unit
+            }
+        }
+
+        // Access the lifecycle for settings
+        val lifecycle = lifecycleOwner.lifecycle
+
+        //create owner and trigger resume event with onEvent function
+        val observer = LifecycleEventObserver { owner, event ->
+            onEvent(owner, event)
+        }
+
+        // Add the observer to the lifecycle
+        lifecycle.addObserver(observer)
+
+        //removes the lifecycle owner when the settings screen leaves composition
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
 
 
     Box(
@@ -102,7 +133,6 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -121,8 +151,6 @@ fun SettingsScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-
 
             // Account Information Section
             Text(
@@ -222,26 +250,21 @@ fun SettingsScreen(
                     .padding(horizontal = 16.dp)
             )
 
-
             // Security Section
             Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
             Spacer(modifier = Modifier.height(16.dp))
 
-
-
             SettingsField(
                 label = "Security Code:",
-                value = if (isSecurityCodeEditable) enteredSecurityCode else "********", // Show actual code in edit mode, otherwise hide it
+                value = if (isSecurityCodeEditable) enteredSecurityCode else "********",
                 onValueChange = { updatedSecurityCode ->
                     enteredSecurityCode = updatedSecurityCode
                 },
                 isEditable = isSecurityCodeEditable,
                 onClearClick = {
-                    // Clear the entered security code
                     enteredSecurityCode = ""
                 }
             )
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -281,20 +304,17 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
 
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("Settings", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
 
             Spacer(modifier = Modifier.height(8.dp))
-
 
             // Dark Mode
             Text(
@@ -306,10 +326,8 @@ fun SettingsScreen(
                     darkMode = it
                     sharedViewModel.setDarkMode(it)
                     if (it) {
-                        // Display toast when Dark Mode is turned on
                         Toast.makeText(context, "Dark Mode turned on", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Display toast when Dark Mode is turned off
                         Toast.makeText(context, "Dark Mode turned off", Toast.LENGTH_SHORT).show()
                     }
 
@@ -318,7 +336,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Security  switch
+            // Security switch
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Enable Security Code",
@@ -326,19 +344,16 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = notificationEnabled,
-                onCheckedChange = { newNotificationEnabledState ->
-                    notificationEnabled = newNotificationEnabledState
-                    isSecurityCodeEditable =
-                        newNotificationEnabledState // Update the editability of the security code field
+                checked = securityEnabled,
+                onCheckedChange = { newsecurityEnabledState ->
+                    securityEnabled = newsecurityEnabledState
+                    isSecurityCodeEditable = newsecurityEnabledState
 
-                    sharedViewModel.setNotificationEnabled(newNotificationEnabledState)
+                    sharedViewModel.setsecurityEnabled(newsecurityEnabledState)
 
-                    if (newNotificationEnabledState) {
-                        // Display a message when the security feature is enabled
+                    if (newsecurityEnabledState) {
                         Toast.makeText(context, "Security feature is on", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Display a message when the security feature is disabled
                         Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT).show()
                     }
                 },
@@ -350,7 +365,3 @@ fun SettingsScreen(
         }
     }
 }
-
-
-
-
