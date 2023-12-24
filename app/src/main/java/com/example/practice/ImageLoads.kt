@@ -33,6 +33,7 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.DropDownList
+import com.example.practice.screens.items.InterestsDropDownList
 import com.example.practice.screens.items.UserProfileItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,27 +96,22 @@ fun UserProfilesLoading(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = topAppBarTitle,
-                            color = when {
-                                username.lowercase().startsWith("bob") -> Color.Green
-                                username.lowercase().startsWith("alice") -> Color.LightGray
-                                username.lowercase().startsWith("eve") -> Color.Magenta
-                                else -> Color.Gray
-                            }
-
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                TopAppBar(title = {
+                    Text(
+                        text = topAppBarTitle, color = when {
+                            username.lowercase().startsWith("bob") -> Color.Green
+                            username.lowercase().startsWith("alice") -> Color.LightGray
+                            username.lowercase().startsWith("eve") -> Color.Magenta
+                            else -> Color.Gray
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                 )
 
                 Row(
@@ -127,12 +123,22 @@ fun UserProfilesLoading(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     if (selectedIndex in userProfiles.indices && !isShowingEdit) {
-                        UserProfileItem(
-                            userProfiles[selectedIndex],
-                            onEditClick = {},
+                        UserProfileItem(userProfile = userProfiles[selectedIndex],
+                            onEditClick = {
+                                isShowingEdit = true
+                            },
                             isEditScreen = isShowingEdit,
                             onSaveProfession = { updatedProfession ->
                                 userProfiles[selectedIndex].profession = updatedProfession
+                                viewModel.saveProfession(
+                                    userProfiles[selectedIndex].imageResId, updatedProfession
+                                )
+                            },
+                            onInterestsSelected = { selectedInterests ->
+                                userProfiles[selectedIndex].interests = selectedInterests
+                                viewModel.saveInterests(
+                                    userProfiles[selectedIndex].imageResId, selectedInterests
+                                )
                             },
                             viewModel = viewModel
                         )
@@ -159,24 +165,27 @@ fun UserProfilesLoading(
 }
 
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileBob(
     userProfile: UserData,
     onEditClick: () -> Unit,
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
+    onInterestsSelected: (List<String>) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+    var isEditingInterests by remember { mutableStateOf(false) }
+    var selectedInterests by remember { mutableStateOf(userProfile.interests) }
+    var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
-        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+        animationSpec = tween(durationMillis = 500),
+        label = "imageSizeAnimation"
     )
 
     Column(
@@ -189,8 +198,7 @@ fun UserProfileBob(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Use animated size
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -200,15 +208,13 @@ fun UserProfileBob(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on images screen
-            OutlinedTextField(
-                value = selectedProfession,
+            // Render text field for editing profession only on the EditProfile screen
+            OutlinedTextField(value = selectedProfession,
                 onValueChange = { newProfession ->
                     selectedProfession = newProfession
                 },
@@ -218,56 +224,93 @@ fun UserProfileBob(
                     .fillMaxWidth()
                     .padding(8.dp),
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
-                            isDropDownListVisible = !isDropDownListVisible
-                        }
-                    ) {
+                    IconButton(onClick = {
+                        // Toggle the visibility of the DropDownList when the arrow button is clicked
+                        isDropDownListVisible = !isDropDownListVisible
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = null,
                             tint = Color.Gray
                         )
                     }
-                }
-            )
+                })
 
-            //DropDownList
+            // DropDownList for professions
             if (isDropDownListVisible) {
-                DropDownList(
-                    onOptionSelected = {
-                        selectedProfession = it
-                    },
-                    expanded = isDropDownListVisible,
-                    onDismissRequest = {
-                        isDropDownListVisible = false
-                    }
-                )
+                DropDownList(onOptionSelected = {
+                    selectedProfession = it
+                }, expanded = isDropDownListVisible, onDismissRequest = {
+                    isDropDownListVisible = false
+                })
             }
         } else {
             // Display user information
-            Text(
-                text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
+            if (isEditingInterests) {
+                // Interests dropdown list
+                InterestsDropDownList(onInterestsSelected = {
+                    selectedInterests = it
+                },
+                    selectedInterests = selectedInterests,
+                    expanded = isInterestsDropDownListVisible,
+                    onDismissRequest = {
+                        isInterestsDropDownListVisible = false
+                    })
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-
-            if (userProfile.profession.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                // OutlineTextField for interests
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                    onValueChange = { newInterests ->
+                        selectedInterests = newInterests.split(", ").map { it.trim() }
+                    },
+                    label = { Text("Enter Interests") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
+                            isInterestsDropDownListVisible = !isInterestsDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
+            } else {
                 Text(
-                    text = "Profession: ${userProfile.profession}",
+                    text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
                     color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Last Name: ${userProfile.lastName}",
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
+                )
+
+                if (userProfile.profession.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Profession: ${userProfile.profession}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
+
+                if (userProfile.interests.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Interests: ${userProfile.interests}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
             }
         }
 
@@ -279,15 +322,14 @@ fun UserProfileBob(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -297,35 +339,64 @@ fun UserProfileBob(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
                         Text("Edit Profession", color = Color.White)
                     }
                 }
+
+                // Toggle button for editing interests
+                if (isEditingInterests) {
+                    Button(
+                        onClick = {
+                            onInterestsSelected(selectedInterests)
+                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                            isEditingInterests = false
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Interests", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingInterests = !isEditingInterests
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Interests", color = Color.White)
+                    }
+                }
             }
         }
     }
 }
+
 @Composable
 fun UserProfileAlice(
     userProfile: UserData,
     onEditClick: () -> Unit,
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
+    onInterestsSelected: (List<String>) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+    var isEditingInterests by remember { mutableStateOf(false) }
+    var selectedInterests by remember { mutableStateOf(userProfile.interests) }
+    var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
-        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+        animationSpec = tween(durationMillis = 500),
+        label = "imageSizeAnimation"
     )
 
     Column(
@@ -338,8 +409,7 @@ fun UserProfileAlice(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Use animated size
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -349,15 +419,13 @@ fun UserProfileAlice(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on images screen
-            OutlinedTextField(
-                value = selectedProfession,
+            // Render text field for editing profession only on the EditProfile screen
+            OutlinedTextField(value = selectedProfession,
                 onValueChange = { newProfession ->
                     selectedProfession = newProfession
                 },
@@ -367,56 +435,93 @@ fun UserProfileAlice(
                     .fillMaxWidth()
                     .padding(8.dp),
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
-                            isDropDownListVisible = !isDropDownListVisible
-                        }
-                    ) {
+                    IconButton(onClick = {
+                        // Toggle the visibility of the DropDownList when the arrow button is clicked
+                        isDropDownListVisible = !isDropDownListVisible
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = null,
                             tint = Color.Gray
                         )
                     }
-                }
-            )
+                })
 
-            //DropDownList
+            // DropDownList for professions
             if (isDropDownListVisible) {
-                DropDownList(
-                    onOptionSelected = {
-                        selectedProfession = it
-                    },
-                    expanded = isDropDownListVisible,
-                    onDismissRequest = {
-                        isDropDownListVisible = false
-                    }
-                )
+                DropDownList(onOptionSelected = {
+                    selectedProfession = it
+                }, expanded = isDropDownListVisible, onDismissRequest = {
+                    isDropDownListVisible = false
+                })
             }
         } else {
             // Display user information
-            Text(
-                text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
+            if (isEditingInterests) {
+                // Interests dropdown list
+                InterestsDropDownList(onInterestsSelected = {
+                    selectedInterests = it
+                },
+                    selectedInterests = selectedInterests,
+                    expanded = isInterestsDropDownListVisible,
+                    onDismissRequest = {
+                        isInterestsDropDownListVisible = false
+                    })
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-
-            if (userProfile.profession.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                // OutlineTextField for interests
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                    onValueChange = { newInterests ->
+                        selectedInterests = newInterests.split(", ").map { it.trim() }
+                    },
+                    label = { Text("Enter Interests") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
+                            isInterestsDropDownListVisible = !isInterestsDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
+            } else {
                 Text(
-                    text = "Profession: ${userProfile.profession}",
+                    text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
                     color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Last Name: ${userProfile.lastName}",
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
+                )
+
+                if (userProfile.profession.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Profession: ${userProfile.profession}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
+
+                if (userProfile.interests.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Interests: ${userProfile.interests}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
             }
         }
 
@@ -428,15 +533,14 @@ fun UserProfileAlice(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -446,19 +550,43 @@ fun UserProfileAlice(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
                         Text("Edit Profession", color = Color.White)
                     }
                 }
+
+                // Toggle button for editing interests
+                if (isEditingInterests) {
+                    Button(
+                        onClick = {
+                            onInterestsSelected(selectedInterests)
+                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                            isEditingInterests = false
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Interests", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingInterests = !isEditingInterests
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Interests", color = Color.White)
+                    }
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun UserProfileEve(
@@ -466,16 +594,21 @@ fun UserProfileEve(
     onEditClick: () -> Unit,
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
+    onInterestsSelected: (List<String>) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
     var isDropDownListVisible by remember { mutableStateOf(false) }
 
+    var isEditingInterests by remember { mutableStateOf(false) }
+    var selectedInterests by remember { mutableStateOf(userProfile.interests) }
+    var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
-        animationSpec = tween(durationMillis = 500), label = "imageSizeAnimation"
+        animationSpec = tween(durationMillis = 500),
+        label = "imageSizeAnimation"
     )
 
     Column(
@@ -488,8 +621,7 @@ fun UserProfileEve(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Use animated size
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -499,15 +631,13 @@ fun UserProfileEve(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on images screen
-            OutlinedTextField(
-                value = selectedProfession,
+            // Render text field for editing profession only on the EditProfile screen
+            OutlinedTextField(value = selectedProfession,
                 onValueChange = { newProfession ->
                     selectedProfession = newProfession
                 },
@@ -517,56 +647,93 @@ fun UserProfileEve(
                     .fillMaxWidth()
                     .padding(8.dp),
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
-                            isDropDownListVisible = !isDropDownListVisible
-                        }
-                    ) {
+                    IconButton(onClick = {
+                        // Toggle the visibility of the DropDownList when the arrow button is clicked
+                        isDropDownListVisible = !isDropDownListVisible
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = null,
                             tint = Color.Gray
                         )
                     }
-                }
-            )
+                })
 
-            //DropDownList
+            // DropDownList for professions
             if (isDropDownListVisible) {
-                DropDownList(
-                    onOptionSelected = {
-                        selectedProfession = it
-                    },
-                    expanded = isDropDownListVisible,
-                    onDismissRequest = {
-                        isDropDownListVisible = false
-                    }
-                )
+                DropDownList(onOptionSelected = {
+                    selectedProfession = it
+                }, expanded = isDropDownListVisible, onDismissRequest = {
+                    isDropDownListVisible = false
+                })
             }
         } else {
             // Display user information
-            Text(
-                text = "First Name: ${userProfile.firstName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
+            if (isEditingInterests) {
+                // Interests dropdown list
+                InterestsDropDownList(onInterestsSelected = {
+                    selectedInterests = it
+                },
+                    selectedInterests = selectedInterests,
+                    expanded = isInterestsDropDownListVisible,
+                    onDismissRequest = {
+                        isInterestsDropDownListVisible = false
+                    })
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Last Name: ${userProfile.lastName}",
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-
-            if (userProfile.profession.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                // OutlineTextField for interests
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                    onValueChange = { newInterests ->
+                        selectedInterests = newInterests.split(", ").map { it.trim() }
+                    },
+                    label = { Text("Enter Interests") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
+                            isInterestsDropDownListVisible = !isInterestsDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
+            } else {
                 Text(
-                    text = "Profession: ${userProfile.profession}",
+                    text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
                     color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Last Name: ${userProfile.lastName}",
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    color = Color.Black
+                )
+
+                if (userProfile.profession.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Profession: ${userProfile.profession}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
+
+                if (userProfile.interests.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Interests: ${userProfile.interests}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        color = Color.Black
+                    )
+                }
             }
         }
 
@@ -578,15 +745,14 @@ fun UserProfileEve(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -596,19 +762,43 @@ fun UserProfileEve(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
                         Text("Edit Profession", color = Color.White)
                     }
                 }
+
+                // Toggle button for editing interests
+                if (isEditingInterests) {
+                    Button(
+                        onClick = {
+                            onInterestsSelected(selectedInterests)
+                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                            isEditingInterests = false
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue
+                        )
+                    ) {
+                        Text("Save Interests", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            isEditingInterests = !isEditingInterests
+                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Edit Interests", color = Color.White)
+                    }
+                }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -621,18 +811,13 @@ fun UserProfilesList(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopAppBar(
-            title = { Text("Edit") },
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onBackNavigate()
-                    }
-                ) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                }
+        TopAppBar(title = { Text("Edit") }, navigationIcon = {
+            IconButton(onClick = {
+                onBackNavigate()
+            }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
             }
-        )
+        })
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -643,13 +828,16 @@ fun UserProfilesList(
             horizontalArrangement = Arrangement.Center
         ) {
             userProfiles.forEach { userProfile ->
-                UserProfileItem(
-                    userProfile,
+                UserProfileItem(userProfile,
                     onEditClick = {},
                     isEditScreen,
                     onSaveProfession = { updatedProfession ->
                         userProfile.profession = updatedProfession
                         viewModel.saveProfession(userProfile.imageResId, updatedProfession)
+                    },
+                    onInterestsSelected = { selectedInterests ->
+                        userProfile.interests = selectedInterests
+                        viewModel.saveInterests(userProfile.imageResId, selectedInterests)
                     },
                     viewModel = viewModel
                 )
@@ -658,8 +846,9 @@ fun UserProfilesList(
             }
         }
 
-        // Display saved profession information
+        // Display saved profession and interests information
         val savedProfession = viewModel.savedProfessions.value
+        val savedInterests = viewModel.savedInterests.value
         if (savedProfession != null) {
             Text(
                 "Saved Profession: $savedProfession",
@@ -669,10 +858,15 @@ fun UserProfilesList(
             )
         }
 
+        if (savedInterests != null) {
+            Text(
+                "Saved Interests: ${savedInterests.joinToString(", ")}",
+                fontSize = 16.sp,
+                color = Color.Green,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
-
-
-
-

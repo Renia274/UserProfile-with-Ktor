@@ -33,6 +33,13 @@ class UserRepository @Inject constructor() {
     }
 
 
-
+    fun saveInterests(imageResId: Int, interests: List<String>) {
+        val userProfiles = _userProfiles.value.orEmpty().toMutableList()
+        val userProfile = userProfiles.find { it.imageResId == imageResId }
+        userProfile?.let {
+            it.interests = interests
+        }
+        _userProfiles.value = userProfiles
+    }
 
 }

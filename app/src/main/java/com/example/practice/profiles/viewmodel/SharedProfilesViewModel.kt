@@ -35,6 +35,14 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
 
     var userProfiles: List<UserData> = emptyList()
 
+    private val _savedInterests = MutableLiveData<List<String>>()
+    val savedInterests: LiveData<List<String>>
+        get() = _savedInterests
+
+    private val _interestsDropdownVisible = MutableLiveData<Boolean>()
+    val interestsDropdownVisible: LiveData<Boolean>
+        get() = _interestsDropdownVisible
+
     fun saveProfession(imageResId: Int, profession: String) {
         userRepository.saveProfession(imageResId, profession)
         _savedProfessions.value = profession
@@ -54,6 +62,11 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
 
     fun setNotificationEnabled(isEnabled: Boolean) {
         _notificationEnabled.value = isEnabled
+    }
+
+    fun saveInterests(imageResId: Int, interests: List<String>) {
+        userRepository.saveInterests(imageResId, interests)
+        _savedInterests.value = interests
     }
 
 

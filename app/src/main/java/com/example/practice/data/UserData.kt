@@ -8,6 +8,7 @@ data class UserData(
     val imageResId: Int,
     var profession: String = "",
     var savedProfession: String = "",
+    var interests: List<String> = emptyList()
 
 )
 
@@ -16,6 +17,7 @@ data class BottomNavItem(
     val iconResId: Int,
     val destination: String,
     val itemColor: Color
+
 )
 
 

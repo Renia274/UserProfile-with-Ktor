@@ -14,24 +14,45 @@ fun UserProfileItem(
     onEditClick: () -> Unit,
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
+    onInterestsSelected: (List<String>) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     val username = userProfile.firstName.lowercase()
 
     when {
         username.startsWith("bob") -> {
-            UserProfileBob(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+            UserProfileBob(
+                userProfile,
+                onEditClick,
+                isEditScreen,
+                onSaveProfession,
+                onInterestsSelected,
+                viewModel
+            )
         }
 
         username.startsWith("alice") -> {
-            UserProfileAlice(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+            UserProfileAlice(
+                userProfile,
+                onEditClick,
+                isEditScreen,
+                onSaveProfession,
+                onInterestsSelected,
+                viewModel
+            )
         }
 
         username.startsWith("eve") -> {
-            UserProfileEve(userProfile, onEditClick, isEditScreen, onSaveProfession, viewModel)
+            UserProfileEve(
+                userProfile,
+                onEditClick,
+                isEditScreen,
+                onSaveProfession,
+                onInterestsSelected,
+                viewModel
+            )
         }
 
         else -> null
     }
 }
-
