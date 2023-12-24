@@ -123,7 +123,8 @@ fun UserProfilesLoading(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     if (selectedIndex in userProfiles.indices && !isShowingEdit) {
-                        UserProfileItem(userProfile = userProfiles[selectedIndex],
+                        UserProfileItem(
+                            userProfile = userProfiles[selectedIndex],
                             onEditClick = {
                                 isShowingEdit = true
                             },
@@ -212,41 +213,42 @@ fun UserProfileBob(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on the EditProfile screen
-            OutlinedTextField(value = selectedProfession,
-                onValueChange = { newProfession ->
-                    selectedProfession = newProfession
-                },
-                label = { Text("Enter Profession") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                trailingIcon = {
-                    IconButton(onClick = {
-                        // Toggle the visibility of the DropDownList when the arrow button is clicked
-                        isDropDownListVisible = !isDropDownListVisible
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    }
-                })
+        when {
+            isEditScreen && isEditingProfession -> {
+                // Render text field for editing profession only on the EditProfile screen
+                OutlinedTextField(value = selectedProfession,
+                    onValueChange = { newProfession ->
+                        selectedProfession = newProfession
+                    },
+                    label = { Text("Enter Profession") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
 
-            // DropDownList for professions
-            if (isDropDownListVisible) {
-                DropDownList(onOptionSelected = {
-                    selectedProfession = it
-                }, expanded = isDropDownListVisible, onDismissRequest = {
-                    isDropDownListVisible = false
-                })
+                // DropDownList for professions
+                if (isDropDownListVisible) {
+                    DropDownList(onOptionSelected = {
+                        selectedProfession = it
+                    }, expanded = isDropDownListVisible, onDismissRequest = {
+                        isDropDownListVisible = false
+                    })
+                }
             }
-        } else {
-            // Display user information
-            if (isEditingInterests) {
+
+            isEditingInterests -> {
                 // Interests dropdown list
                 InterestsDropDownList(onInterestsSelected = {
                     selectedInterests = it
@@ -257,7 +259,7 @@ fun UserProfileBob(
                         isInterestsDropDownListVisible = false
                     })
 
-                // OutlineTextField for interests
+                // TextField for interests
                 OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
@@ -279,7 +281,9 @@ fun UserProfileBob(
                             )
                         }
                     })
-            } else {
+            }
+
+            else -> {
                 Text(
                     text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -316,7 +320,7 @@ fun UserProfileBob(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on EditProfile screen
+        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -423,41 +427,42 @@ fun UserProfileAlice(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on the EditProfile screen
-            OutlinedTextField(value = selectedProfession,
-                onValueChange = { newProfession ->
-                    selectedProfession = newProfession
-                },
-                label = { Text("Enter Profession") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                trailingIcon = {
-                    IconButton(onClick = {
-                        // Toggle the visibility of the DropDownList when the arrow button is clicked
-                        isDropDownListVisible = !isDropDownListVisible
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    }
-                })
+        when {
+            isEditScreen && isEditingProfession -> {
+                // Render text field for editing profession only on the EditProfile screen
+                OutlinedTextField(value = selectedProfession,
+                    onValueChange = { newProfession ->
+                        selectedProfession = newProfession
+                    },
+                    label = { Text("Enter Profession") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
 
-            // DropDownList for professions
-            if (isDropDownListVisible) {
-                DropDownList(onOptionSelected = {
-                    selectedProfession = it
-                }, expanded = isDropDownListVisible, onDismissRequest = {
-                    isDropDownListVisible = false
-                })
+                // DropDownList for professions
+                if (isDropDownListVisible) {
+                    DropDownList(onOptionSelected = {
+                        selectedProfession = it
+                    }, expanded = isDropDownListVisible, onDismissRequest = {
+                        isDropDownListVisible = false
+                    })
+                }
             }
-        } else {
-            // Display user information
-            if (isEditingInterests) {
+
+            isEditingInterests -> {
                 // Interests dropdown list
                 InterestsDropDownList(onInterestsSelected = {
                     selectedInterests = it
@@ -468,7 +473,7 @@ fun UserProfileAlice(
                         isInterestsDropDownListVisible = false
                     })
 
-                // OutlineTextField for interests
+                // TextField for interests
                 OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
@@ -490,7 +495,9 @@ fun UserProfileAlice(
                             )
                         }
                     })
-            } else {
+            }
+
+            else -> {
                 Text(
                     text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -527,7 +534,7 @@ fun UserProfileAlice(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on EditProfile screen
+        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -635,41 +642,42 @@ fun UserProfileEve(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isEditScreen && isEditingProfession) {
-            // Render text field for editing profession only on the EditProfile screen
-            OutlinedTextField(value = selectedProfession,
-                onValueChange = { newProfession ->
-                    selectedProfession = newProfession
-                },
-                label = { Text("Enter Profession") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                trailingIcon = {
-                    IconButton(onClick = {
-                        // Toggle the visibility of the DropDownList when the arrow button is clicked
-                        isDropDownListVisible = !isDropDownListVisible
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    }
-                })
+        when {
+            isEditScreen && isEditingProfession -> {
+                // Render text field for editing profession only on the EditProfile screen
+                OutlinedTextField(value = selectedProfession,
+                    onValueChange = { newProfession ->
+                        selectedProfession = newProfession
+                    },
+                    label = { Text("Enter Profession") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // Toggle the visibility of the DropDownList when the arrow button is clicked
+                            isDropDownListVisible = !isDropDownListVisible
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    })
 
-            // DropDownList for professions
-            if (isDropDownListVisible) {
-                DropDownList(onOptionSelected = {
-                    selectedProfession = it
-                }, expanded = isDropDownListVisible, onDismissRequest = {
-                    isDropDownListVisible = false
-                })
+                // DropDownList for professions
+                if (isDropDownListVisible) {
+                    DropDownList(onOptionSelected = {
+                        selectedProfession = it
+                    }, expanded = isDropDownListVisible, onDismissRequest = {
+                        isDropDownListVisible = false
+                    })
+                }
             }
-        } else {
-            // Display user information
-            if (isEditingInterests) {
+
+            isEditingInterests -> {
                 // Interests dropdown list
                 InterestsDropDownList(onInterestsSelected = {
                     selectedInterests = it
@@ -680,7 +688,7 @@ fun UserProfileEve(
                         isInterestsDropDownListVisible = false
                     })
 
-                // OutlineTextField for interests
+                // TextField for interests
                 OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
@@ -702,7 +710,9 @@ fun UserProfileEve(
                             )
                         }
                     })
-            } else {
+            }
+
+            else -> {
                 Text(
                     text = "First Name: ${userProfile.firstName}",
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
@@ -739,7 +749,7 @@ fun UserProfileEve(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and displaying user information only on EditProfile screen
+        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -828,7 +838,8 @@ fun UserProfilesList(
             horizontalArrangement = Arrangement.Center
         ) {
             userProfiles.forEach { userProfile ->
-                UserProfileItem(userProfile,
+                UserProfileItem(
+                    userProfile,
                     onEditClick = {},
                     isEditScreen,
                     onSaveProfession = { updatedProfession ->
