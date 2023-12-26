@@ -2,6 +2,8 @@ package com.example.practice.profiles.viewmodel
 
 
 
+import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -70,6 +72,18 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     }
 
 
+    fun arePermissionsGranted(context: Context): Boolean {
+        val cameraPermission = ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.CAMERA
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
+        val recordAudioPermission = ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.RECORD_AUDIO
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+        return cameraPermission && recordAudioPermission
+    }
 
 }

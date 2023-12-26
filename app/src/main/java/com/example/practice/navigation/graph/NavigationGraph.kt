@@ -59,7 +59,6 @@ data class Navigation(
 
 @Composable
 fun NavigationApp() {
-
     val navController = rememberNavController()
     val credentialsViewModel = viewModel<CredentialsViewModel>()
     val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
@@ -76,6 +75,7 @@ fun NavigationApp() {
                 authNavigationHandler.navigateToSignUpSignIn()
             }
         }
+
         composable(Navigation.Auth.SignUpSignIn.route) {
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
@@ -83,12 +83,14 @@ fun NavigationApp() {
                 viewModel = credentialsViewModel
             )
         }
+
         composable(Navigation.Screen.Recovery.route) {
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
                 viewModel = sharedProfilesViewModel
             )
         }
+
         composable(Navigation.Auth.Signup.route) {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
@@ -96,7 +98,6 @@ fun NavigationApp() {
                 credentialsViewModel = credentialsViewModel
             )
         }
-
 
         composable(Navigation.Auth.UsernamePasswordLogin.route) {
             var isLoading by remember { mutableStateOf(false) }
@@ -107,10 +108,8 @@ fun NavigationApp() {
                 val securityCodeAvailable = credentialsViewModel.securityCode.value != null
 
                 if (securityCodeAvailable) {
-                    // Navigate to PinLogin if security code is available
                     authNavigationHandler.navigateToPinLogin()
-                }
-                else{
+                } else {
                     UsernamePasswordLoginScreen(
                         onLoginSuccess = { enteredUsername, _, _, _ ->
                             isLoading = true
@@ -120,27 +119,21 @@ fun NavigationApp() {
                                     "Johnson",
                                     R.drawable.bob_johnson
                                 )
-
                                 enteredUsername.lowercase().startsWith("alice") -> UserData(
                                     "Alice",
                                     "Smith",
                                     R.drawable.alice_smith
                                 )
-
                                 enteredUsername.lowercase().startsWith("eve") -> UserData(
                                     "Eve",
                                     "Brown",
                                     R.drawable.eve_brown
                                 )
-
                                 else -> null
                             }
 
                             userProfile?.let {
                                 sharedProfilesViewModel.userProfiles = listOf(it)
-                                println("Login Successful")
-
-                                // Navigating to the security code screen
                                 authNavigationHandler.navigateToPinLogin()
                             } ?: run {
                                 println("Invalid username")
@@ -158,7 +151,8 @@ fun NavigationApp() {
                         viewModel = credentialsViewModel
                     )
                 }
-            }}
+            }
+        }
 
         composable(Navigation.Screen.Settings.route) {
             SettingsScreen(
@@ -169,9 +163,8 @@ fun NavigationApp() {
                         "back" -> navigationHandler.navigateBack()
                         "securityCode" -> {
                             authNavigationHandler.navigateToSecurityCode()
-
                         }
-                        "usernamePasswordLogin"->authNavigationHandler.navigateToUsernamePasswordLogin()
+                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
                     }
                 }
             ) { newUsername, newPassword ->
@@ -182,9 +175,8 @@ fun NavigationApp() {
             }
         }
 
-
         composable(Navigation.Auth.SecurityCode.route) {
-          SecurityCodeScreen(
+            SecurityCodeScreen(
                 viewModel = credentialsViewModel,
                 onNavigate = { destination ->
                     when (destination) {
@@ -195,8 +187,6 @@ fun NavigationApp() {
                 securityCode = credentialsViewModel.securityCode.value ?: ""
             )
         }
-
-
 
         composable(Navigation.Auth.PinLogin.route) {
             PinLoginScreen(
@@ -209,16 +199,14 @@ fun NavigationApp() {
             )
         }
 
-
-
         composable(Navigation.Screen.Posts.route) {
             PostsScreen(onNavigate = {
                 authNavigationHandler.navigateToPinLogin()
             })
         }
 
-        composable(Navigation.Screen.UserProfileBob.route) {
 
+        composable(Navigation.Screen.UserProfileBob.route) {
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -230,11 +218,9 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
-
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
@@ -246,7 +232,6 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Screen.UserProfileAlice.route) {
-
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -258,11 +243,9 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
-
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
@@ -274,7 +257,6 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Screen.UserProfileEve.route) {
-
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -286,11 +268,9 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
-
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
-
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
@@ -311,7 +291,5 @@ fun NavigationApp() {
                 viewModel = sharedProfilesViewModel
             )
         }
-
     }
-
 }

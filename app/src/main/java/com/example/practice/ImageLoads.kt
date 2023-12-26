@@ -32,8 +32,10 @@ import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
+import com.example.practice.screens.items.CameraPermissionDialog
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
+import com.example.practice.screens.items.MicrophonePermissionDialog
 import com.example.practice.screens.items.UserProfileItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +54,8 @@ fun UserProfilesLoading(
     var selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
+    var isCameraPermissionDialogShown by remember { mutableStateOf(true) }
+    var isMicrophonePermissionDialogShown by remember { mutableStateOf(false) }
 
     // Provide an initial value for selectedIndex
     val initialSelectedIndex = 0
@@ -91,27 +95,76 @@ fun UserProfilesLoading(
                 .fillMaxSize()
                 .background(mainBackgroundColor)
         ) {
+            // Show CameraPermissionDialog if camera permissions are not granted
+            if (isCameraPermissionDialogShown) {
+                CameraPermissionDialog(
+                    isPermissionDialogShown = isCameraPermissionDialogShown,
+                    onDismiss = { isCameraPermissionDialogShown = false },
+                    onAllow = {
+                        // Handle camera permission granted
+                        isCameraPermissionDialogShown = false
+                    },
+                    onDeny = {
+                        // Handle camera permission denied
+                        isCameraPermissionDialogShown = false
+                    },
+                    onLater = {
+                        // Handle camera permission later
+                        isCameraPermissionDialogShown = false
+                    }
+                )
+            }
+
+            // delay between dialogs
+            LaunchedEffect(Unit) {
+                delay(2000)
+                isMicrophonePermissionDialogShown = true
+            }
+
+            // Show MicrophonePermissionDialog if microphone permissions are not granted
+            if (isMicrophonePermissionDialogShown) {
+                MicrophonePermissionDialog(
+                    isPermissionDialogShown = isMicrophonePermissionDialogShown,
+                    onDismiss = { isMicrophonePermissionDialogShown = false },
+                    onAllow = {
+                        // Handle microphone permission granted
+                        isMicrophonePermissionDialogShown = false
+                    },
+                    onDeny = {
+                        // Handle microphone permission denied
+                        isMicrophonePermissionDialogShown = false
+                    },
+                    onLater = {
+                        // Handle microphone permission later
+                        isMicrophonePermissionDialogShown = false
+                    }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(title = {
-                    Text(
-                        text = topAppBarTitle, color = when {
-                            username.lowercase().startsWith("bob") -> Color.Green
-                            username.lowercase().startsWith("alice") -> Color.LightGray
-                            username.lowercase().startsWith("eve") -> Color.Magenta
-                            else -> Color.Gray
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = topAppBarTitle, color = when {
+                                username.lowercase().startsWith("bob") -> Color.Green
+                                username.lowercase().startsWith("alice") -> Color.LightGray
+                                username.lowercase().startsWith("eve") -> Color.Magenta
+                                else -> Color.Gray
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                         }
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 )
 
                 Row(
@@ -127,6 +180,8 @@ fun UserProfilesLoading(
                             userProfile = userProfiles[selectedIndex],
                             onEditClick = {
                                 isShowingEdit = true
+                                // Show permission dialog when entering edit mode
+                                isCameraPermissionDialogShown = true
                             },
                             isEditScreen = isShowingEdit,
                             onSaveProfession = { updatedProfession ->
@@ -197,6 +252,7 @@ fun UserProfileBob(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(8.dp))
+
 
         // Use animated size
         Image(painter = painterResource(id = userProfile.imageResId),

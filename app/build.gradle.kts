@@ -109,6 +109,13 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
+    //permissions
+    implementation ("com.google.accompanist:accompanist-permissions:0.21.1-beta")
+
+    //bitmap
+    implementation ("dev.chrisbanes.accompanist:accompanist-coil:0.6.1")
+
+
 
 
 }
