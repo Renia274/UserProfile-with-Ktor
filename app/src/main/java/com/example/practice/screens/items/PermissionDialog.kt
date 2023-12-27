@@ -178,9 +178,9 @@ fun PermissionDialog(
     var isCameraPermissionGrantedState by remember { mutableStateOf(false) }
     var isMicrophonePermissionGrantedState by remember { mutableStateOf(false) }
 
-    // Introduce a delay between the dialogs
+    // delay between the dialogs
     LaunchedEffect(Unit) {
-        delay(1000) // Adjust the delay time as needed
+        delay(1000)
     }
 
     if (isPermissionDialogShown) {
