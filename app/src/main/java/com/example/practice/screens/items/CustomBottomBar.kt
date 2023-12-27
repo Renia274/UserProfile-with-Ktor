@@ -24,7 +24,7 @@ fun CustomBottomBar(
     selectedIndex: Int,
     onItemSelected: (Int) -> Unit,
     backgroundColor: Color = Color.White,
-    barHeight: Dp = 90.dp,
+    barHeight: Dp = 64.dp,
     iconSize: Dp = 24.dp
 ) {
     BottomNavigation(

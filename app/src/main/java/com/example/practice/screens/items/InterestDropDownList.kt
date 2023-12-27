@@ -17,10 +17,13 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.practice.data.CustomWindowInfo
+import com.example.practice.data.rememberWindowInfo
 
 @Composable
 fun InterestsDropDownList(
@@ -31,26 +34,24 @@ fun InterestsDropDownList(
 ) {
     // List of interests/hobbies
     val interestsList = listOf(
-        "Reading",
-        "Traveling",
-        "Cooking",
-        "Gaming",
-        "Photography",
-        "Sports",
-        "Music",
-        "Art",
-        "Movies",
-        "Technology",
-        "Fitness",
-        "Writing",
-        "Dancing",
-        "Hiking",
-        "Cycling",
-        "Crafting"
+        "Reading", "Traveling", "Cooking", "Gaming", "Photography", "Sports", "Music",
+        "Art", "Movies", "Technology", "Fitness", "Writing", "Dancing", "Hiking", "Cycling", "Crafting"
     )
 
+    val windowInfo = rememberWindowInfo()
+
     val dropdownHeight by animateDpAsState(
-        targetValue = if (expanded) 240.dp else 0.dp,
+        targetValue = if (expanded) {
+            if (windowInfo.screenWidthInfo == CustomWindowInfo.CustomWindowType.Expanded) {
+                // If the window is expanded, show only half the list
+                windowInfo.screenHeight / 2
+            } else {
+                // Otherwise, show the full list
+                240.dp
+            }
+        } else {
+            0.dp
+        },
         animationSpec = tween(durationMillis = 300), label = ""
     )
 
@@ -65,26 +66,41 @@ fun InterestsDropDownList(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { onDismissRequest() },
-                modifier = Modifier.fillMaxWidth().background(Color.Green)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 interestsList.forEach { interest ->
+                    val background = if (interest in selectedInterests) {
+                        if (selectedInterests.size > interestsList.size / 2) {
+                            Color.Cyan
+                        } else {
+                            Color.Magenta
+                        }
+                    } else {
+                        Color.White
+                    }
+
+                    val updatedInterests = rememberUpdatedState(selectedInterests)
+
                     DropdownMenuItem(
                         onClick = {
-                            val updatedInterests =
-                                if (selectedInterests.contains(interest)) {
-                                    selectedInterests - interest
+                            val newInterests =
+                                if (interest in selectedInterests) {
+                                    updatedInterests.value - interest
                                 } else {
-                                    selectedInterests + interest
+                                    updatedInterests.value + interest
                                 }
-                            onInterestsSelected(updatedInterests)
-                        }
+                            onInterestsSelected(newInterests)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(background)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Checkbox(
-                                checked = selectedInterests.contains(interest),
+                                checked = interest in selectedInterests,
                                 onCheckedChange = null
                             )
                             Text(interest, color = Color.Black)

@@ -6,6 +6,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -51,7 +53,7 @@ fun UserProfilesLoading(
     username: String,
     topAppBarTitle: String
 ) {
-    var selectedIndex by remember { mutableStateOf(0) }
+    val selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
     var isCameraPermissionDialogShown by remember { mutableStateOf(true) }
@@ -874,66 +876,41 @@ fun UserProfilesList(
     isEditScreen: Boolean,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
     ) {
-        TopAppBar(title = { Text("Edit") }, navigationIcon = {
-            IconButton(onClick = {
-                onBackNavigate()
-            }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-        })
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            userProfiles.forEach { userProfile ->
-                UserProfileItem(
-                    userProfile,
-                    onEditClick = {},
-                    isEditScreen,
-                    onSaveProfession = { updatedProfession ->
-                        userProfile.profession = updatedProfession
-                        viewModel.saveProfession(userProfile.imageResId, updatedProfession)
-                    },
-                    onInterestsSelected = { selectedInterests ->
-                        userProfile.interests = selectedInterests
-                        viewModel.saveInterests(userProfile.imageResId, selectedInterests)
-                    },
-                    viewModel = viewModel
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-        }
-
-        // Display saved profession and interests information
-        val savedProfession = viewModel.savedProfessions.value
-        val savedInterests = viewModel.savedInterests.value
-        if (savedProfession != null) {
-            Text(
-                "Saved Profession: $savedProfession",
-                fontSize = 16.sp,
-                color = Color.Green,
-                modifier = Modifier.padding(16.dp)
+        item {
+            TopAppBar(
+                title = { Text("Edit") },
+                navigationIcon = {
+                    IconButton(onClick = { onBackNavigate() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        if (savedInterests != null) {
-            Text(
-                "Saved Interests: ${savedInterests.joinToString(", ")}",
-                fontSize = 16.sp,
-                color = Color.Green,
-                modifier = Modifier.padding(16.dp)
+        items(userProfiles) { userProfile ->
+            UserProfileItem(
+                userProfile,
+                onEditClick = {},
+                isEditScreen,
+                onSaveProfession = { updatedProfession ->
+                    userProfile.profession = updatedProfession
+                    viewModel.saveProfession(userProfile.imageResId, updatedProfession)
+                },
+                onInterestsSelected = { selectedInterests ->
+                    userProfile.interests = selectedInterests
+                    viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                },
+                viewModel = viewModel
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+
     }
 }

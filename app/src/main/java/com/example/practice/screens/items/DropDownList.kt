@@ -1,5 +1,6 @@
 package com.example.practice.screens.items
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -16,7 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.example.practice.data.CustomWindowInfo
+import com.example.practice.data.rememberWindowInfo
 
 @Composable
 fun DropDownList(
@@ -24,6 +28,9 @@ fun DropDownList(
     expanded: Boolean,
     onDismissRequest: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val windowInfo = rememberWindowInfo()
+
     // List of professions
     val selectedProfessions = listOf(
         "Software Engineer",
@@ -49,7 +56,19 @@ fun DropDownList(
     )
 
     val dropdownHeight by animateDpAsState(
-        targetValue = if (expanded) 240.dp else 0.dp,
+        targetValue = if (expanded) {
+            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                windowInfo.screenWidthInfo == CustomWindowInfo.CustomWindowType.Expanded
+            ) {
+                // If landscape and the window is expanded, show only half the list
+                windowInfo.screenHeight / 2
+            } else {
+                // Otherwise, show the full list
+                240.dp
+            }
+        } else {
+            0.dp
+        },
         animationSpec = tween(durationMillis = 300), label = ""
     )
 
@@ -64,14 +83,24 @@ fun DropDownList(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { onDismissRequest() },
-                modifier = Modifier.fillMaxWidth().background(Color.Green)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                selectedProfessions.forEach { option ->
+                selectedProfessions.forEachIndexed { index, option ->
+                    val itemModifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            when {
+                                index <= 8 -> Color.Yellow
+                                else -> Color.Magenta
+                            }
+                        )
+
                     DropdownMenuItem(
                         onClick = {
                             onOptionSelected(option)
                             onDismissRequest()
-                        }
+                        },
+                        modifier = itemModifier
                     ) {
                         Text(option, color = Color.Black)
                     }
