@@ -6,7 +6,7 @@ import com.example.practice.ktor.dto.PostResponse
 
 interface PostsService {
 
-    suspend fun getPosts(): List<PostResponse>
+    suspend fun getPosts(page: Int, pageSize: Int): List<PostResponse>
 
     suspend fun createPost(postRequest: PostRequest): PostResponse?
 

@@ -112,8 +112,12 @@ dependencies {
     //permissions
     implementation ("com.google.accompanist:accompanist-permissions:0.21.1-beta")
 
-    //bitmap
-    implementation ("dev.chrisbanes.accompanist:accompanist-coil:0.6.1")
+
+
+    //constraintlayout
+   // implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07")
+
+    implementation( "androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
 
 

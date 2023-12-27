@@ -21,7 +21,7 @@ class PostsServiceImpl @Inject constructor(
     private val client: HttpClient
 ) : PostsService {
 
-    override suspend fun getPosts(): List<PostResponse> {
+    override suspend fun getPosts(page: Int, pageSize: Int): List<PostResponse> {
         return try {
             val response = client.get<HttpResponse> {
                 url(HttpRoutes.POSTS)

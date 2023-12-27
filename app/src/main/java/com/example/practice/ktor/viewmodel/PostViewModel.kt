@@ -9,6 +9,7 @@ import com.example.practice.ktor.dto.PostRequest
 import com.example.practice.ktor.dto.PostResponse
 import com.example.practice.ktor.repository.PostsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +26,11 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
 
     //val searchQuery: LiveData<String> get() = _searchQuery
 
+    private var currentPage = 1
+    private val pageSize = 10
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
@@ -32,7 +38,11 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
     fun fetchPosts() {
         viewModelScope.launch {
             try {
-                val fetchedPosts = repository.getPosts()
+                _isLoading.value = true
+
+                delay(2000)
+
+                val fetchedPosts = repository.getPosts(currentPage, pageSize)
 
                 val filteredPosts = if (_searchQuery.value.isNullOrBlank()) {
                     fetchedPosts
@@ -43,11 +53,22 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
                     }
                 }
 
-                _posts.value = filteredPosts.sortedBy { it.title }
+                _posts.value = (_posts.value?.plus(filteredPosts) ?: filteredPosts)
+                    .distinctBy { it.id }
+                    .sortedBy { it.title }
+
+                _isLoading.value = false
+
             } catch (e: Exception) {
+                _isLoading.value = false
                 _errorMessage.value = "Error fetching posts: ${e.message}"
             }
         }
+    }
+
+    fun loadNextPage() {
+        currentPage++
+        fetchPosts()
     }
 
     fun createPosts(listState: LazyListState) {

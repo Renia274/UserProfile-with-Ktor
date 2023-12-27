@@ -8,7 +8,9 @@ import javax.inject.Inject
 
 class PostsRepository @Inject constructor (private val postsService: PostsService) {
 
-    suspend fun getPosts() = postsService.getPosts()
+    suspend fun getPosts(page: Int, pageSize: Int): List<PostResponse> {
+        return postsService.getPosts(page, pageSize)
+    }
 
 
     suspend fun createPost(postRequest: PostRequest): PostResponse? {

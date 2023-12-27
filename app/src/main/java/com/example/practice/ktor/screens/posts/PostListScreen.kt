@@ -1,5 +1,6 @@
 package com.example.practice.ktor.screens.posts
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -48,6 +51,7 @@ fun PostsScreen(
     var searchQuery by remember { mutableStateOf(TextFieldValue()) }
     val posts by viewModel.posts.observeAsState(emptyList())
     val errorMessage by viewModel.errorMessage.observeAsState("")
+    val isLoading by viewModel.isLoading.observeAsState()
 
     val listState = rememberLazyListState()
 
@@ -55,6 +59,14 @@ fun PostsScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.fetchPosts()
+    }
+
+    DisposableEffect(listState) {
+        onDispose {
+            if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == posts.size - 1 && !isLoading!!) {
+                viewModel.loadNextPage()
+            }
+        }
     }
 
     Column(
@@ -161,5 +173,17 @@ fun PostsScreen(
             }
 
         }
+
+        if (isLoading == true) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
     }
 }
+
