@@ -1,5 +1,6 @@
 package com.example.practice.navigation.graph
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.example.practice.R
 import com.example.practice.UserProfilesList
 import com.example.practice.UserProfilesLoading
@@ -18,6 +20,7 @@ import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.screens.InfoScreen
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
@@ -43,6 +46,7 @@ data class Navigation(
             val EditProfile = Screen("edit")
             val Recovery = Screen("recovery")
             val Settings = Screen("settings")
+            val InfoScreen = Screen("info_screen")
         }
     }
 
@@ -224,6 +228,9 @@ fun NavigationApp() {
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
+                        "info"->{
+                            navigationHandler.navigateToInfoScreen()
+                        }
                     }
                 },
                 username = "Bob",
@@ -248,6 +255,9 @@ fun NavigationApp() {
                         }
                         "settings" -> {
                             navigationHandler.navigateToSettings()
+                        }
+                        "info"->{
+                            navigationHandler.navigateToInfoScreen()
                         }
                     }
                 },
@@ -274,12 +284,28 @@ fun NavigationApp() {
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
+                        "info"->{
+                            navigationHandler.navigateToInfoScreen()
+                        }
                     }
                 },
                 username = "Eve",
                 topAppBarTitle = "Eve's Profile"
             )
         }
+
+        composable(
+            route = Navigation.Screen.InfoScreen.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "https://pl-coding.com/"
+                    action = Intent.ACTION_VIEW
+                }
+            )
+        ) {
+            InfoScreen()
+        }
+
 
         composable(Navigation.Screen.EditProfile.route) {
             UserProfilesList(

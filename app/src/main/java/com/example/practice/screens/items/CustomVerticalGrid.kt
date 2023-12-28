@@ -46,8 +46,6 @@ fun CustomVerticalGrid(
             ) {
                 rowItems.forEach { item ->
 
-
-
                     CustomGridItem(
                         text = item,
                         isSelected = selectedItem == item,

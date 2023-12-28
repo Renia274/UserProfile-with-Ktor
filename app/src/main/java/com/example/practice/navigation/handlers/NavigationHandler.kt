@@ -45,6 +45,10 @@ class NavigationHandler(
         navController.navigate(Navigation.Screen.Settings.route)
     }
 
+    fun navigateToInfoScreen() {
+        navController.navigate(Navigation.Screen.InfoScreen.route)
+    }
+
 
 
 }

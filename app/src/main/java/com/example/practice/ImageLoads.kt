@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -143,23 +144,38 @@ fun UserProfilesLoading(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(title = {
-                    Text(
-                        text = topAppBarTitle, color = when {
-                            username.lowercase().startsWith("bob") -> Color.Green
-                            username.lowercase().startsWith("alice") -> Color.LightGray
-                            username.lowercase().startsWith("eve") -> Color.Magenta
-                            else -> Color.Gray
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = topAppBarTitle,
+                            color = when {
+                                username.lowercase().startsWith("bob") -> Color.Green
+                                username.lowercase().startsWith("alice") -> Color.LightGray
+                                username.lowercase().startsWith("eve") -> Color.Magenta
+                                else -> Color.Gray
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                         }
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                // Navigate to the InfoScreen when the info icon is clicked
+                                onNavigate("info")
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 )
+
 
                 Row(
                     modifier = Modifier
