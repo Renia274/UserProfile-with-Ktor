@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +28,8 @@ import androidx.compose.ui.unit.sp
 fun CustomVerticalGrid(
     items: List<String>
 ) {
+    var selectedItem by remember { mutableStateOf<String?>(null) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,30 +45,70 @@ fun CustomVerticalGrid(
                 horizontalArrangement = Arrangement.Center
             ) {
                 rowItems.forEach { item ->
-                    CustomGridItem(text = item)
+
+
+
+                    CustomGridItem(
+                        text = item,
+                        isSelected = selectedItem == item,
+                        onClick = {
+                            selectedItem = if (selectedItem == item) null else item
+                        },
+                        description = "Description for $item"
+                    )
                 }
             }
+        }
+
+
+        selectedItem?.let { selectedItem ->
+            Text(
+                text = "Description: $selectedItem",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
+
+
 @Composable
 fun CustomGridItem(
-    text: String
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    description: String
 ) {
     Box(
         modifier = Modifier
             .padding(8.dp)
-            .background(MaterialTheme.colorScheme.primary)
-            .clickable { /*  */ }
-            .padding(16.dp)
+            .background(
+                color = if (isSelected) MaterialTheme.colorScheme.secondary
+                else MaterialTheme.colorScheme.primary
+            )
+            .clickable(onClick = onClick)
     ) {
-        Text(
-            text = text,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (isSelected && description.isNotEmpty()) {
+                Text(
+                    text = description,
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
+        }
     }
 }
-
