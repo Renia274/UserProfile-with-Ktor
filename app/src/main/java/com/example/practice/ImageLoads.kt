@@ -6,8 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +33,7 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CameraPermissionDialog
+import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
 import com.example.practice.screens.items.MicrophonePermissionDialog
@@ -99,8 +98,7 @@ fun UserProfilesLoading(
         ) {
             // Show CameraPermissionDialog if camera permissions are not granted
             if (isCameraPermissionDialogShown) {
-                CameraPermissionDialog(
-                    isPermissionDialogShown = isCameraPermissionDialogShown,
+                CameraPermissionDialog(isPermissionDialogShown = isCameraPermissionDialogShown,
                     onDismiss = { isCameraPermissionDialogShown = false },
                     onAllow = {
                         // Handle camera permission granted
@@ -113,8 +111,7 @@ fun UserProfilesLoading(
                     onLater = {
                         // Handle camera permission later
                         isCameraPermissionDialogShown = false
-                    }
-                )
+                    })
             }
 
             // delay between dialogs
@@ -125,8 +122,7 @@ fun UserProfilesLoading(
 
             // Show MicrophonePermissionDialog if microphone permissions are not granted
             if (isMicrophonePermissionDialogShown) {
-                MicrophonePermissionDialog(
-                    isPermissionDialogShown = isMicrophonePermissionDialogShown,
+                MicrophonePermissionDialog(isPermissionDialogShown = isMicrophonePermissionDialogShown,
                     onDismiss = { isMicrophonePermissionDialogShown = false },
                     onAllow = {
                         // Handle microphone permission granted
@@ -139,8 +135,7 @@ fun UserProfilesLoading(
                     onLater = {
                         // Handle microphone permission later
                         isMicrophonePermissionDialogShown = false
-                    }
-                )
+                    })
             }
 
             Column(
@@ -148,25 +143,22 @@ fun UserProfilesLoading(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = topAppBarTitle, color = when {
-                                username.lowercase().startsWith("bob") -> Color.Green
-                                username.lowercase().startsWith("alice") -> Color.LightGray
-                                username.lowercase().startsWith("eve") -> Color.Magenta
-                                else -> Color.Gray
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                TopAppBar(title = {
+                    Text(
+                        text = topAppBarTitle, color = when {
+                            username.lowercase().startsWith("bob") -> Color.Green
+                            username.lowercase().startsWith("alice") -> Color.LightGray
+                            username.lowercase().startsWith("eve") -> Color.Magenta
+                            else -> Color.Gray
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                 )
 
                 Row(
@@ -178,8 +170,7 @@ fun UserProfilesLoading(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     if (selectedIndex in userProfiles.indices && !isShowingEdit) {
-                        UserProfileItem(
-                            userProfile = userProfiles[selectedIndex],
+                        UserProfileItem(userProfile = userProfiles[selectedIndex],
                             onEditClick = {
                                 isShowingEdit = true
                                 // Show permission dialog when entering edit mode
@@ -199,6 +190,7 @@ fun UserProfilesLoading(
                                 )
                             },
                             viewModel = viewModel
+
                         )
                     } else {
                         UserProfilesList(
@@ -206,6 +198,7 @@ fun UserProfilesLoading(
                             onBackNavigate = onBack,
                             isEditScreen = isShowingEdit,
                             viewModel = viewModel
+
                         )
                     }
                 }
@@ -249,15 +242,13 @@ fun UserProfileBob(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-
-        // Use animated size
-        Image(painter = painterResource(id = userProfile.imageResId),
+        Image(
+            painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -267,14 +258,14 @@ fun UserProfileBob(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                })
+                }
+        )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         when {
             isEditScreen && isEditingProfession -> {
-                // Render text field for editing profession only on the EditProfile screen
-                OutlinedTextField(value = selectedProfession,
+                OutlinedTextField(
+                    value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
@@ -285,7 +276,6 @@ fun UserProfileBob(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
                             isDropDownListVisible = !isDropDownListVisible
                         }) {
                             Icon(
@@ -294,31 +284,28 @@ fun UserProfileBob(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
 
-                // DropDownList for professions
                 if (isDropDownListVisible) {
-                    DropDownList(onOptionSelected = {
-                        selectedProfession = it
-                    }, expanded = isDropDownListVisible, onDismissRequest = {
-                        isDropDownListVisible = false
-                    })
+                    DropDownList(
+                        onOptionSelected = { selectedProfession = it },
+                        expanded = isDropDownListVisible,
+                        onDismissRequest = { isDropDownListVisible = false }
+                    )
                 }
             }
 
             isEditingInterests -> {
-                // Interests dropdown list
-                InterestsDropDownList(onInterestsSelected = {
-                    selectedInterests = it
-                },
+                InterestsDropDownList(
+                    onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = {
-                        isInterestsDropDownListVisible = false
-                    })
+                    onDismissRequest = { isInterestsDropDownListVisible = false }
+                )
 
-                // TextField for interests
-                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                OutlinedTextField(
+                    value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
@@ -329,7 +316,6 @@ fun UserProfileBob(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
                         }) {
                             Icon(
@@ -338,7 +324,9 @@ fun UserProfileBob(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
+
             }
 
             else -> {
@@ -373,25 +361,33 @@ fun UserProfileBob(
                         color = Color.Black
                     )
                 }
+
+                if (!isEditScreen) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CustomVerticalGrid(
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                    )
+                }
+
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -401,7 +397,9 @@ fun UserProfileBob(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -409,14 +407,15 @@ fun UserProfileBob(
                     }
                 }
 
-                // Toggle button for editing interests
                 if (isEditingInterests) {
                     Button(
                         onClick = {
                             onInterestsSelected(selectedInterests)
                             viewModel.saveInterests(userProfile.imageResId, selectedInterests)
                             isEditingInterests = false
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -426,7 +425,9 @@ fun UserProfileBob(
                     Button(
                         onClick = {
                             isEditingInterests = !isEditingInterests
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -434,9 +435,15 @@ fun UserProfileBob(
                     }
                 }
             }
+
+            CustomVerticalGrid(
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+            )
+
         }
     }
 }
+
 
 @Composable
 fun UserProfileAlice(
@@ -464,14 +471,13 @@ fun UserProfileAlice(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Use animated size
-        Image(painter = painterResource(id = userProfile.imageResId),
+        Image(
+            painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -481,14 +487,14 @@ fun UserProfileAlice(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                })
+                }
+        )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         when {
             isEditScreen && isEditingProfession -> {
-                // Render text field for editing profession only on the EditProfile screen
-                OutlinedTextField(value = selectedProfession,
+                OutlinedTextField(
+                    value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
@@ -499,7 +505,6 @@ fun UserProfileAlice(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
                             isDropDownListVisible = !isDropDownListVisible
                         }) {
                             Icon(
@@ -508,31 +513,28 @@ fun UserProfileAlice(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
 
-                // DropDownList for professions
                 if (isDropDownListVisible) {
-                    DropDownList(onOptionSelected = {
-                        selectedProfession = it
-                    }, expanded = isDropDownListVisible, onDismissRequest = {
-                        isDropDownListVisible = false
-                    })
+                    DropDownList(
+                        onOptionSelected = { selectedProfession = it },
+                        expanded = isDropDownListVisible,
+                        onDismissRequest = { isDropDownListVisible = false }
+                    )
                 }
             }
 
             isEditingInterests -> {
-                // Interests dropdown list
-                InterestsDropDownList(onInterestsSelected = {
-                    selectedInterests = it
-                },
+                InterestsDropDownList(
+                    onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = {
-                        isInterestsDropDownListVisible = false
-                    })
+                    onDismissRequest = { isInterestsDropDownListVisible = false }
+                )
 
-                // TextField for interests
-                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                OutlinedTextField(
+                    value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
@@ -543,7 +545,6 @@ fun UserProfileAlice(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
                         }) {
                             Icon(
@@ -552,7 +553,9 @@ fun UserProfileAlice(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
+
             }
 
             else -> {
@@ -587,25 +590,33 @@ fun UserProfileAlice(
                         color = Color.Black
                     )
                 }
+
+                if (!isEditScreen) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CustomVerticalGrid(
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                    )
+                }
+
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -615,7 +626,9 @@ fun UserProfileAlice(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -623,14 +636,15 @@ fun UserProfileAlice(
                     }
                 }
 
-                // Toggle button for editing interests
                 if (isEditingInterests) {
                     Button(
                         onClick = {
                             onInterestsSelected(selectedInterests)
                             viewModel.saveInterests(userProfile.imageResId, selectedInterests)
                             isEditingInterests = false
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -640,7 +654,9 @@ fun UserProfileAlice(
                     Button(
                         onClick = {
                             isEditingInterests = !isEditingInterests
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -648,6 +664,11 @@ fun UserProfileAlice(
                     }
                 }
             }
+
+            CustomVerticalGrid(
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+            )
+
         }
     }
 }
@@ -679,14 +700,13 @@ fun UserProfileEve(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Use animated size
-        Image(painter = painterResource(id = userProfile.imageResId),
+        Image(
+            painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -696,14 +716,14 @@ fun UserProfileEve(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                })
+                }
+        )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         when {
             isEditScreen && isEditingProfession -> {
-                // Render text field for editing profession only on the EditProfile screen
-                OutlinedTextField(value = selectedProfession,
+                OutlinedTextField(
+                    value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
@@ -714,7 +734,6 @@ fun UserProfileEve(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the DropDownList when the arrow button is clicked
                             isDropDownListVisible = !isDropDownListVisible
                         }) {
                             Icon(
@@ -723,31 +742,28 @@ fun UserProfileEve(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
 
-                // DropDownList for professions
                 if (isDropDownListVisible) {
-                    DropDownList(onOptionSelected = {
-                        selectedProfession = it
-                    }, expanded = isDropDownListVisible, onDismissRequest = {
-                        isDropDownListVisible = false
-                    })
+                    DropDownList(
+                        onOptionSelected = { selectedProfession = it },
+                        expanded = isDropDownListVisible,
+                        onDismissRequest = { isDropDownListVisible = false }
+                    )
                 }
             }
 
             isEditingInterests -> {
-                // Interests dropdown list
-                InterestsDropDownList(onInterestsSelected = {
-                    selectedInterests = it
-                },
+                InterestsDropDownList(
+                    onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = {
-                        isInterestsDropDownListVisible = false
-                    })
+                    onDismissRequest = { isInterestsDropDownListVisible = false }
+                )
 
-                // TextField for interests
-                OutlinedTextField(value = selectedInterests.joinToString(", "),
+                OutlinedTextField(
+                    value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
@@ -758,7 +774,6 @@ fun UserProfileEve(
                         .padding(8.dp),
                     trailingIcon = {
                         IconButton(onClick = {
-                            // Toggle the visibility of the Interests DropDownList when the arrow button is clicked
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
                         }) {
                             Icon(
@@ -767,7 +782,9 @@ fun UserProfileEve(
                                 tint = Color.Gray
                             )
                         }
-                    })
+                    }
+                )
+
             }
 
             else -> {
@@ -802,25 +819,33 @@ fun UserProfileEve(
                         color = Color.Black
                     )
                 }
+
+                if (!isEditScreen) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CustomVerticalGrid(
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                    )
+                }
+
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Toggle between editing profession and interests and displaying user information only on EditProfile screen
         if (isEditScreen) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Toggle button for editing profession
                 if (isEditingProfession) {
                     Button(
                         onClick = {
                             onSaveProfession(selectedProfession)
                             isEditingProfession = false
                             viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -830,7 +855,9 @@ fun UserProfileEve(
                     Button(
                         onClick = {
                             isEditingProfession = !isEditingProfession
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -838,14 +865,15 @@ fun UserProfileEve(
                     }
                 }
 
-                // Toggle button for editing interests
                 if (isEditingInterests) {
                     Button(
                         onClick = {
                             onInterestsSelected(selectedInterests)
                             viewModel.saveInterests(userProfile.imageResId, selectedInterests)
                             isEditingInterests = false
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Blue
                         )
                     ) {
@@ -855,7 +883,9 @@ fun UserProfileEve(
                     Button(
                         onClick = {
                             isEditingInterests = !isEditingInterests
-                        }, modifier = Modifier.padding(8.dp), colors = ButtonDefaults.buttonColors(
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red
                         )
                     ) {
@@ -863,10 +893,14 @@ fun UserProfileEve(
                     }
                 }
             }
+
+            CustomVerticalGrid(
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+            )
+
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -876,23 +910,18 @@ fun UserProfilesList(
     isEditScreen: Boolean,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        item {
-            TopAppBar(
-                title = { Text("Edit") },
-                navigationIcon = {
-                    IconButton(onClick = { onBackNavigate() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        TopAppBar(title = { Text("Edit") }, navigationIcon = {
+            IconButton(onClick = { onBackNavigate() }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+        })
+        Spacer(modifier = Modifier.height(16.dp))
 
-        items(userProfiles) { userProfile ->
+        userProfiles.forEach { userProfile ->
             UserProfileItem(
                 userProfile,
                 onEditClick = {},
@@ -910,7 +939,5 @@ fun UserProfilesList(
 
             Spacer(modifier = Modifier.height(8.dp))
         }
-
-
     }
 }

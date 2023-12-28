@@ -15,10 +15,10 @@ fun UserProfileItem(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel(),
+
 ) {
     val username = userProfile.firstName.lowercase()
-
     when {
         username.startsWith("bob") -> {
             UserProfileBob(
