@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun UserProfilesLoading(
     userProfiles: List<UserData>,
     viewModel: SharedProfilesViewModel = hiltViewModel(),
-    timerViewModel: TimerViewModel= hiltViewModel(),
+    timerViewModel: TimerViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String,
@@ -70,10 +70,26 @@ fun UserProfilesLoading(
     LaunchedEffect(isLoading) {
         delay(SplashWaitTimeMillis)
         isLoading = false
+
     }
+
+
 
     // Observe the dark mode value from the view model
     val darkMode by viewModel.darkMode.observeAsState(false)
+
+    val timeLeft = timerViewModel.timeLeft.value
+
+    LaunchedEffect(timeLeft) {
+        // Check if the timer has run out
+        if (timeLeft <= 0) {
+            // Update the current destination
+            onNavigate("usernamePasswordLogin")
+
+            // Reset the timer
+            timerViewModel.resetTimer()
+        }
+    }
 
     val mainBackgroundColor = if (darkMode) {
         MaterialTheme.colorScheme.background
@@ -183,7 +199,7 @@ fun UserProfilesLoading(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .wrapContentHeight(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -196,14 +212,15 @@ fun UserProfilesLoading(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
+                        .fillMaxWidth(),
+                    // .padding(top = 16.dp),
                     verticalAlignment = Alignment.Top,
                 ) {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     if (selectedIndex in userProfiles.indices && !isShowingEdit) {
-                        UserProfileItem(userProfile = userProfiles[selectedIndex],
+                        UserProfileItem(
+                            userProfile = userProfiles[selectedIndex],
                             onEditClick = {
                                 isShowingEdit = true
                                 // Show permission dialog when entering edit mode
@@ -278,7 +295,6 @@ fun UserProfileBob(
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
 
         Image(
             painter = painterResource(id = userProfile.imageResId),
@@ -396,9 +412,10 @@ fun UserProfileBob(
                 }
 
                 if (!isEditScreen) {
-                    Spacer(modifier = Modifier.height(4.dp))
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        )
                     )
                 }
 
@@ -470,11 +487,15 @@ fun UserProfileBob(
             }
 
             CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                    "Item 5", "Item 6", "Item 7", "Item 8"
+                )
             )
 
         }
     }
+
+
 }
 
 
@@ -507,7 +528,6 @@ fun UserProfileAlice(
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
 
         Image(
             painter = painterResource(id = userProfile.imageResId),
@@ -625,9 +645,10 @@ fun UserProfileAlice(
                 }
 
                 if (!isEditScreen) {
-                    Spacer(modifier = Modifier.height(4.dp))
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        )
                     )
                 }
 
@@ -699,11 +720,14 @@ fun UserProfileAlice(
             }
 
             CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                    "Item 5", "Item 6", "Item 7", "Item 8"
+                )
             )
 
         }
     }
+
 }
 
 
@@ -736,7 +760,6 @@ fun UserProfileEve(
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
 
         Image(
             painter = painterResource(id = userProfile.imageResId),
@@ -854,9 +877,10 @@ fun UserProfileEve(
                 }
 
                 if (!isEditScreen) {
-                    Spacer(modifier = Modifier.height(4.dp))
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        )
                     )
                 }
 
@@ -928,11 +952,14 @@ fun UserProfileEve(
             }
 
             CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
+                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
+                    "Item 5", "Item 6", "Item 7", "Item 8"
+                )
             )
 
         }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

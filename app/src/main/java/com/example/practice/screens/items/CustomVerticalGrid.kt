@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,16 +31,15 @@ fun CustomVerticalGrid(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         items.chunked(2).forEach { rowItems ->
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 rowItems.forEach { item ->
@@ -58,14 +56,6 @@ fun CustomVerticalGrid(
             }
         }
 
-
-        selectedItem?.let { selectedItem ->
-            Text(
-                text = "Description: $selectedItem",
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
     }
 }
 

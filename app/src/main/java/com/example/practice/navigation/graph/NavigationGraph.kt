@@ -235,6 +235,10 @@ fun NavigationApp() {
                         "info"->{
                             navigationHandler.navigateToInfoScreen()
                         }
+                        "usernamePasswordLogin"->{
+                            authNavigationHandler.navigateToUsernamePasswordLogin()
+                        }
+
                     }
                 },
                 username = "Bob",
@@ -265,6 +269,7 @@ fun NavigationApp() {
                         "info"->{
                             navigationHandler.navigateToInfoScreen()
                         }
+
                     }
                 },
                 username = "Alice",
@@ -295,6 +300,7 @@ fun NavigationApp() {
                         "info"->{
                             navigationHandler.navigateToInfoScreen()
                         }
+
                     }
                 },
                 username = "Eve",
