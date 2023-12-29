@@ -32,8 +32,10 @@ import com.example.practice.data.UserData
 import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CameraPermissionDialog
+import com.example.practice.screens.items.CountdownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
@@ -48,11 +50,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun UserProfilesLoading(
     userProfiles: List<UserData>,
     viewModel: SharedProfilesViewModel = hiltViewModel(),
+    timerViewModel: TimerViewModel= hiltViewModel(),
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String,
-    topAppBarTitle: String
-) {
+    topAppBarTitle: String,
+
+    ) {
     val selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
@@ -175,6 +179,19 @@ fun UserProfilesLoading(
                         .fillMaxWidth()
                         .wrapContentHeight()
                 )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+
+                    // Countdown timer display
+                    CountdownTimer(timerViewModel = timerViewModel)
+                }
 
 
                 Row(

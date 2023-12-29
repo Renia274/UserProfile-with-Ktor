@@ -20,6 +20,7 @@ import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.InfoScreen
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.PinLoginScreen
@@ -66,6 +67,7 @@ fun NavigationApp() {
     val navController = rememberNavController()
     val credentialsViewModel = viewModel<CredentialsViewModel>()
     val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
+    val timerViewModel = viewModel<TimerViewModel>()
 
     val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
     val authNavigationHandler = AuthNavigationHandler(navController, credentialsViewModel)
@@ -214,6 +216,8 @@ fun NavigationApp() {
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
+                timerViewModel=timerViewModel,
+
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -242,6 +246,8 @@ fun NavigationApp() {
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
+                timerViewModel=timerViewModel,
+
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -270,6 +276,8 @@ fun NavigationApp() {
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
+                timerViewModel=timerViewModel,
+
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
