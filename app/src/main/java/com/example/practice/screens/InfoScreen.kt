@@ -37,12 +37,10 @@ fun InfoScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Welcome to the Info Screen!", style = MaterialTheme.typography.h5)
+        Text(text = "Welcome to the Info/Test Screen!", style = MaterialTheme.typography.h5)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display the URL on the screen
-        Text(text = url, style = MaterialTheme.typography.body1)
 
         // Button to open the link
         Button(onClick = {
