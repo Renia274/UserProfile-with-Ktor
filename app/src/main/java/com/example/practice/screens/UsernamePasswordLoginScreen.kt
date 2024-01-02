@@ -22,8 +22,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,10 +59,10 @@ fun UsernamePasswordLoginScreen(
     var isLoginSuccessful by remember { mutableStateOf(false) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    // Use LiveData to observe changes in entered credentials
-    val enteredCredentials by viewModel.enteredCredentials.observeAsState()
 
-    // Use enteredCredentials.value to get the current value
+    val enteredCredentials by viewModel.enteredCredentials.collectAsState()
+
+
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }
     var password by remember { mutableStateOf(enteredCredentials?.password ?: "") }
 

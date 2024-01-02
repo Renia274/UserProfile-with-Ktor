@@ -41,11 +41,6 @@ fun CameraPermissionDialog(
             onDismiss()
         },
         title = {
-            Image(
-                painter = painterResource(R.drawable.ic_camera),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp)
-            )
             Text(text = "Camera Permission Required")
         },
         text = {
@@ -111,11 +106,6 @@ fun MicrophonePermissionDialog(
             onDismiss()
         },
         title = {
-            Image(
-                painter = painterResource(R.drawable.ic_microphone),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp)
-            )
             Text(text = "Microphone Permission Required")
         },
         text = {

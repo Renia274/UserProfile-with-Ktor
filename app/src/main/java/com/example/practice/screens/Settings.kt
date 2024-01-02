@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,10 +62,12 @@ fun SettingsScreen(
 
     var darkMode by remember { mutableStateOf(false) }
     var notificationEnabled by remember {
-        mutableStateOf(
-            sharedViewModel.notificationEnabled.value ?: false
-        )
+        mutableStateOf(sharedViewModel.notificationEnabled.value)
     }
+
+
+
+
     var isSecurityCodeEditable by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
 
@@ -96,13 +99,17 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    LaunchedEffect(sharedViewModel.notificationEnabled) {
+        notificationEnabled = sharedViewModel.notificationEnabled.value
+    }
+
     DisposableEffect(lifecycleOwner) {
         val onEvent: (LifecycleOwner, Lifecycle.Event) -> Unit = { owner, event ->
             when (event) {
                 androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
                     //update the UI based on the lifecycle event
-                    darkMode = sharedViewModel.darkMode.value ?: false
-                    notificationEnabled = sharedViewModel.notificationEnabled.value ?: false
+                    darkMode = sharedViewModel.darkMode.value
+                    notificationEnabled = sharedViewModel.notificationEnabled.value
                     isSecurityCodeEditable = notificationEnabled
                 }
                 else -> Unit
@@ -177,7 +184,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             SettingsField(label = "Email:",
-                value = sharedViewModel.signupEmail.value ?: "",
+                value = sharedViewModel.signupEmail.value,
                 onValueChange = { sharedViewModel.setSignupEmail(it) },
                 isEditable = true,
                 onClearClick = { sharedViewModel.setSignupEmail("") })

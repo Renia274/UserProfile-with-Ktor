@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,8 +60,7 @@ fun UserProfilesLoading(
     val selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
-    var isCameraPermissionDialogShown by remember { mutableStateOf(true) }
-    var isMicrophonePermissionDialogShown by remember { mutableStateOf(false) }
+
 
     // Provide an initial value for selectedIndex
     val initialSelectedIndex = 0
@@ -74,9 +73,9 @@ fun UserProfilesLoading(
     }
 
 
-
     // Observe the dark mode value from the view model
-    val darkMode by viewModel.darkMode.observeAsState(false)
+    val darkMode by viewModel.darkMode.collectAsState(false)
+
 
     val timeLeft = timerViewModel.timeLeft.value
 
@@ -117,83 +116,36 @@ fun UserProfilesLoading(
                 .fillMaxSize()
                 .background(mainBackgroundColor)
         ) {
-            // Show CameraPermissionDialog if camera permissions are not granted
-            if (isCameraPermissionDialogShown) {
-                CameraPermissionDialog(isPermissionDialogShown = isCameraPermissionDialogShown,
-                    onDismiss = { isCameraPermissionDialogShown = false },
-                    onAllow = {
-                        // Handle camera permission granted
-                        isCameraPermissionDialogShown = false
-                    },
-                    onDeny = {
-                        // Handle camera permission denied
-                        isCameraPermissionDialogShown = false
-                    },
-                    onLater = {
-                        // Handle camera permission later
-                        isCameraPermissionDialogShown = false
-                    })
-            }
 
-            // delay between dialogs
-            LaunchedEffect(Unit) {
-                delay(2000)
-                isMicrophonePermissionDialogShown = true
-            }
-
-            // Show MicrophonePermissionDialog if microphone permissions are not granted
-            if (isMicrophonePermissionDialogShown) {
-                MicrophonePermissionDialog(isPermissionDialogShown = isMicrophonePermissionDialogShown,
-                    onDismiss = { isMicrophonePermissionDialogShown = false },
-                    onAllow = {
-                        // Handle microphone permission granted
-                        isMicrophonePermissionDialogShown = false
-                    },
-                    onDeny = {
-                        // Handle microphone permission denied
-                        isMicrophonePermissionDialogShown = false
-                    },
-                    onLater = {
-                        // Handle microphone permission later
-                        isMicrophonePermissionDialogShown = false
-                    })
-            }
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = topAppBarTitle,
-                            color = when {
-                                username.lowercase().startsWith("bob") -> Color.Green
-                                username.lowercase().startsWith("alice") -> Color.LightGray
-                                username.lowercase().startsWith("eve") -> Color.Magenta
-                                else -> Color.Gray
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                TopAppBar(title = {
+                    Text(
+                        text = topAppBarTitle, color = when {
+                            username.lowercase().startsWith("bob") -> Color.Green
+                            username.lowercase().startsWith("alice") -> Color.LightGray
+                            username.lowercase().startsWith("eve") -> Color.Magenta
+                            else -> Color.Gray
                         }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                // Navigate to the InfoScreen when the info icon is clicked
-                                onNavigate("info")
-                            }
-                        ) {
-                            Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                }, actions = {
+                    IconButton(onClick = {
+                        // Navigate to the InfoScreen when the info icon is clicked
+                        onNavigate("info")
+                    }) {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                    }
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                 )
 
                 Row(
@@ -211,9 +163,7 @@ fun UserProfilesLoading(
 
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    // .padding(top = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top,
                 ) {
                     Spacer(modifier = Modifier.width(16.dp))
@@ -223,8 +173,6 @@ fun UserProfilesLoading(
                             userProfile = userProfiles[selectedIndex],
                             onEditClick = {
                                 isShowingEdit = true
-                                // Show permission dialog when entering edit mode
-                                isCameraPermissionDialogShown = true
                             },
                             isEditScreen = isShowingEdit,
                             onSaveProfession = { updatedProfession ->
@@ -283,21 +231,32 @@ fun UserProfileBob(
     var selectedInterests by remember { mutableStateOf(userProfile.interests) }
     var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    var isCameraPermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+    var isMicrophonePermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+
+    var isDelayApplied by remember { mutableStateOf(false) }
+
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
         animationSpec = tween(durationMillis = 500),
         label = "imageSizeAnimation"
     )
 
+    LaunchedEffect(key1 = Unit) {
+        if (!isDelayApplied) {
+            delay(2000)
+            isDelayApplied = true
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -307,22 +266,22 @@ fun UserProfileBob(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
+
+
+
 
 
         when {
             isEditScreen && isEditingProfession -> {
-                OutlinedTextField(
-                    value = selectedProfession,
+                OutlinedTextField(value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
                     label = { Text("Enter Profession") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isDropDownListVisible = !isDropDownListVisible
@@ -333,36 +292,29 @@ fun UserProfileBob(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
                 if (isDropDownListVisible) {
-                    DropDownList(
-                        onOptionSelected = { selectedProfession = it },
+                    DropDownList(onOptionSelected = { selectedProfession = it },
                         expanded = isDropDownListVisible,
-                        onDismissRequest = { isDropDownListVisible = false }
-                    )
+                        onDismissRequest = { isDropDownListVisible = false })
                 }
             }
 
             isEditingInterests -> {
-                InterestsDropDownList(
-                    onInterestsSelected = { selectedInterests = it },
+                InterestsDropDownList(onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = { isInterestsDropDownListVisible = false }
-                )
+                    onDismissRequest = { isInterestsDropDownListVisible = false })
 
-                OutlinedTextField(
-                    value = selectedInterests.joinToString(", "),
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
                     label = { Text("Enter Interests") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
@@ -373,8 +325,7 @@ fun UserProfileBob(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
             }
 
@@ -413,89 +364,130 @@ fun UserProfileBob(
 
                 if (!isEditScreen) {
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        items = listOf(
+                            "Item 1",
+                            "Item 2",
+                            "Item 3",
+                            "Item 4",
+                            "Item 5",
+                            "Item 6",
+                            "Item 7",
+                            "Item 8"
                         )
                     )
                 }
+                if (isDelayApplied && !isEditScreen) {
 
-            }
-        }
+                    // Show CameraPermissionDialog if camera permissions are not granted
+                    if (isCameraPermissionDialogShown) {
+                        CameraPermissionDialog(isPermissionDialogShown = isCameraPermissionDialogShown,
+                            onDismiss = { isCameraPermissionDialogShown = false },
+                            onAllow = {
+                                // Handle camera permission granted
+                                isCameraPermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle camera permission denied
+                                isCameraPermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle camera permission later
+                                isCameraPermissionDialogShown = false
+                            })
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (isEditScreen) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (isEditingProfession) {
-                    Button(
-                        onClick = {
-                            onSaveProfession(selectedProfession)
-                            isEditingProfession = false
-                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Profession", color = Color.White)
                     }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Profession", color = Color.White)
-                    }
-                }
 
-                if (isEditingInterests) {
-                    Button(
-                        onClick = {
-                            onInterestsSelected(selectedInterests)
-                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
-                            isEditingInterests = false
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Interests", color = Color.White)
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingInterests = !isEditingInterests
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Interests", color = Color.White)
+
+                    // Show MicrophonePermissionDialog if microphone permissions are not granted
+                    if (isMicrophonePermissionDialogShown) {
+                        MicrophonePermissionDialog(isPermissionDialogShown = isMicrophonePermissionDialogShown,
+                            onDismiss = { isMicrophonePermissionDialogShown = false },
+                            onAllow = {
+                                // Handle microphone permission granted
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle microphone permission denied
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle microphone permission later
+                                isMicrophonePermissionDialogShown = false
+                            })
                     }
                 }
             }
-
-            CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                    "Item 5", "Item 6", "Item 7", "Item 8"
-                )
-            )
 
         }
     }
 
+    Spacer(modifier = Modifier.height(8.dp))
 
+    if (isEditScreen) {
+
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isEditingProfession) {
+
+                Button(
+                    onClick = {
+                        onSaveProfession(selectedProfession)
+                        isEditingProfession = false
+                        viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Profession", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingProfession = !isEditingProfession
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Profession", color = Color.White)
+                }
+            }
+
+            if (isEditingInterests) {
+                Button(
+                    onClick = {
+                        onInterestsSelected(selectedInterests)
+                        viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                        isEditingInterests = false
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Interests", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingInterests = !isEditingInterests
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Interests", color = Color.White)
+                }
+            }
+        }
+
+        CustomVerticalGrid(
+            items = listOf(
+                "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8"
+            )
+        )
+
+    }
 }
 
 
@@ -516,21 +508,32 @@ fun UserProfileAlice(
     var selectedInterests by remember { mutableStateOf(userProfile.interests) }
     var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    var isCameraPermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+    var isMicrophonePermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+
+    var isDelayApplied by remember { mutableStateOf(false) }
+
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
         animationSpec = tween(durationMillis = 500),
         label = "imageSizeAnimation"
     )
 
+    LaunchedEffect(key1 = Unit) {
+        if (!isDelayApplied) {
+            delay(2000)
+            isDelayApplied = true
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -540,22 +543,19 @@ fun UserProfileAlice(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
 
 
         when {
             isEditScreen && isEditingProfession -> {
-                OutlinedTextField(
-                    value = selectedProfession,
+                OutlinedTextField(value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
                     label = { Text("Enter Profession") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isDropDownListVisible = !isDropDownListVisible
@@ -566,36 +566,29 @@ fun UserProfileAlice(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
                 if (isDropDownListVisible) {
-                    DropDownList(
-                        onOptionSelected = { selectedProfession = it },
+                    DropDownList(onOptionSelected = { selectedProfession = it },
                         expanded = isDropDownListVisible,
-                        onDismissRequest = { isDropDownListVisible = false }
-                    )
+                        onDismissRequest = { isDropDownListVisible = false })
                 }
             }
 
             isEditingInterests -> {
-                InterestsDropDownList(
-                    onInterestsSelected = { selectedInterests = it },
+                InterestsDropDownList(onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = { isInterestsDropDownListVisible = false }
-                )
+                    onDismissRequest = { isInterestsDropDownListVisible = false })
 
-                OutlinedTextField(
-                    value = selectedInterests.joinToString(", "),
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
                     label = { Text("Enter Interests") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
@@ -606,8 +599,7 @@ fun UserProfileAlice(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
             }
 
@@ -646,90 +638,130 @@ fun UserProfileAlice(
 
                 if (!isEditScreen) {
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        items = listOf(
+                            "Item 1",
+                            "Item 2",
+                            "Item 3",
+                            "Item 4",
+                            "Item 5",
+                            "Item 6",
+                            "Item 7",
+                            "Item 8"
                         )
                     )
                 }
+                if (isDelayApplied && !isEditScreen) {
 
-            }
-        }
+                    // Show CameraPermissionDialog if camera permissions are not granted
+                    if (isCameraPermissionDialogShown) {
+                        CameraPermissionDialog(isPermissionDialogShown = isCameraPermissionDialogShown,
+                            onDismiss = { isCameraPermissionDialogShown = false },
+                            onAllow = {
+                                // Handle camera permission granted
+                                isCameraPermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle camera permission denied
+                                isCameraPermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle camera permission later
+                                isCameraPermissionDialogShown = false
+                            })
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (isEditScreen) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (isEditingProfession) {
-                    Button(
-                        onClick = {
-                            onSaveProfession(selectedProfession)
-                            isEditingProfession = false
-                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Profession", color = Color.White)
                     }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Profession", color = Color.White)
-                    }
-                }
 
-                if (isEditingInterests) {
-                    Button(
-                        onClick = {
-                            onInterestsSelected(selectedInterests)
-                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
-                            isEditingInterests = false
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Interests", color = Color.White)
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingInterests = !isEditingInterests
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Interests", color = Color.White)
+
+                    // Show MicrophonePermissionDialog if microphone permissions are not granted
+                    if (isMicrophonePermissionDialogShown) {
+                        MicrophonePermissionDialog(isPermissionDialogShown = isMicrophonePermissionDialogShown,
+                            onDismiss = { isMicrophonePermissionDialogShown = false },
+                            onAllow = {
+                                // Handle microphone permission granted
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle microphone permission denied
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle microphone permission later
+                                isMicrophonePermissionDialogShown = false
+                            })
                     }
                 }
             }
-
-            CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                    "Item 5", "Item 6", "Item 7", "Item 8"
-                )
-            )
 
         }
     }
 
-}
+    Spacer(modifier = Modifier.height(8.dp))
 
+    if (isEditScreen) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isEditingProfession) {
+
+                Button(
+                    onClick = {
+                        onSaveProfession(selectedProfession)
+                        isEditingProfession = false
+                        viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Profession", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingProfession = !isEditingProfession
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Profession", color = Color.White)
+                }
+            }
+
+            if (isEditingInterests) {
+                Button(
+                    onClick = {
+                        onInterestsSelected(selectedInterests)
+                        viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                        isEditingInterests = false
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Interests", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingInterests = !isEditingInterests
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Interests", color = Color.White)
+                }
+            }
+        }
+
+        CustomVerticalGrid(
+            items = listOf(
+                "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8"
+            )
+        )
+
+    }
+}
 
 @Composable
 fun UserProfileEve(
@@ -748,21 +780,32 @@ fun UserProfileEve(
     var selectedInterests by remember { mutableStateOf(userProfile.interests) }
     var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
+
+    var isCameraPermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+    var isMicrophonePermissionDialogShown by rememberSaveable { mutableStateOf(true) }
+
+    var isDelayApplied by remember { mutableStateOf(false) }
+
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
         animationSpec = tween(durationMillis = 500),
         label = "imageSizeAnimation"
     )
 
+    LaunchedEffect(key1 = Unit) {
+        if (!isDelayApplied) {
+            delay(2000)
+            isDelayApplied = true
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
+        Image(painter = painterResource(id = userProfile.imageResId),
             contentDescription = null,
             modifier = Modifier
                 .size(imageSize)
@@ -772,22 +815,22 @@ fun UserProfileEve(
                     if (!isEditingProfession) {
                         onEditClick()
                     }
-                }
-        )
+                })
+
+
+
 
 
         when {
             isEditScreen && isEditingProfession -> {
-                OutlinedTextField(
-                    value = selectedProfession,
+                OutlinedTextField(value = selectedProfession,
                     onValueChange = { newProfession ->
                         selectedProfession = newProfession
                     },
                     label = { Text("Enter Profession") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isDropDownListVisible = !isDropDownListVisible
@@ -798,36 +841,29 @@ fun UserProfileEve(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
                 if (isDropDownListVisible) {
-                    DropDownList(
-                        onOptionSelected = { selectedProfession = it },
+                    DropDownList(onOptionSelected = { selectedProfession = it },
                         expanded = isDropDownListVisible,
-                        onDismissRequest = { isDropDownListVisible = false }
-                    )
+                        onDismissRequest = { isDropDownListVisible = false })
                 }
             }
 
             isEditingInterests -> {
-                InterestsDropDownList(
-                    onInterestsSelected = { selectedInterests = it },
+                InterestsDropDownList(onInterestsSelected = { selectedInterests = it },
                     selectedInterests = selectedInterests,
                     expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = { isInterestsDropDownListVisible = false }
-                )
+                    onDismissRequest = { isInterestsDropDownListVisible = false })
 
-                OutlinedTextField(
-                    value = selectedInterests.joinToString(", "),
+                OutlinedTextField(value = selectedInterests.joinToString(", "),
                     onValueChange = { newInterests ->
                         selectedInterests = newInterests.split(", ").map { it.trim() }
                     },
                     label = { Text("Enter Interests") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                        .fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
                             isInterestsDropDownListVisible = !isInterestsDropDownListVisible
@@ -838,8 +874,7 @@ fun UserProfileEve(
                                 tint = Color.Gray
                             )
                         }
-                    }
-                )
+                    })
 
             }
 
@@ -878,88 +913,130 @@ fun UserProfileEve(
 
                 if (!isEditScreen) {
                     CustomVerticalGrid(
-                        items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                            "Item 5", "Item 6", "Item 7", "Item 8"
+                        items = listOf(
+                            "Item 1",
+                            "Item 2",
+                            "Item 3",
+                            "Item 4",
+                            "Item 5",
+                            "Item 6",
+                            "Item 7",
+                            "Item 8"
                         )
                     )
                 }
+                if (isDelayApplied && !isEditScreen) {
 
-            }
-        }
+                    // Show CameraPermissionDialog if camera permissions are not granted
+                    if (isCameraPermissionDialogShown) {
+                        CameraPermissionDialog(isPermissionDialogShown = isCameraPermissionDialogShown,
+                            onDismiss = { isCameraPermissionDialogShown = false },
+                            onAllow = {
+                                // Handle camera permission granted
+                                isCameraPermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle camera permission denied
+                                isCameraPermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle camera permission later
+                                isCameraPermissionDialogShown = false
+                            })
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (isEditScreen) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (isEditingProfession) {
-                    Button(
-                        onClick = {
-                            onSaveProfession(selectedProfession)
-                            isEditingProfession = false
-                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Profession", color = Color.White)
                     }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingProfession = !isEditingProfession
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Profession", color = Color.White)
-                    }
-                }
 
-                if (isEditingInterests) {
-                    Button(
-                        onClick = {
-                            onInterestsSelected(selectedInterests)
-                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
-                            isEditingInterests = false
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Interests", color = Color.White)
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingInterests = !isEditingInterests
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Interests", color = Color.White)
+
+                    // Show MicrophonePermissionDialog if microphone permissions are not granted
+                    if (isMicrophonePermissionDialogShown) {
+                        MicrophonePermissionDialog(isPermissionDialogShown = isMicrophonePermissionDialogShown,
+                            onDismiss = { isMicrophonePermissionDialogShown = false },
+                            onAllow = {
+                                // Handle microphone permission granted
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onDeny = {
+                                // Handle microphone permission denied
+                                isMicrophonePermissionDialogShown = false
+                            },
+                            onLater = {
+                                // Handle microphone permission later
+                                isMicrophonePermissionDialogShown = false
+                            })
                     }
                 }
             }
-
-            CustomVerticalGrid(
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4",
-                    "Item 5", "Item 6", "Item 7", "Item 8"
-                )
-            )
 
         }
     }
 
+    Spacer(modifier = Modifier.height(8.dp))
+
+    if (isEditScreen) {
+
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isEditingProfession) {
+
+                Button(
+                    onClick = {
+                        onSaveProfession(selectedProfession)
+                        isEditingProfession = false
+                        viewModel.saveProfession(userProfile.imageResId, selectedProfession)
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Profession", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingProfession = !isEditingProfession
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Profession", color = Color.White)
+                }
+            }
+
+            if (isEditingInterests) {
+                Button(
+                    onClick = {
+                        onInterestsSelected(selectedInterests)
+                        viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                        isEditingInterests = false
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text("Save Interests", color = Color.White)
+                }
+            } else {
+                Button(
+                    onClick = {
+                        isEditingInterests = !isEditingInterests
+                    }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Edit Interests", color = Color.White)
+                }
+            }
+        }
+
+        CustomVerticalGrid(
+            items = listOf(
+                "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8"
+            )
+        )
+
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -971,8 +1048,7 @@ fun UserProfilesList(
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         TopAppBar(title = { Text("Edit") }, navigationIcon = {
             IconButton(onClick = { onBackNavigate() }) {

@@ -1,6 +1,5 @@
 package com.example.practice.navigation.graph
 
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,12 +9,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
 import com.example.practice.R
 import com.example.practice.UserProfilesList
 import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData
-import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
@@ -47,7 +44,7 @@ data class Navigation(
             val EditProfile = Screen("edit")
             val Recovery = Screen("recovery")
             val Settings = Screen("settings")
-            val InfoScreen = Screen("info_screen")
+            val InfoScreen = Screen("info")
         }
     }
 
@@ -61,6 +58,8 @@ data class Navigation(
         }
     }
 }
+
+
 
 @Composable
 fun NavigationApp() {
@@ -76,13 +75,13 @@ fun NavigationApp() {
         navController = navController,
         startDestination = Navigation.Screen.Splash.route
     ) {
-        composable(Navigation.Screen.Splash.route) {
+        composable("splash") {
             SplashScreen {
                 authNavigationHandler.navigateToSignUpSignIn()
             }
         }
 
-        composable(Navigation.Auth.SignUpSignIn.route) {
+        composable("signupsignin") {
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
@@ -90,14 +89,14 @@ fun NavigationApp() {
             )
         }
 
-        composable(Navigation.Screen.Recovery.route) {
+        composable("recovery") {
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
                 viewModel = sharedProfilesViewModel
             )
         }
 
-        composable(Navigation.Auth.Signup.route) {
+        composable("signup") {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
                 sharedViewModel = sharedProfilesViewModel,
@@ -105,7 +104,7 @@ fun NavigationApp() {
             )
         }
 
-        composable(Navigation.Auth.UsernamePasswordLogin.route) {
+        composable("usernamePasswordLogin") {
             var isLoading by remember { mutableStateOf(false) }
 
             if (isLoading) {
@@ -159,8 +158,7 @@ fun NavigationApp() {
                 }
             }
         }
-
-        composable(Navigation.Screen.Settings.route) {
+        composable("settings") {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
                 credentialsViewModel = credentialsViewModel,
@@ -181,7 +179,18 @@ fun NavigationApp() {
             }
         }
 
-        composable(Navigation.Auth.SecurityCode.route) {
+        composable("pinLogin") {
+            PinLoginScreen(
+                onLoginSuccess = { userProfile ->
+                    sharedProfilesViewModel.userProfiles = listOf(userProfile)
+                    navigationHandler.navigateToUserProfile(userProfile.firstName)
+                },
+                onNavigate = { screen: Navigation.Screen -> navigationHandler.navigateTo(screen) },
+                onPostNavigate = { navigationHandler.navigateToPosts() }
+            )
+        }
+
+        composable("securityCode") {
             SecurityCodeScreen(
                 viewModel = credentialsViewModel,
                 onNavigate = { destination ->
@@ -194,30 +203,12 @@ fun NavigationApp() {
             )
         }
 
-        composable(Navigation.Auth.PinLogin.route) {
-            PinLoginScreen(
-                onLoginSuccess = { userProfile ->
-                    sharedProfilesViewModel.userProfiles = listOf(userProfile)
-                    navigationHandler.navigateToUserProfile(userProfile.firstName)
-                },
-                onNavigate = { screen: Navigation.Screen -> navigationHandler.navigateTo(screen) },
-                onPostNavigate = { navigationHandler.navigateToPosts() }
-            )
-        }
-
-        composable(Navigation.Screen.Posts.route) {
-            PostsScreen(onNavigate = {
-                authNavigationHandler.navigateToPinLogin()
-            })
-        }
-
-
-        composable(Navigation.Screen.UserProfileBob.route) {
+        composable("userProfileBob") { navBackStackEntry ->
+            val username = navBackStackEntry.arguments?.getString("username") ?: "Bob"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
-                timerViewModel=timerViewModel,
-
+                timerViewModel = timerViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -232,26 +223,25 @@ fun NavigationApp() {
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
-                        "info"->{
+                        "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
-                        "usernamePasswordLogin"->{
+                        "usernamePasswordLogin" -> {
                             authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
-
                     }
                 },
-                username = "Bob",
-                topAppBarTitle = "Bob's Profile"
+                username = username,
+                topAppBarTitle = "$username's Profile"
             )
         }
 
-        composable(Navigation.Screen.UserProfileAlice.route) {
+        composable("userProfileAlice") { navBackStackEntry ->
+            val username = navBackStackEntry.arguments?.getString("username") ?: "Alice"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
-                timerViewModel=timerViewModel,
-
+                timerViewModel = timerViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -266,23 +256,22 @@ fun NavigationApp() {
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
-                        "info"->{
+                        "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
-
                     }
                 },
-                username = "Alice",
-                topAppBarTitle = "Alice's Profile"
+                username = username,
+                topAppBarTitle = "$username's Profile"
             )
         }
 
-        composable(Navigation.Screen.UserProfileEve.route) {
+        composable("userProfileEve") { navBackStackEntry ->
+            val username = navBackStackEntry.arguments?.getString("username") ?: "Eve"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
-                timerViewModel=timerViewModel,
-
+                timerViewModel = timerViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -297,31 +286,21 @@ fun NavigationApp() {
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
-                        "info"->{
+                        "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
-
                     }
                 },
-                username = "Eve",
-                topAppBarTitle = "Eve's Profile"
+                username = username,
+                topAppBarTitle = "$username's Profile"
             )
         }
 
-        composable(
-            route = Navigation.Screen.InfoScreen.route,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "https://pl-coding.com/"
-                    action = Intent.ACTION_VIEW
-                }
-            )
-        ) {
+        composable("info") {
             InfoScreen()
         }
 
-
-        composable(Navigation.Screen.EditProfile.route) {
+        composable("edit") {
             UserProfilesList(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 onBackNavigate = {
@@ -333,3 +312,4 @@ fun NavigationApp() {
         }
     }
 }
+

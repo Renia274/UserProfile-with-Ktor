@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
 private fun navigateToDeepLink(url: String, context: Context) {
@@ -37,7 +38,7 @@ fun InfoScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Welcome to the Info/Test Screen!", style = MaterialTheme.typography.h5)
+        Text(text = "Welcome to the Info/Test Screen!", style = MaterialTheme.typography.h5, fontFamily = FontFamily.SansSerif)
 
         Spacer(modifier = Modifier.height(16.dp))
 
