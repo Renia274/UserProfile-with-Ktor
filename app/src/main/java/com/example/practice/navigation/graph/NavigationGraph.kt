@@ -1,10 +1,12 @@
 package com.example.practice.navigation.graph
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +22,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.InfoScreen
 import com.example.practice.screens.LoadingScreen
+import com.example.practice.screens.OtpScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
 import com.example.practice.screens.SecurityCodeScreen
@@ -55,6 +58,7 @@ data class Navigation(
             val UsernamePasswordLogin = Auth("usernamePasswordLogin")
             val PinLogin = Auth("pinLogin")
             val SecurityCode = Auth("securityCode")
+            val OtpScreen=Auth("otpScreen")
         }
     }
 }
@@ -92,7 +96,8 @@ fun NavigationApp() {
         composable("recovery") {
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
-                viewModel = sharedProfilesViewModel
+                viewModel = sharedProfilesViewModel,
+                onNavigateBack = { navigationHandler.navigateBack() }
             )
         }
 
@@ -102,6 +107,12 @@ fun NavigationApp() {
                 sharedViewModel = sharedProfilesViewModel,
                 credentialsViewModel = credentialsViewModel
             )
+        }
+
+        composable(Navigation.Auth.OtpScreen.route) {
+            OtpScreen(onNavigate = { verificationId ->
+                authNavigationHandler.navigateToUsernamePasswordLogin()
+            }, activity = LocalContext.current as Activity)
         }
 
         composable("usernamePasswordLogin") {
@@ -297,7 +308,8 @@ fun NavigationApp() {
         }
 
         composable("info") {
-            InfoScreen()
+            InfoScreen(onNavigateBack = { navigationHandler.navigateBack() })
+
         }
 
         composable("edit") {

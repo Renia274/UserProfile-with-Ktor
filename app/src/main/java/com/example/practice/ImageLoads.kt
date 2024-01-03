@@ -35,7 +35,7 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CameraPermissionDialog
-import com.example.practice.screens.items.CountdownTimer
+import com.example.practice.screens.items.CountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
@@ -158,7 +158,7 @@ fun UserProfilesLoading(
 
 
                     // Countdown timer display
-                    CountdownTimer(timerViewModel = timerViewModel)
+                    CountDownTimer(timerViewModel = timerViewModel)
                 }
 
 

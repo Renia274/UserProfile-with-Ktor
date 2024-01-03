@@ -21,7 +21,7 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun CountdownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
+fun CountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
 
     var timeLeftState by remember { mutableStateOf(timerViewModel.timeLeft.value) }
     var isTimerRunning by remember { mutableStateOf(timerViewModel.timerIsRunning) }

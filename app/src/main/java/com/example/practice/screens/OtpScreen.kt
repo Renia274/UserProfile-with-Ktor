@@ -1,0 +1,132 @@
+package com.example.practice.screens
+
+import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun OtpScreen(onNavigate: (String) -> Unit, activity: Activity) {
+    var phoneNumber by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf("") }
+    var isButtonEnabled by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val otpViewModel: FirebaseOtpViewModel = hiltViewModel()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = {
+                phoneNumber = it
+            },
+            label = { Text("Enter Phone Number") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                autoCorrect = false
+            ),
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = otp,
+            onValueChange = {
+                otp = it
+                isButtonEnabled = it.length == 6
+            },
+            label = { Text("Enter OTP") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                autoCorrect = false
+            ),
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // New property to check if the user is authenticated
+        val isUserAuthenticated by otpViewModel.isUserAuthenticated.collectAsState()
+
+        Button(
+            onClick = {
+                otpViewModel.sendOtp(
+                    phoneNumber = phoneNumber,
+                    activity = activity
+                )
+                // Pass verificationId to the onNavigate callback
+                onNavigate(otpViewModel.verificationId.value)
+            },
+            enabled = phoneNumber.isNotBlank() && isUserAuthenticated
+        ) {
+            Text("Send OTP")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        otpViewModel.verificationErrorMessage.value?.let { errorMessage ->
+            Text(errorMessage, color = Color.Red)
+        }
+
+        otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
+            Text(codeSentMessage, color = Color.Green)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                otpViewModel.verifyOtp(otp)
+                onNavigate("usernamePasswordLogin")
+                keyboardController?.hide()
+            },
+            enabled = isButtonEnabled && isUserAuthenticated
+        ) {
+            Text("Verify")
+        }
+
+        val receivedOtp = otpViewModel.otp.value
+        val isOtpVerified = otpViewModel.isOtpVerified.value
+
+        Text("Received OTP: $receivedOtp")
+        Text("Is OTP Verified: $isOtpVerified")
+    }
+}

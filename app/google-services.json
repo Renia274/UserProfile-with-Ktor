@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "169020987597",
+    "project_id": "mpla-34756",
+    "storage_bucket": "mpla-34756.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169020987597:android:3710d66fb10ba3dcc23184",
+        "android_client_info": {
+          "package_name": "com.example.practice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-HK5aZ0EwNZevK-rXgDI94-yDqKgj0uw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

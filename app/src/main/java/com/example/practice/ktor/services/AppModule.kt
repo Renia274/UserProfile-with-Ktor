@@ -1,5 +1,8 @@
 package com.example.practice.ktor.services
 
+import com.example.practice.services.FirebaseAuthService
+import com.example.practice.services.FirebaseAuthServiceImpl
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,4 +33,17 @@ object AppModule {
             }
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuthService(firebaseAuth: FirebaseAuth): FirebaseAuthService {
+        return FirebaseAuthServiceImpl(firebaseAuth)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
 }
