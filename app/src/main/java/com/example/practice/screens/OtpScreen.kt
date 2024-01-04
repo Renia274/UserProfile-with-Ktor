@@ -135,9 +135,7 @@ fun OtpScreen(
 
         // Display codeSentMessage if email matches signupEmail
         if (email == signupEmail) {
-            otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
-                Text(codeSentMessage, color = Color.Green)
-            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -156,9 +154,12 @@ fun OtpScreen(
             ) {
                 Text("Verify OTP")
             }
+
+            otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
+                Text(codeSentMessage, color = Color.Green)
+            }
         }
 
-        val isOtpVerified = otpViewModel.isOtpVerified.value
-        Text("Is OTP Verified: $isOtpVerified")
+
     }
 }
