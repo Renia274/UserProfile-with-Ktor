@@ -1,12 +1,10 @@
 package com.example.practice.navigation.graph
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -105,14 +103,16 @@ fun NavigationApp() {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
                 sharedViewModel = sharedProfilesViewModel,
-                credentialsViewModel = credentialsViewModel
+                credentialsViewModel = credentialsViewModel,
+                onNavigate = { authNavigationHandler.navigateToOtp() }
             )
         }
 
+
         composable(Navigation.Auth.OtpScreen.route) {
-            OtpScreen(onNavigate = { verificationId ->
+            OtpScreen(onNavigate = {
                 authNavigationHandler.navigateToUsernamePasswordLogin()
-            }, activity = LocalContext.current as Activity)
+            })
         }
 
         composable("usernamePasswordLogin") {

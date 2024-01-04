@@ -18,7 +18,6 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
 
     val securityCode = MutableStateFlow<String?>(null)
 
-
     fun setEnteredCredentials(username: String, password: String) {
         val userCredentials = UserCredentials(username, password)
         viewModelScope.launch {
@@ -31,6 +30,8 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
             it.username == username && it.password == password
         } ?: false
     }
+
+
 
     fun updateCredentials(updatedUsername: String, updatedPassword: String) {
         viewModelScope.launch {

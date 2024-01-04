@@ -14,6 +14,4 @@ fun isValidPassword(password: String): Boolean {
 }
 
 
-fun isValidRecoveryEmail(email: String, signUpEmail: String): Boolean {
-    return email == signUpEmail && isValidEmail(email)
-}
+

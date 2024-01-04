@@ -43,6 +43,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 @Composable
 fun SignupScreen(
     onNavigateToLogin: () -> Unit,
+    onNavigate: () -> Unit,
     credentialsViewModel: CredentialsViewModel = hiltViewModel(),
     sharedViewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
@@ -55,6 +56,9 @@ fun SignupScreen(
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+
+
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     Column(
@@ -109,7 +113,7 @@ fun SignupScreen(
                     onClick = { isPasswordVisible = !isPasswordVisible },
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isPasswordVisible)   R.drawable.ic_show_pin else R.drawable.ic_hide ),
+                        painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
                         contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                     )
                 }
@@ -119,6 +123,8 @@ fun SignupScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Signup Button
@@ -126,12 +132,11 @@ fun SignupScreen(
             onClick = {
                 // navigate to login screen upon successful signup
                 if (isValidEmail(email) && isValidPassword(password)) {
-
                     credentialsViewModel.setEnteredCredentials(username, password)
                     sharedViewModel.setSignupEmail(email)
 
-                    // Navigate to login screen upon successful signup
-                    onNavigateToLogin.invoke()
+
+                    onNavigate.invoke()
                 }
             },
             modifier = Modifier

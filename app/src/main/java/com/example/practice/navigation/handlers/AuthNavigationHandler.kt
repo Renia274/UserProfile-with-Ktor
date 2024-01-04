@@ -27,4 +27,10 @@ class AuthNavigationHandler(private val navController: NavHostController, privat
     fun navigateToSecurityCode(){
         navController.navigate(Navigation.Auth.SecurityCode.route)
     }
+
+    fun navigateToOtp() {
+        navController.navigate(Navigation.Auth.OtpScreen.route)
+    }
+
+
 }

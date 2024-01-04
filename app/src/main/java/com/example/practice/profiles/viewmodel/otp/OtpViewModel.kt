@@ -1,36 +1,20 @@
 package com.example.practice.profiles.viewmodel.otp
 
-import android.app.Activity
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.practice.profiles.repository.UserRepository
 import com.example.practice.services.FirebaseAuthService
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
 
 @HiltViewModel
 class FirebaseOtpViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val firebaseAuth: FirebaseAuth,
-    private val firebaseAuthService: FirebaseAuthService,
-    userRepository: UserRepository
+    private val firebaseAuthService: FirebaseAuthService
 ) : ViewModel() {
-    private val verificationIdFlow = MutableStateFlow(savedStateHandle.get<String>("verificationId") ?: "")
-    val verificationId: StateFlow<String> get() = verificationIdFlow.asStateFlow()
+    private val emailFlow = MutableStateFlow("")
 
-    private val otpFlow = MutableStateFlow<String?>(null)
-    val otp: StateFlow<String?> get() = otpFlow.asStateFlow()
 
     private val isOtpVerifiedFlow = MutableStateFlow(false)
     val isOtpVerified: StateFlow<Boolean> get() = isOtpVerifiedFlow.asStateFlow()
@@ -43,70 +27,42 @@ class FirebaseOtpViewModel @Inject constructor(
 
     private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
+    fun createOtp(email: String): String {
+        this.emailFlow.value = email
 
-    private val isUserAuthenticatedFlow = MutableStateFlow(userRepository.isUserAuthenticated())
-    val isUserAuthenticated: StateFlow<Boolean> get() = isUserAuthenticatedFlow.asStateFlow()
+        // Your existing code for OTP via email
+        // Generate a random 6-digit OTP
+        val generatedOtp = (100000..999999).random()
 
-    fun sendOtp(phoneNumber: String, activity: Activity) {
-        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    signInWithPhoneAuthCredential(credential)
-                }
-
-                override fun onVerificationFailed(e: FirebaseException) {
-                    verificationErrorMessageFlow.value = "Verification failed: ${e.message}"
-                }
-
-                override fun onCodeSent(
-                    verificationId: String,
-                    token: PhoneAuthProvider.ForceResendingToken
-                ) {
-                    verificationIdFlow.value = verificationId
+        firebaseAuthService.sendOtpToEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
                     codeSentMessageFlow.value = "Verification code sent successfully!"
+                } else {
+                    verificationErrorMessageFlow.value =
+                        "Failed to send verification code: ${task.exception?.message}"
                 }
-            })
-            .build()
+            }
 
-        PhoneAuthProvider.verifyPhoneNumber(options)
+        // Return the generated OTP
+        return generatedOtp.toString()
     }
 
     fun verifyOtp(enteredOtp: String) {
-        // Check if the user is authenticated before proceeding with OTP verification
-        if (isUserAuthenticatedFlow.value) {
-            // Your existing code for OTP verification
-            val verificationId = verificationIdFlow.value
-            val credential = PhoneAuthProvider.getCredential(verificationId, enteredOtp)
+        val email = emailFlow.value
 
-            firebaseAuthService.signInWithPhoneAuthCredential(credential)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        isOtpVerifiedFlow.value = true
-                    } else {
-                        // Handle verification failure
-                        logToCrashlytics("Verification failed: ${task.exception?.message}")
-                    }
-                }
-        } else {
-            isUserAuthenticatedFlow.value = false
-        }
-    }
-
-
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        firebaseAuth.signInWithCredential(credential)
+        firebaseAuthService.verifyOtpFromEmail(email, enteredOtp)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     isOtpVerifiedFlow.value = true
                 } else {
-                    // Handle sign-in failure
-                    logToCrashlytics("Sign-in failed: ${task.exception?.message}")
+                    val errorMessage = "Verification failed: ${task.exception?.message}"
+                    verificationErrorMessageFlow.value = errorMessage
+                    logToCrashlytics(errorMessage)
                 }
             }
     }
+
 
     private fun logToCrashlytics(message: String) {
         firebaseCrashlytics.log(message)

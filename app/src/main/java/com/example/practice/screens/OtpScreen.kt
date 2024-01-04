@@ -1,6 +1,5 @@
 package com.example.practice.screens
 
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +29,10 @@ import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun OtpScreen(onNavigate: (String) -> Unit, activity: Activity) {
-    var phoneNumber by remember { mutableStateOf("") }
+fun OtpScreen(onNavigate: () -> Unit) {
+    var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
-    var isButtonEnabled by remember { mutableStateOf(false) }
+    var isButtonEnabled by remember { mutableStateOf(true) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val otpViewModel: FirebaseOtpViewModel = hiltViewModel()
@@ -47,13 +45,13 @@ fun OtpScreen(onNavigate: (String) -> Unit, activity: Activity) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
-            value = phoneNumber,
+            value = email,
             onValueChange = {
-                phoneNumber = it
+                email = it
             },
-            label = { Text("Enter Phone Number") },
+            label = { Text("Enter Email Address") },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
+                keyboardType = KeyboardType.Email,
                 autoCorrect = false
             ),
             maxLines = 1,
@@ -83,21 +81,18 @@ fun OtpScreen(onNavigate: (String) -> Unit, activity: Activity) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // New property to check if the user is authenticated
-        val isUserAuthenticated by otpViewModel.isUserAuthenticated.collectAsState()
+
 
         Button(
             onClick = {
-                otpViewModel.sendOtp(
-                    phoneNumber = phoneNumber,
-                    activity = activity
-                )
-                // Pass verificationId to the onNavigate callback
-                onNavigate(otpViewModel.verificationId.value)
+                // Generate and send OTP
+                val generatedOtp = otpViewModel.createOtp(email)
+                // Automatically fill the OTP field
+                otp = generatedOtp
             },
-            enabled = phoneNumber.isNotBlank() && isUserAuthenticated
+            enabled = email.isNotBlank()
         ) {
-            Text("Send OTP")
+            Text("Generate OTP")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -114,19 +109,18 @@ fun OtpScreen(onNavigate: (String) -> Unit, activity: Activity) {
 
         Button(
             onClick = {
+                // Verify OTP
                 otpViewModel.verifyOtp(otp)
-                onNavigate("usernamePasswordLogin")
+                onNavigate()
                 keyboardController?.hide()
             },
-            enabled = isButtonEnabled && isUserAuthenticated
+            enabled = isButtonEnabled
         ) {
-            Text("Verify")
+            Text("Verify OTP")
         }
 
-        val receivedOtp = otpViewModel.otp.value
-        val isOtpVerified = otpViewModel.isOtpVerified.value
 
-        Text("Received OTP: $receivedOtp")
+        val isOtpVerified = otpViewModel.isOtpVerified.value
         Text("Is OTP Verified: $isOtpVerified")
     }
 }

@@ -1,39 +1,46 @@
 package com.example.practice.services
 
-// File: FirebaseAuthServiceImpl.kt
+
 
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 class FirebaseAuthServiceImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) : FirebaseAuthService {
 
-    override fun signInWithPhoneNumber(phoneNumber: String, callback: PhoneAuthProvider.OnVerificationStateChangedCallbacks) {
-        val options = PhoneAuthOptions.newBuilder(firebaseAuth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setCallbacks(callback)
-            .build()
 
-        PhoneAuthProvider.verifyPhoneNumber(options)
+    // For OTP via email
+    override fun sendOtpToEmail(email: String): Task<Void> {
+        // Generate a random 6-digit OTP
+        val otpCode = (100000..999999).random()
+
+        // Print the OTP for testing purposes
+        println("OTP for $email: $otpCode")
+
+
+        // For now, just return a successful Task
+        return Tasks.forResult(null)
     }
 
-    override fun verifyPhoneNumberWithCode(verificationId: String, code: String): Task<AuthResult> {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
-        return firebaseAuth.signInWithCredential(credential)
+    override fun verifyOtpFromEmail(email: String, otp: String): Task<AuthResult> {
+        // Build the email address by appending a placeholder domain
+        val emailWithDomain = "$email@yourdomain.com"
+
+        // Sign in with the provided email and OTP
+        return firebaseAuth.signInWithEmailAndPassword(emailWithDomain, otp)
+            .continueWithTask { signInTask ->
+                // Check if the sign-in task was successful
+                if (signInTask.isSuccessful) {
+                    // If successful, return the AuthResult
+                    Tasks.forResult(signInTask.result)
+                } else {
+                    // If unsuccessful, return an error Task with the exception
+                    Tasks.forException(signInTask.exception!!)
+                }
+            }
     }
-
-    override fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential): Task<AuthResult> {
-        return firebaseAuth.signInWithCredential(credential)
-    }
-
-
-
 
 }
