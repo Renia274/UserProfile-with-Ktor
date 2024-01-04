@@ -6,6 +6,7 @@ import com.example.practice.data.UserData
 import com.example.practice.profiles.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 
@@ -14,7 +15,8 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
 
     private val savedProfessions = MutableStateFlow("")
 
-    val signupEmail = MutableStateFlow("")
+    private val _signupEmail = MutableStateFlow("")
+    val signupEmail: StateFlow<String> get() = _signupEmail
 
     private val recoveryEmail = MutableStateFlow("")
 
@@ -33,7 +35,7 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     }
 
     fun setSignupEmail(email: String) {
-        signupEmail.value = email
+        _signupEmail.value = email
     }
 
     fun setRecoveryEmail(email: String) {

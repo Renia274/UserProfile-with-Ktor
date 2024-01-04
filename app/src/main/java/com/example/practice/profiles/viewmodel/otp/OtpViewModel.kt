@@ -27,10 +27,13 @@ class FirebaseOtpViewModel @Inject constructor(
 
     private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
+    private val emailErrorMessageFlow = MutableStateFlow<String?>(null)
+    val emailErrorMessage: StateFlow<String?> get() = emailErrorMessageFlow.asStateFlow()
+
     fun createOtp(email: String): String {
         this.emailFlow.value = email
 
-        // Your existing code for OTP via email
+
         // Generate a random 6-digit OTP
         val generatedOtp = (100000..999999).random()
 
@@ -63,6 +66,10 @@ class FirebaseOtpViewModel @Inject constructor(
             }
     }
 
+
+    fun setEmailErrorMessage(errorMessage: String?) {
+        emailErrorMessageFlow.value = errorMessage
+    }
 
     private fun logToCrashlytics(message: String) {
         firebaseCrashlytics.log(message)

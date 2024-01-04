@@ -17,6 +17,7 @@ import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.InfoScreen
 import com.example.practice.screens.LoadingScreen
@@ -56,11 +57,10 @@ data class Navigation(
             val UsernamePasswordLogin = Auth("usernamePasswordLogin")
             val PinLogin = Auth("pinLogin")
             val SecurityCode = Auth("securityCode")
-            val OtpScreen=Auth("otpScreen")
+            val OtpScreen = Auth("otpScreen")
         }
     }
 }
-
 
 
 @Composable
@@ -69,6 +69,7 @@ fun NavigationApp() {
     val credentialsViewModel = viewModel<CredentialsViewModel>()
     val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
     val timerViewModel = viewModel<TimerViewModel>()
+    val otpViewModel = viewModel<FirebaseOtpViewModel>()
 
     val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
     val authNavigationHandler = AuthNavigationHandler(navController, credentialsViewModel)
@@ -110,9 +111,11 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.OtpScreen.route) {
-            OtpScreen(onNavigate = {
+            OtpScreen(
+                onNavigate = {
                 authNavigationHandler.navigateToUsernamePasswordLogin()
-            })
+            },
+                onBackPressed = { navigationHandler.navigateBack() }, viewModel = sharedProfilesViewModel, otpViewModel = otpViewModel)
         }
 
         composable("usernamePasswordLogin") {
@@ -135,16 +138,19 @@ fun NavigationApp() {
                                     "Johnson",
                                     R.drawable.bob_johnson
                                 )
+
                                 enteredUsername.lowercase().startsWith("alice") -> UserData(
                                     "Alice",
                                     "Smith",
                                     R.drawable.alice_smith
                                 )
+
                                 enteredUsername.lowercase().startsWith("eve") -> UserData(
                                     "Eve",
                                     "Brown",
                                     R.drawable.eve_brown
                                 )
+
                                 else -> null
                             }
 
@@ -179,6 +185,7 @@ fun NavigationApp() {
                         "securityCode" -> {
                             authNavigationHandler.navigateToSecurityCode()
                         }
+
                         "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
                     }
                 }
@@ -228,15 +235,19 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
+
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
+
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
+
                         "usernamePasswordLogin" -> {
                             authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
@@ -261,12 +272,15 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
+
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
+
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
@@ -291,12 +305,15 @@ fun NavigationApp() {
                         "edit" -> {
                             navigationHandler.navigateToEditProfile()
                         }
+
                         "back" -> {
                             navigationHandler.navigateBack()
                         }
+
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
+
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
