@@ -40,7 +40,7 @@ class FirebaseOtpViewModel @Inject constructor(
         firebaseAuthService.sendOtpToEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    codeSentMessageFlow.value = "Verification code sent successfully,please click the verification button for verifying"
+                    codeSentMessageFlow.value = "Verification code created successfully,please click the verification button for verifying"
                 } else {
                     verificationErrorMessageFlow.value =
                         "Failed to send verification code: ${task.exception?.message}"
