@@ -11,7 +11,6 @@ import javax.inject.Inject
 
 class FirebaseAuthServiceImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) : FirebaseAuthService {
 
-
     // For OTP via email
     override fun sendOtpToEmail(email: String): Task<Void> {
         // Generate a random 6-digit OTP
@@ -19,7 +18,6 @@ class FirebaseAuthServiceImpl @Inject constructor(private val firebaseAuth: Fire
 
         // Print the OTP for testing purposes
         println("OTP for $email: $otpCode")
-
 
         // For now, just return a successful Task
         return Tasks.forResult(null)
@@ -42,5 +40,4 @@ class FirebaseAuthServiceImpl @Inject constructor(private val firebaseAuth: Fire
                 }
             }
     }
-
 }

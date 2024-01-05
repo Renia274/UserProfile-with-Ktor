@@ -8,5 +8,4 @@ interface FirebaseAuthService {
     // OTP via email
     fun sendOtpToEmail(email: String): Task<Void>
     fun verifyOtpFromEmail(email: String, otp: String): Task<AuthResult>
-
 }

@@ -1,5 +1,6 @@
 package com.example.practice.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,9 @@ fun OtpScreen(
     viewModel: SharedProfilesViewModel = hiltViewModel(),
     otpViewModel: FirebaseOtpViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
     var showMessage by remember { mutableStateOf(false) }
@@ -64,7 +69,7 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // OutlinedTextField for email
+        // email
         OutlinedTextField(
             value = email,
             onValueChange = {
@@ -87,9 +92,8 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // OutlinedTextField for OTP
+        //  OTP
         OutlinedTextField(
             value = otp,
             onValueChange = {
@@ -106,9 +110,12 @@ fun OtpScreen(
                 .background(Color.Transparent)
         )
 
+
+
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button to generate OTP
+
         Button(
             onClick = {
                 // Generate and send OTP
@@ -132,12 +139,22 @@ fun OtpScreen(
             // Button to verify OTP
             Button(
                 onClick = {
-                    // Verify OTP
-                    otpViewModel.verifyOtp(otp)
-                    onNavigate()
-                    keyboardController?.hide()
+                    // Verify OTP only if the entered email matches the signup email
+                    if (email == signupEmail) {
+                        otpViewModel.verifyOtp(otp)
+                        onNavigate()
+                        keyboardController?.hide()
+                    } else {
+                        // Show an error message if the entered email is different from the signup email
+                        showMessage = false
+                        Toast.makeText(
+                            context,
+                            "Entered email doesn't match the signup email",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 },
-                enabled = true,
+                enabled = email == signupEmail,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text("Verify OTP")
