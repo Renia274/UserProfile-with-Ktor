@@ -2,8 +2,6 @@ package com.example.practice.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,19 +43,16 @@ fun OtpScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
-    var isButtonEnabled by remember { mutableStateOf(true) }
+    var showMessage by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
-
 
     val signupEmail by viewModel.signupEmail.collectAsState()
 
-
     Column(
         modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
     ) {
+        // TopAppBar
         TopAppBar(
             title = { Text("OTP") },
             navigationIcon = {
@@ -67,105 +62,94 @@ fun OtpScreen(
             }
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        // OutlinedTextField for email
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+            },
+            label = { Text("Enter Email Address") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                autoCorrect = false
+            ),
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Transparent)
+                .border(
+                    width = 1.dp,
+                    color = if (email.isNotBlank() && email != signupEmail) Color.Red else Color.Transparent
+                )
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // OutlinedTextField for OTP
+        OutlinedTextField(
+            value = otp,
+            onValueChange = {
+                otp = it
+            },
+            label = { Text("Enter OTP") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                autoCorrect = false
+            ),
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Button to generate OTP
+        Button(
+            onClick = {
+                // Generate and send OTP
+                val generatedOtp = otpViewModel.createOtp(email, signupEmail)
+                // Automatically fill the OTP field
+                otp = generatedOtp
+                showMessage = true
+            },
+            enabled = email.isNotBlank(),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            // Email for OTP
-            OutlinedTextField(
-                value = email,
-                onValueChange = {
-                    email = it
-                },
-                label = { Text("Enter Email Address") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    autoCorrect = false
-                ),
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-                    .border(
-                        width = 1.dp,
-                        color = if (email.isNotBlank() && email != signupEmail) Color.Red else Color.Transparent
-                    )
-            )
+            Text("Generate OTP")
+        }
 
-            // Spacer
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-
-
-
-
+        // Display codeSentMessage if email matches signupEmail
+        if (showMessage) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            //OTP
-            OutlinedTextField(
-                value = otp,
-                onValueChange = {
-                    otp = it
-                    isButtonEnabled = it.length == 6
-                },
-                label = { Text("Enter OTP") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    autoCorrect = false
-                ),
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Button to generate OTP
+            // Button to verify OTP
             Button(
                 onClick = {
-                    // Generate and send OTP
-                    val generatedOtp = otpViewModel.createOtp(email, signupEmail)
-                    // Automatically fill the OTP field
-                    otp = generatedOtp
+                    // Verify OTP
+                    otpViewModel.verifyOtp(otp)
+                    onNavigate()
+                    keyboardController?.hide()
                 },
-                enabled = email.isNotBlank()
+                enabled = true,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Generate OTP")
+                Text("Verify OTP")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Display codeSentMessage if email matches signupEmail
-            if (email == signupEmail) {
-
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Button to verify OTP
-                Button(
-                    onClick = {
-
-                        // Verify OTP
-                        otpViewModel.verifyOtp(otp)
-                        onNavigate()
-                        keyboardController?.hide()
-
-                    },
-                    enabled = true
-                ) {
-                    Text("Verify OTP")
-                }
-
-                otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
-                    Text(codeSentMessage, color = Color.Green)
-                }
+            otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
+                Text(
+                    codeSentMessage,
+                    color = Color.Green,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
             }
-
-
         }
     }
 }
