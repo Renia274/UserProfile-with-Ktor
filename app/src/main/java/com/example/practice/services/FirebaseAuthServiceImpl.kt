@@ -16,10 +16,10 @@ class FirebaseAuthServiceImpl @Inject constructor(private val firebaseAuth: Fire
         // Generate a random 6-digit OTP
         val otpCode = (100000..999999).random()
 
-        // Print the OTP for testing purposes
+
         println("OTP for $email: $otpCode")
 
-        // For now, just return a successful Task
+        // return a successful Task
         return Tasks.forResult(null)
     }
 
