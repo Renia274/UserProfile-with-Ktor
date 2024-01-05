@@ -1,8 +1,6 @@
 package com.example.practice.profiles.viewmodel.credentials
 
 
-import android.app.AlertDialog
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.practice.data.UserCredentials
@@ -22,6 +20,7 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
 
     val securityCode = MutableStateFlow<String?>(null)
 
+    // Use the firebaseAuth property
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     fun setEnteredCredentials(username: String, password: String) {
@@ -36,8 +35,6 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
             it.username == username && it.password == password
         } ?: false
     }
-
-
 
     fun updateCredentials(updatedUsername: String, updatedPassword: String) {
         viewModelScope.launch {
@@ -61,20 +58,9 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    fun signOut(context: Context) {
-        val alertDialog = AlertDialog.Builder(context)
-            .setTitle("Sign Out")
-            .setMessage("Are you sure you want to sign out?")
-            .setPositiveButton("Sign Out") { _, _ ->
-                performSignOut()
-            }
-            .setNegativeButton("Cancel", null)
-            .create()
 
-        alertDialog.show()
-    }
 
-    private fun performSignOut() {
+    fun performSignOut() {
         viewModelScope.launch {
             try {
                 firebaseAuth.signOut()
@@ -84,6 +70,4 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-
-
 }

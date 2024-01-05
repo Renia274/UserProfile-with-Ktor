@@ -227,6 +227,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
+                credentialsViewModel=credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -264,6 +265,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
+                credentialsViewModel=credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -283,6 +285,9 @@ fun NavigationApp() {
 
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
+                        }
+                        "usernamePasswordLogin"->{
+                            authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
                     }
                 },
@@ -297,6 +302,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
+                credentialsViewModel=credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -316,6 +322,9 @@ fun NavigationApp() {
 
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
+                        }
+                        "usernamePasswordLogin"->{
+                            authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
                     }
                 },

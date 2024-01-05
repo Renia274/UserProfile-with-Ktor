@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,15 +33,16 @@ import com.example.practice.data.UserData
 import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CameraPermissionDialog
-import com.example.practice.screens.items.CountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
 import com.example.practice.screens.items.MicrophonePermissionDialog
 import com.example.practice.screens.items.UserProfileItem
+import com.example.practice.utils.SignOutDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -51,16 +53,17 @@ fun UserProfilesLoading(
     userProfiles: List<UserData>,
     viewModel: SharedProfilesViewModel = hiltViewModel(),
     timerViewModel: TimerViewModel = hiltViewModel(),
+    credentialsViewModel: CredentialsViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String,
     topAppBarTitle: String,
+) {
 
-    ) {
     val selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
-
+    var showSignOutDialog by remember { mutableStateOf(false) }
 
     // Provide an initial value for selectedIndex
     val initialSelectedIndex = 0
@@ -69,13 +72,10 @@ fun UserProfilesLoading(
     LaunchedEffect(isLoading) {
         delay(SplashWaitTimeMillis)
         isLoading = false
-
     }
-
 
     // Observe the dark mode value from the view model
     val darkMode by viewModel.darkMode.collectAsState(false)
-
 
     val timeLeft = timerViewModel.timeLeft.value
 
@@ -116,51 +116,47 @@ fun UserProfilesLoading(
                 .fillMaxSize()
                 .background(mainBackgroundColor)
         ) {
-
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TopAppBar(title = {
-                    Text(
-                        text = topAppBarTitle, color = when {
-                            username.lowercase().startsWith("bob") -> Color.Green
-                            username.lowercase().startsWith("alice") -> Color.LightGray
-                            username.lowercase().startsWith("eve") -> Color.Magenta
-                            else -> Color.Gray
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = topAppBarTitle, color = when {
+                                username.lowercase().startsWith("bob") -> Color.Green
+                                username.lowercase().startsWith("alice") -> Color.LightGray
+                                username.lowercase().startsWith("eve") -> Color.Magenta
+                                else -> Color.Gray
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                         }
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                }, actions = {
-                    IconButton(onClick = {
-                        // Navigate to the InfoScreen when the info icon is clicked
-                        onNavigate("info")
-                    }) {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                    }
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                )
+                    },
+                    actions = {
+                        // Perform sign-out when the sign-out icon is clicked
+                        IconButton(onClick = {
+                            showSignOutDialog = true
+                        }) {
+                            Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
+                        }
 
-                Row(
+                        // Navigate to the InfoScreen when the info icon is clicked
+                        IconButton(onClick = {
+                            onNavigate("info")
+                        }) {
+                            Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                        }
+
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-
-
-                    // Countdown timer display
-                    CountDownTimer(timerViewModel = timerViewModel)
-                }
-
+                        .wrapContentHeight()
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -188,7 +184,6 @@ fun UserProfilesLoading(
                                 )
                             },
                             viewModel = viewModel
-
                         )
                     } else {
                         UserProfilesList(
@@ -196,9 +191,23 @@ fun UserProfilesLoading(
                             onBackNavigate = onBack,
                             isEditScreen = isShowingEdit,
                             viewModel = viewModel
-
                         )
                     }
+                }
+
+                if (showSignOutDialog) {
+                    SignOutDialog(
+                        viewModel = credentialsViewModel,
+                        onSignOut = {
+                            credentialsViewModel.performSignOut() // Perform sign-out
+
+                            showSignOutDialog = false // Dismiss the dialog after sign-out
+                            onNavigate("usernamePasswordLogin")
+                                    },
+                        onDismiss = {
+                            showSignOutDialog = false // Dismiss the dialog if canceled
+                        }
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
