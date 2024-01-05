@@ -21,7 +21,6 @@ fun SignOutDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    // Perform sign-out and navigate to "usernamePasswordLogin"
                     viewModel.performSignOut()
                     onSignOut.invoke()
                 }
