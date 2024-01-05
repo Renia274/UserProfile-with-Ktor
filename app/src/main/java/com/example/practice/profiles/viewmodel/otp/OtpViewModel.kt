@@ -17,20 +17,16 @@ class FirebaseOtpViewModel @Inject constructor(
 
 
     private val isOtpVerifiedFlow = MutableStateFlow(false)
-    val isOtpVerified: StateFlow<Boolean> get() = isOtpVerifiedFlow.asStateFlow()
 
     private val verificationErrorMessageFlow = MutableStateFlow<String?>(null)
-    val verificationErrorMessage: StateFlow<String?> get() = verificationErrorMessageFlow.asStateFlow()
 
     private val codeSentMessageFlow = MutableStateFlow<String?>(null)
     val codeSentMessage: StateFlow<String?> get() = codeSentMessageFlow.asStateFlow()
 
     private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
-    private val emailErrorMessageFlow = MutableStateFlow<String?>(null)
-    val emailErrorMessage: StateFlow<String?> get() = emailErrorMessageFlow.asStateFlow()
 
-    fun createOtp(email: String): String {
+    fun createOtp(email: String,signupEmail:String): String {
         this.emailFlow.value = email
 
 
@@ -40,7 +36,10 @@ class FirebaseOtpViewModel @Inject constructor(
         firebaseAuthService.sendOtpToEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    codeSentMessageFlow.value = "Verification code created successfully,please click the verification button for verifying"
+                    if (email.isNotBlank() && email == signupEmail) {
+                        codeSentMessageFlow.value = "OTP created successfully, please verify the code"
+                    }
+                    codeSentMessageFlow.value = "OTP created successfully,please verifying the code"
                 } else {
                     verificationErrorMessageFlow.value =
                         "Failed to send verification code: ${task.exception?.message}"
@@ -67,9 +66,7 @@ class FirebaseOtpViewModel @Inject constructor(
     }
 
 
-    fun setEmailErrorMessage(errorMessage: String?) {
-        emailErrorMessageFlow.value = errorMessage
-    }
+
 
     private fun logToCrashlytics(message: String) {
         firebaseCrashlytics.log(message)
