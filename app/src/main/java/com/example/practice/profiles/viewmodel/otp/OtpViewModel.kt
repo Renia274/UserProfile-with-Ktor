@@ -69,7 +69,7 @@ class FirebaseOtpViewModel @Inject constructor(
                 } else {
                     val errorMessage = "Verification failed: ${task.exception?.message}"
                     verificationErrorMessageFlow.value = errorMessage
-                    logToCrashlytics(errorMessage)
+
                 }
             }
     }
@@ -81,7 +81,7 @@ class FirebaseOtpViewModel @Inject constructor(
     }
 
 
-    // Function to set error message for non-matching email
+    //set error message for non-matching email
     fun setErrorEmail(email: String, signupEmail: String) {
         val emailErrorMessage = createEmailErrorMessage(email, signupEmail)
         emailErrorMessageFlow.value = emailErrorMessage
