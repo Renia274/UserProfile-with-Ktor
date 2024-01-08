@@ -30,7 +30,6 @@ class FirebaseOtpViewModel @Inject constructor(
     private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
 
-
     fun createOtp(email: String, signupEmail: String): String {
         this.emailFlow.value = email
 
@@ -43,7 +42,8 @@ class FirebaseOtpViewModel @Inject constructor(
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         if (email.isNotBlank() && email == signupEmail) {
-                            codeSentMessageFlow.value = "OTP created successfully, please verify the code"
+                            codeSentMessageFlow.value =
+                                "OTP created successfully, please verify the code"
                         }
                     } else {
                         // Handle the case where OTP sending fails
@@ -56,7 +56,6 @@ class FirebaseOtpViewModel @Inject constructor(
         // Return the generated OTP
         return generatedOtp.toString()
     }
-
 
 
     fun verifyOtp(enteredOtp: String) {
@@ -75,13 +74,12 @@ class FirebaseOtpViewModel @Inject constructor(
     }
 
 
-
     fun clearEmailErrorMessage() {
         emailErrorMessageFlow.value = null
     }
 
 
-    //set error message for non-matching email
+    // set error message for non-matching email
     fun setErrorEmail(email: String, signupEmail: String) {
         val emailErrorMessage = createEmailErrorMessage(email, signupEmail)
         emailErrorMessageFlow.value = emailErrorMessage

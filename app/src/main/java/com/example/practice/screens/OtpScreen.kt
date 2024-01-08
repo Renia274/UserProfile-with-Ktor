@@ -43,7 +43,6 @@ fun OtpScreen(
 ) {
 
 
-
     var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
     var showMessage by remember { mutableStateOf(false) }
@@ -52,6 +51,7 @@ fun OtpScreen(
     val signupEmail by viewModel.signupEmail.collectAsState()
 
     val emailErrorMessage by otpViewModel.emailErrorMessage.collectAsState()
+    val codeMessage by otpViewModel.codeSentMessage.collectAsState()
 
 
 
@@ -146,13 +146,15 @@ fun OtpScreen(
 
         if (emailErrorMessage != null) {
             Text(
-                emailErrorMessage!!,
+                emailErrorMessage.orEmpty(),
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
 
-// OtpScreen.kt
+        Spacer(modifier = Modifier.height(8.dp))
+
+
 
         Button(
             onClick = {
@@ -164,7 +166,8 @@ fun OtpScreen(
                 } else {
                     // Show an error message if the entered email is different from the signup email
                     showMessage = true
-                    otpViewModel.emailErrorMessageFlow.value = "Please enter the email used during signup"
+                    otpViewModel.emailErrorMessageFlow.value =
+                        "Please enter the email used during signup"
                     // Log to Crashlytics
                     otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
                 }
@@ -175,14 +178,15 @@ fun OtpScreen(
             Text("Verify OTP")
         }
 
-
-            otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
-                Text(
-                    codeSentMessage,
-                    color = Color.Green,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
+        if (codeMessage != null) {
+            Text(
+                codeMessage.orEmpty(),
+                color = Color.Green,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
+
+
     }
+}
 
