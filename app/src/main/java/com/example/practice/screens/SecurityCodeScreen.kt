@@ -87,7 +87,7 @@ fun SecurityCodeScreen(
                     onClick = { isSecurityCodeVisible = !isSecurityCodeVisible },
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isSecurityCodeVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                        painter = painterResource(id = if (isSecurityCodeVisible) R.drawable.ic_show else R.drawable.ic_hide),
                         contentDescription = if (isSecurityCodeVisible) "Hide security code" else "Show security code"
                     )
                 }

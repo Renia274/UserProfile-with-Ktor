@@ -37,6 +37,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CameraPermissionDialog
+import com.example.practice.screens.items.CountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
@@ -157,6 +158,20 @@ fun UserProfilesLoading(
                         .fillMaxWidth()
                         .wrapContentHeight()
                 )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+
+                    // Countdown timer display
+                    CountDownTimer(timerViewModel = timerViewModel)
+
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

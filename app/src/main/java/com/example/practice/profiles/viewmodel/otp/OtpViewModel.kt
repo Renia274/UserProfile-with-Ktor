@@ -23,10 +23,12 @@ class FirebaseOtpViewModel @Inject constructor(
     private val codeSentMessageFlow = MutableStateFlow<String?>(null)
     val codeSentMessage: StateFlow<String?> get() = codeSentMessageFlow.asStateFlow()
 
-    private val emailErrorMessageFlow = MutableStateFlow<String?>(null)
+    val emailErrorMessageFlow = MutableStateFlow<String?>(null)
     val emailErrorMessage: StateFlow<String?> get() = emailErrorMessageFlow.asStateFlow()
 
+
     private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+
 
 
     fun createOtp(email: String, signupEmail: String): String {
@@ -35,20 +37,16 @@ class FirebaseOtpViewModel @Inject constructor(
         // Generate a random 6-digit OTP
         val generatedOtp = (100000..999999).random()
 
-        // Check if the entered email matches the signup email
-        val emailErrorMessage = createEmailErrorMessage(email, signupEmail)
-
-        if (emailErrorMessage != null) {
-            emailErrorMessageFlow.value = emailErrorMessage
-        } else {
+        if (emailErrorMessageFlow.value == null) {
+            // Proceed with sending OTP only if the email matches the signup email
             firebaseAuthService.sendOtpToEmail(email)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         if (email.isNotBlank() && email == signupEmail) {
                             codeSentMessageFlow.value = "OTP created successfully, please verify the code"
                         }
-                        codeSentMessageFlow.value = "OTP created successfully, please verifying the code"
                     } else {
+                        // Handle the case where OTP sending fails
                         verificationErrorMessageFlow.value =
                             "Failed to send verification code: ${task.exception?.message}"
                     }
@@ -58,6 +56,8 @@ class FirebaseOtpViewModel @Inject constructor(
         // Return the generated OTP
         return generatedOtp.toString()
     }
+
+
 
     fun verifyOtp(enteredOtp: String) {
         val email = emailFlow.value
@@ -75,6 +75,18 @@ class FirebaseOtpViewModel @Inject constructor(
     }
 
 
+    fun clearEmailErrorMessage() {
+        emailErrorMessageFlow.value = null
+    }
+
+
+    // Function to set error message for non-matching email
+    fun setErrorEmail(email: String, signupEmail: String) {
+        val emailErrorMessage = createEmailErrorMessage(email, signupEmail)
+        emailErrorMessageFlow.value = emailErrorMessage
+    }
+
+
     private fun createEmailErrorMessage(email: String, signupEmail: String): String? {
         return if (email.isNotBlank() && email != signupEmail) {
             "Entered email doesn't match the signup email"
@@ -82,7 +94,6 @@ class FirebaseOtpViewModel @Inject constructor(
             null
         }
     }
-
 
     private fun logToCrashlytics(message: String) {
         firebaseCrashlytics.log(message)

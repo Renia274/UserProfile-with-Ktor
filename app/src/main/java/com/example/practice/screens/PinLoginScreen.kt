@@ -121,7 +121,7 @@ fun PinLoginScreen(
                         onClick = { isPinVisible = !isPinVisible },
                     ) {
                         Icon(
-                            painter = painterResource(id = if (isPinVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                            painter = painterResource(id = if (isPinVisible) R.drawable.ic_show else R.drawable.ic_hide),
                             contentDescription = if (isPinVisible) "Hide pin" else "Show pin"
                         )
                     }

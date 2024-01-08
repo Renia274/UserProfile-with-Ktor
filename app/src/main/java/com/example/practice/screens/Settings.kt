@@ -263,14 +263,15 @@ fun SettingsScreen(
 
             SettingsField(
                 label = "Security Code:",
-                value = if (isSecurityCodeEditable) enteredSecurityCode else "********",
+                value = enteredSecurityCode,
                 onValueChange = { updatedSecurityCode ->
                     enteredSecurityCode = updatedSecurityCode
                 },
                 isEditable = isSecurityCodeEditable,
                 onClearClick = {
                     enteredSecurityCode = ""
-                }
+                },
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))

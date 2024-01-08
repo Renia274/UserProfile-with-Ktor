@@ -113,7 +113,7 @@ fun SignupScreen(
                     onClick = { isPasswordVisible = !isPasswordVisible },
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                        painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
                         contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                     )
                 }

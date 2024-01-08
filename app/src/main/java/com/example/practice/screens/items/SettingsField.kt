@@ -3,7 +3,7 @@ package com.example.practice.screens.items
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,19 +35,19 @@ fun SettingsField(
     initiallyVisible: Boolean = false
 ) {
     var isVisible by remember { mutableStateOf(initiallyVisible) }
-    val observedValue by remember { mutableStateOf(value) }
+    val displayedValue by remember { mutableStateOf(value) }
 
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         Text(
             text = label,
             style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
         )
         if (isEditable) {
-            val editableState = remember { mutableStateOf(observedValue) }
+            val editableState = remember { mutableStateOf(displayedValue) }
             OutlinedTextField(
                 value = editableState.value,
                 onValueChange = {
@@ -56,7 +56,11 @@ fun SettingsField(
                 },
                 label = { Text(label) },
                 visualTransformation =
-                if (label.equals("Password:", ignoreCase = true) )
+                if (label.equals("Password:", ignoreCase = true) || label.equals(
+                        "Security Code:",
+                        ignoreCase = true
+                    )
+                )
                     if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
                 else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -67,7 +71,11 @@ fun SettingsField(
                     .fillMaxWidth()
                     .height(64.dp),
                 trailingIcon = {
-                    if (label.equals("Password:", ignoreCase = true)) {
+                    if (label.equals(
+                            "Password:",
+                            ignoreCase = true
+                        ) || label.equals("Security Code:", ignoreCase = true)
+                    ) {
                         IconButton(
                             onClick = {
                                 isVisible = !isVisible
@@ -75,16 +83,26 @@ fun SettingsField(
                             },
                         ) {
                             Icon(
-                                painter = painterResource(id = if (isVisible) R.drawable.ic_show_pin else R.drawable.ic_hide),
+                                painter = painterResource(id = if (isVisible) R.drawable.ic_show else R.drawable.ic_hide),
                                 contentDescription = if (isVisible) "Hide" else "Show"
                             )
                         }
                     }
                 }
             )
+
+            if (label.equals(
+                    "Security Code:",
+                    ignoreCase = true
+                ) && isEditable && editableState.value.isNotEmpty()
+            ) {
+                SecurityCodeStrengthIndicator(securityCode = editableState.value)
+            }
         } else {
-            Text(text = observedValue, style = TextStyle(fontSize = 16.sp))
+            Text(
+                text = displayedValue,
+                style = TextStyle(fontSize = 16.sp)
+            )
         }
     }
 }
-
