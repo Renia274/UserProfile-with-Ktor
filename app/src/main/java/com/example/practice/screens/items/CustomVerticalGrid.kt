@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,15 +34,19 @@ fun CustomVerticalGrid(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
+            .wrapContentHeight()
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        items.chunked(2).forEach { rowItems ->
+        items.chunked(2).forEachIndexed { rowIndex, rowItems ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+
+                Spacer(modifier = Modifier.width(16.dp))
+
                 rowItems.forEach { item ->
 
                     CustomGridItem(
@@ -50,53 +55,77 @@ fun CustomVerticalGrid(
                         onClick = {
                             selectedItem = if (selectedItem == item) null else item
                         },
-                        description = "Description for $item"
+                        description = "Description for $item",
+                        color = getColorForIndex(rowIndex)
                     )
+
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             }
-        }
 
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
-
-
 
 @Composable
 fun CustomGridItem(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    description: String
+    description: String,
+    color: Color
 ) {
     Box(
         modifier = Modifier
-            .padding(8.dp)
+            .width(100.dp)
+            .height(80.dp)
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.secondary
-                else MaterialTheme.colorScheme.primary
+                else color
             )
             .clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
         ) {
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = text,
-                color = Color.White,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
-
 
             Spacer(modifier = Modifier.height(8.dp))
 
             if (isSelected && description.isNotEmpty()) {
                 Text(
                     text = description,
-                    color = Color.White,
+                    color = Color.Black,
                     fontSize = 14.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
+}
+
+fun getColorForIndex(index: Int): Color {
+    val itemColors = listOf(
+        Color.Blue,
+        Color.Green,
+        Color.Magenta,
+        Color.Yellow,
+        Color.Red,
+        Color.Cyan,
+        Color.Gray,
+        Color.DarkGray,
+        Color.LightGray,
+        Color.Black
+    )
+
+    // Using the index to select a color from the list
+    return itemColors.getOrElse(index % itemColors.size) { Color.Gray }
 }
