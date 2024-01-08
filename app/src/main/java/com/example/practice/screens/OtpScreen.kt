@@ -144,7 +144,7 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (emailErrorMessage != null||showMessage) {
+        if (emailErrorMessage != null) {
             Text(
                 emailErrorMessage!!,
                 color = Color.Red,
@@ -152,7 +152,7 @@ fun OtpScreen(
             )
         }
 
-            // Button to verify OTP
+
             Button(
                 onClick = {
                     // Verify OTP only if the entered email matches the signup email
