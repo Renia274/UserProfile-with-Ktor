@@ -75,6 +75,7 @@ class FirebaseOtpViewModel @Inject constructor(
     }
 
 
+
     fun clearEmailErrorMessage() {
         emailErrorMessageFlow.value = null
     }
@@ -95,7 +96,7 @@ class FirebaseOtpViewModel @Inject constructor(
         }
     }
 
-    private fun logToCrashlytics(message: String) {
+    fun logToCrashlytics(message: String) {
         firebaseCrashlytics.log(message)
         firebaseCrashlytics.recordException(Exception(message))
     }

@@ -152,25 +152,29 @@ fun OtpScreen(
             )
         }
 
+// OtpScreen.kt
 
-            Button(
-                onClick = {
-                    // Verify OTP only if the entered email matches the signup email
-                    if (email == signupEmail) {
-                        otpViewModel.verifyOtp(otp)
-                        onNavigate()
-                        keyboardController?.hide()
-                    } else {
-                        // Show an error message if the entered email is different from the signup email
-                        showMessage = false
-                        otpViewModel.emailErrorMessageFlow.value = "Entered email doesn't match the signup email"
-                    }
-                },
-                enabled = email == signupEmail,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Verify OTP")
-            }
+        Button(
+            onClick = {
+                // Check if the entered email matches the signup email before verifying OTP
+                if (email == signupEmail) {
+                    otpViewModel.verifyOtp(otp)
+                    onNavigate()
+                    keyboardController?.hide()
+                } else {
+                    // Show an error message if the entered email is different from the signup email
+                    showMessage = true
+                    otpViewModel.emailErrorMessageFlow.value = "Please enter the email used during signup"
+                    // Log to Crashlytics
+                    otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
+                }
+            },
+            enabled = true,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Verify OTP")
+        }
+
 
             otpViewModel.codeSentMessage.value?.let { codeSentMessage ->
                 Text(
