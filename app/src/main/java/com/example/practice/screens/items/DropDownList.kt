@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
@@ -75,8 +74,6 @@ fun DropDownList(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dropdownHeight)
-                //.verticalScroll(rememberScrollState())
-                .padding(4.dp)
         ) {
             DropdownMenu(
                 expanded = expanded,

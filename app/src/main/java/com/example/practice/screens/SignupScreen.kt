@@ -45,7 +45,8 @@ fun SignupScreen(
     onNavigateToLogin: () -> Unit,
     onNavigate: () -> Unit,
     credentialsViewModel: CredentialsViewModel = hiltViewModel(),
-    sharedViewModel: SharedProfilesViewModel = hiltViewModel()
+    sharedViewModel: SharedProfilesViewModel = hiltViewModel(),
+
 ) {
     val h4 = TextStyle(
         fontSize = 16.sp,
@@ -136,12 +137,13 @@ fun SignupScreen(
                     sharedViewModel.setSignupEmail(email)
 
 
+
                     onNavigate.invoke()
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+//                .padding(16.dp)
         ) {
             Text("Sign Up")
         }

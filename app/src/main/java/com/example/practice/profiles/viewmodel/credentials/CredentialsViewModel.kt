@@ -20,7 +20,7 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
 
     val securityCode = MutableStateFlow<String?>(null)
 
-    // Use the firebaseAuth property
+
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     fun setEnteredCredentials(username: String, password: String) {

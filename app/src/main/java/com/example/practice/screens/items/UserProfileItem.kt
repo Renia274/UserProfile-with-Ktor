@@ -15,8 +15,7 @@ fun UserProfileItem(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     val username = userProfile.firstName.lowercase()
     when {
@@ -38,7 +37,8 @@ fun UserProfileItem(
                 isEditScreen,
                 onSaveProfession,
                 onInterestsSelected,
-                viewModel
+                viewModel,
+
             )
         }
 
@@ -49,10 +49,9 @@ fun UserProfileItem(
                 isEditScreen,
                 onSaveProfession,
                 onInterestsSelected,
-                viewModel
+                viewModel,
+
             )
         }
-
-        else -> null
     }
 }

@@ -71,6 +71,7 @@ fun NavigationApp() {
     val timerViewModel = viewModel<TimerViewModel>()
     val otpViewModel = viewModel<FirebaseOtpViewModel>()
 
+
     val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
     val authNavigationHandler = AuthNavigationHandler(navController, credentialsViewModel)
 
@@ -128,6 +129,7 @@ fun NavigationApp() {
 
                 if (securityCodeAvailable) {
                     authNavigationHandler.navigateToPinLogin()
+
                 } else {
                     UsernamePasswordLoginScreen(
                         onLoginSuccess = { enteredUsername, _, _, _ ->
@@ -215,9 +217,11 @@ fun NavigationApp() {
                     when (destination) {
                         "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
                         "back" -> navigationHandler.navigateBack()
+                        "pinLogin"->authNavigationHandler.navigateToPinLogin()
                     }
                 },
-                securityCode = credentialsViewModel.securityCode.value ?: ""
+                securityCode = credentialsViewModel.securityCode.value ?: "",
+
             )
         }
 
