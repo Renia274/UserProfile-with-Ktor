@@ -49,6 +49,10 @@ class NavigationHandler(
         navController.navigate(Navigation.Screen.InfoScreen.route)
     }
 
+    fun navigateToPermissionScreen(){
+        navController.navigate(Navigation.Screen.PermissionScreen.route)
+    }
+
 
 
 }

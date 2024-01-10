@@ -18,10 +18,12 @@ import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
+import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.InfoScreen
 import com.example.practice.screens.LoadingScreen
 import com.example.practice.screens.OtpScreen
+import com.example.practice.screens.PermissionScreen
 import com.example.practice.screens.PinLoginScreen
 import com.example.practice.screens.RecoveryScreen
 import com.example.practice.screens.SecurityCodeScreen
@@ -47,6 +49,7 @@ data class Navigation(
             val Recovery = Screen("recovery")
             val Settings = Screen("settings")
             val InfoScreen = Screen("info")
+            val PermissionScreen=Screen("permissions")
         }
     }
 
@@ -70,6 +73,7 @@ fun NavigationApp() {
     val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
     val timerViewModel = viewModel<TimerViewModel>()
     val otpViewModel = viewModel<FirebaseOtpViewModel>()
+    val permissionStateViewModel = viewModel<PermissionStateViewModel>()
 
 
     val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
@@ -114,9 +118,12 @@ fun NavigationApp() {
         composable(Navigation.Auth.OtpScreen.route) {
             OtpScreen(
                 onNavigate = {
-                authNavigationHandler.navigateToUsernamePasswordLogin()
-            },
-                onBackPressed = { navigationHandler.navigateBack() }, viewModel = sharedProfilesViewModel, otpViewModel = otpViewModel)
+                    authNavigationHandler.navigateToUsernamePasswordLogin()
+                },
+                onBackPressed = { navigationHandler.navigateBack() },
+                viewModel = sharedProfilesViewModel,
+                otpViewModel = otpViewModel
+            )
         }
 
         composable("usernamePasswordLogin") {
@@ -189,6 +196,8 @@ fun NavigationApp() {
                         }
 
                         "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
+
+                        "permissions"->navigationHandler.navigateToPermissionScreen()
                     }
                 }
             ) { newUsername, newPassword ->
@@ -198,6 +207,14 @@ fun NavigationApp() {
                 )
             }
         }
+
+        composable("permissions") {
+            PermissionScreen(
+                permissionStateViewModel = permissionStateViewModel,
+                onBackButtonClick = { navigationHandler.navigateBack() }
+            )
+        }
+
 
         composable("pinLogin") {
             PinLoginScreen(
@@ -217,12 +234,12 @@ fun NavigationApp() {
                     when (destination) {
                         "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
                         "back" -> navigationHandler.navigateBack()
-                        "pinLogin"->authNavigationHandler.navigateToPinLogin()
+                        "pinLogin" -> authNavigationHandler.navigateToPinLogin()
                     }
                 },
                 securityCode = credentialsViewModel.securityCode.value ?: "",
 
-            )
+                )
         }
 
         composable("userProfileBob") { navBackStackEntry ->
@@ -231,7 +248,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
-                credentialsViewModel=credentialsViewModel,
+                credentialsViewModel = credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -269,7 +286,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
-                credentialsViewModel=credentialsViewModel,
+                credentialsViewModel = credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -290,7 +307,8 @@ fun NavigationApp() {
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
-                        "usernamePasswordLogin"->{
+
+                        "usernamePasswordLogin" -> {
                             authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
                     }
@@ -306,7 +324,7 @@ fun NavigationApp() {
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
                 timerViewModel = timerViewModel,
-                credentialsViewModel=credentialsViewModel,
+                credentialsViewModel = credentialsViewModel,
                 onBack = {
                     authNavigationHandler.navigateToSignUpSignIn()
                 },
@@ -327,7 +345,8 @@ fun NavigationApp() {
                         "info" -> {
                             navigationHandler.navigateToInfoScreen()
                         }
-                        "usernamePasswordLogin"->{
+
+                        "usernamePasswordLogin" -> {
                             authNavigationHandler.navigateToUsernamePasswordLogin()
                         }
                     }

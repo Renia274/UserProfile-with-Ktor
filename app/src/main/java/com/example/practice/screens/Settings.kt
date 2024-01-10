@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -146,15 +147,24 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
 
-            TopAppBar(title = { Text("Settings") }, navigationIcon = {
-                IconButton(onClick = {
-                    onNavigate("back")
-                }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        onNavigate("back")
+                    }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    // navigating to the Permissions screen through the top app bat
+                    IconButton(onClick = {
+                        onNavigate("permissions")
+                    }) {
+                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Permissions")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(16.dp))

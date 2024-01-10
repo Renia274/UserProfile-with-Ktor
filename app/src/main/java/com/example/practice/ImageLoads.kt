@@ -1,7 +1,5 @@
 package com.example.practice
 
-import CameraButton
-import MicButton
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -35,15 +33,12 @@ import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
-import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
-import com.example.practice.screens.items.CameraPermissionDialog
 import com.example.practice.screens.items.CountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
-import com.example.practice.screens.items.MicrophonePermissionDialog
 import com.example.practice.screens.items.UserProfileItem
 import com.example.practice.utils.SignOutDialog
 import kotlinx.coroutines.delay
@@ -247,8 +242,7 @@ fun UserProfileBob(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-    permissionStateViewModel: PermissionStateViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -399,56 +393,7 @@ fun UserProfileBob(
 
 
                 }
-                if (isDelayApplied && isEditScreen) {
-
-                    // Show CameraPermissionDialog if camera permissions are not granted
-                    if (permissionStateViewModel.isCameraPermissionDialogShown.value) {
-                        CameraPermissionDialog(isPermissionDialogShown = permissionStateViewModel.isCameraPermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setCameraPermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle camera permission granted
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle camera permission denied
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle camera permission later
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            })
-
-                    }
-
-
-                    // Show MicrophonePermissionDialog if microphone permissions are not granted
-                    if (permissionStateViewModel.isMicrophonePermissionDialogShown.value) {
-                        MicrophonePermissionDialog(isPermissionDialogShown = permissionStateViewModel.isMicrophonePermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle microphone permission granted
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle microphone permission denied
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle microphone permission later
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            })
-                    }
-                }
             }
-
         }
     }
 
@@ -513,26 +458,7 @@ fun UserProfileBob(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(text = "PERMISSIONS:", fontWeight = FontWeight.Bold)
-            Text(text = "Please accept the permissions:")
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CameraButton(permissionStateViewModel)
-                Spacer(modifier = Modifier.width(64.dp))
-                MicButton(permissionStateViewModel)
-            }
-        }
 
 
     }
@@ -545,8 +471,7 @@ fun UserProfileAlice(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-    permissionStateViewModel: PermissionStateViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -697,54 +622,7 @@ fun UserProfileAlice(
 
 
                 }
-                if (isDelayApplied && isEditScreen) {
 
-                    // Show CameraPermissionDialog if camera permissions are not granted
-                    if (permissionStateViewModel.isCameraPermissionDialogShown.value) {
-                        CameraPermissionDialog(isPermissionDialogShown = permissionStateViewModel.isCameraPermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setCameraPermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle camera permission granted
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle camera permission denied
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle camera permission later
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            })
-
-                    }
-
-
-                    // Show MicrophonePermissionDialog if microphone permissions are not granted
-                    if (permissionStateViewModel.isMicrophonePermissionDialogShown.value) {
-                        MicrophonePermissionDialog(isPermissionDialogShown = permissionStateViewModel.isMicrophonePermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle microphone permission granted
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle microphone permission denied
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle microphone permission later
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            })
-                    }
-                }
             }
 
         }
@@ -821,15 +699,7 @@ fun UserProfileAlice(
             Text(text = "PERMISSIONS:", fontWeight = FontWeight.Bold)
             Text(text = "Please accept the permissions:")
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CameraButton(permissionStateViewModel)
-                Spacer(modifier = Modifier.width(64.dp))
-                MicButton(permissionStateViewModel)
-            }
+
         }
 
 
@@ -843,8 +713,7 @@ fun UserProfileEve(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-    permissionStateViewModel: PermissionStateViewModel= hiltViewModel()
+    viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -995,54 +864,7 @@ fun UserProfileEve(
 
 
                 }
-                if (isDelayApplied && isEditScreen) {
 
-                    // Show CameraPermissionDialog if camera permissions are not granted
-                    if (permissionStateViewModel.isCameraPermissionDialogShown.value) {
-                        CameraPermissionDialog(isPermissionDialogShown = permissionStateViewModel.isCameraPermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setCameraPermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle camera permission granted
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle camera permission denied
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle camera permission later
-                                permissionStateViewModel.setCameraPermissionDialogShown(false)
-                            })
-
-                    }
-
-
-                    // Show MicrophonePermissionDialog if microphone permissions are not granted
-                    if (permissionStateViewModel.isMicrophonePermissionDialogShown.value) {
-                        MicrophonePermissionDialog(isPermissionDialogShown = permissionStateViewModel.isMicrophonePermissionDialogShown.value,
-                            onDismiss = {
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(
-                                    false
-                                )
-                            },
-                            onAllow = {
-                                // Handle microphone permission granted
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onDeny = {
-                                // Handle microphone permission denied
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            },
-                            onLater = {
-                                // Handle microphone permission later
-                                permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                            })
-                    }
-                }
             }
 
         }
@@ -1109,26 +931,7 @@ fun UserProfileEve(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(text = "PERMISSIONS:", fontWeight = FontWeight.Bold)
-            Text(text = "Please accept the permissions:")
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CameraButton(permissionStateViewModel)
-                Spacer(modifier = Modifier.width(64.dp))
-                MicButton(permissionStateViewModel)
-            }
-        }
 
 
     }
