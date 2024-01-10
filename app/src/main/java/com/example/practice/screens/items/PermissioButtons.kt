@@ -42,10 +42,10 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //        ActivityResultContracts.RequestPermission()
 //    ) { isGranted: Boolean ->
 //        if (isGranted) {
-//            // Permission is granted, perform the necessary actions here
+//
 //            Log.d("Camera", "Camera permission granted")
 //        } else {
-//            // Permission is denied, handle it accordingly
+//
 //            Log.d("Camera", "Camera permission denied")
 //
 //
@@ -60,7 +60,7 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //                    context,
 //                    android.Manifest.permission.CAMERA
 //                ) -> {
-//                    // Some works that require permission
+//                    //
 //                    Log.d("Camera", "Camera requires permission")
 //
 //                }
@@ -88,11 +88,11 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //        ActivityResultContracts.RequestPermission()
 //    ) { isGranted: Boolean ->
 //        if (isGranted) {
-//            // Permission is granted, perform the necessary actions here
+//
 //            Log.d("Mic", "Microphone permission granted")
 //
 //        } else {
-//            // Permission is denied, handle it accordingly
+//
 //            Log.d("Mic", "Microphone permission denied")
 //
 //
@@ -107,7 +107,7 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //                    context,
 //                    android.Manifest.permission.RECORD_AUDIO
 //                ) -> {
-//                    // Some works that require permission
+//
 //                    Log.d("Mic", "Microphone requires permission")
 //                }
 //
