@@ -14,7 +14,7 @@ independently of the main application.
 
 ## Users
 
-The following users have been added to the profile app:
+The following users have been added to the profile app for simulation/testing purposes:
 
 1. Bob Johnson
 2. Alice Smith
