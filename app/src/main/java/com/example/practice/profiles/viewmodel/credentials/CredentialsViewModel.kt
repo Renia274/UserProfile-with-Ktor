@@ -20,20 +20,20 @@ data class CredentialsState(
 @HiltViewModel
 class CredentialsViewModel @Inject constructor() : ViewModel() {
 
-    private val _credentialsState = MutableStateFlow(CredentialsState(null, null))
-    val credentialsState: StateFlow<CredentialsState> get() = _credentialsState
+    private val credentialsStateFlow = MutableStateFlow(CredentialsState(null, null))
+    val credentialsState: StateFlow<CredentialsState> get() = credentialsStateFlow
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     fun setEnteredCredentials(username: String, password: String) {
         val userCredentials = UserCredentials(username, password)
         viewModelScope.launch {
-            _credentialsState.value = _credentialsState.value.copy(enteredCredentials = userCredentials)
+            credentialsStateFlow.value = CredentialsState(enteredCredentials = userCredentials, securityCode = credentialsStateFlow.value.securityCode)
         }
     }
 
     fun isValidCredentials(username: String, password: String): Boolean {
-        return credentialsState.value.enteredCredentials?.let {
+        return credentialsStateFlow.value.enteredCredentials?.let {
             it.username == username && it.password == password
         } ?: false
     }
@@ -44,14 +44,14 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
                 username = updatedUsername,
                 password = updatedPassword
             )
-            _credentialsState.value = _credentialsState.value.copy(enteredCredentials = updatedCredentials)
+            credentialsStateFlow.value = CredentialsState(enteredCredentials = updatedCredentials, securityCode = credentialsStateFlow.value.securityCode)
         }
     }
 
     fun saveSecurityCode(code: String): Boolean {
         return try {
             viewModelScope.launch {
-                _credentialsState.value = _credentialsState.value.copy(securityCode = code)
+                credentialsStateFlow.value = CredentialsState(enteredCredentials = credentialsStateFlow.value.enteredCredentials, securityCode = code)
             }
             true
         } catch (e: Exception) {

@@ -22,8 +22,8 @@ data class SharedProfilesViewState(
 @HiltViewModel
 class SharedProfilesViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-    private val _userProfiles = MutableStateFlow<List<UserData>>(emptyList())
-    var userProfiles: StateFlow<List<UserData>> = _userProfiles
+    private val userProfilesStateFlow = MutableStateFlow<List<UserData>>(emptyList())
+    var userProfiles: StateFlow<List<UserData>> = userProfilesStateFlow
         private set
 
     private val state = MutableStateFlow(
@@ -67,6 +67,6 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
 
     // Update userProfiles when needed
     fun updateUserProfiles(newProfiles: List<UserData>) {
-        _userProfiles.value = newProfiles
+        userProfilesStateFlow.value = newProfiles
     }
 }
