@@ -54,7 +54,6 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //
 //    Button(
 //        onClick = {
-//            permissionStateViewModel.setCameraPermissionDialogShown(true)
 //            when (PackageManager.PERMISSION_GRANTED) {
 //                ContextCompat.checkSelfPermission(
 //                    context,
@@ -101,7 +100,6 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //
 //    Button(
 //        onClick = {
-//            permissionStateViewModel.setMicrophonePermissionDialogShown(true)
 //            when (PackageManager.PERMISSION_GRANTED) {
 //                ContextCompat.checkSelfPermission(
 //                    context,
