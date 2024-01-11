@@ -11,6 +11,15 @@ independently of the main application.
 **Ktor Implementation:** Includes a separate Ktor module with CRUD operations.
 **Firebase Integration:** Utilizes Firebase services for OTP (One-Time Password) for users created through the user profile app.
 
+
+## Users
+
+The following users have been added to the profile app:
+
+1. Bob Johnson
+2. Alice Smith
+3. Eve Brown
+   
 ## Getting Started
 
 ### Prerequisites
