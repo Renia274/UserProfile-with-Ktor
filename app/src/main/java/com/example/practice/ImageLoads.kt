@@ -35,7 +35,6 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
-import com.example.practice.screens.SplashWaitTimeMillis
 import com.example.practice.screens.items.CustomCountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
@@ -44,12 +43,13 @@ import com.example.practice.screens.items.UserProfileItem
 import com.example.practice.utils.SignOutDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfilesLoading(
-    userProfiles: List<UserData>,
+    userProfiles: StateFlow<List<UserData>>,
     viewModel: SharedProfilesViewModel = hiltViewModel(),
     timerViewModel: TimerViewModel = hiltViewModel(),
     credentialsViewModel: CredentialsViewModel = hiltViewModel(),
@@ -58,29 +58,21 @@ fun UserProfilesLoading(
     username: String,
     topAppBarTitle: String,
 ) {
-
-    val selectedIndex by remember { mutableStateOf(0) }
     var isShowingEdit by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(true) }
     var showSignOutDialog by remember { mutableStateOf(false) }
 
     // Provide an initial value for selectedIndex
     val initialSelectedIndex = 0
     val selectedIndexFlow = remember { MutableStateFlow(initialSelectedIndex) }
 
-    LaunchedEffect(isLoading) {
-        delay(SplashWaitTimeMillis)
-        isLoading = false
-    }
+    val timerState by timerViewModel.stateFlow.collectAsState()
+    val timeLeft = timerState.timeLeft
 
-    // Observe the dark mode value from the view model
-    val darkMode by viewModel.darkMode.collectAsState(false)
 
-    val timeLeft = timerViewModel.timeLeft.value
 
     LaunchedEffect(timeLeft) {
         // Check if the timer has run out
-        if (timeLeft <= 0) {
+        if (timerViewModel.stateFlow.value.timeLeft <= 0) {
             // Update the current destination
             onNavigate("usernamePasswordLogin")
 
@@ -89,149 +81,135 @@ fun UserProfilesLoading(
         }
     }
 
-    val mainBackgroundColor = if (darkMode) {
-        MaterialTheme.colorScheme.background
-    } else {
-        when {
-            username.lowercase().startsWith("bob") -> Color.Green
-            username.lowercase().startsWith("alice") -> Color.LightGray
-            username.lowercase().startsWith("eve") -> Color.Magenta
-            else -> Color.Gray
+    val mainBackgroundColor by remember(username) {
+        derivedStateOf {
+            if (viewModel.stateFlow.value.darkMode) {
+               Color.White
+            } else {
+                when {
+                    username.lowercase().startsWith("bob") -> Color.Green
+                    username.lowercase().startsWith("alice") -> Color.LightGray
+                    username.lowercase().startsWith("eve") -> Color.Magenta
+                    else -> Color.Gray
+                }
+            }
         }
     }
 
-    if (isLoading) {
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(mainBackgroundColor)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(mainBackgroundColor),
-            contentAlignment = Alignment.Center
+                .verticalScroll(rememberScrollState())
         ) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(mainBackgroundColor)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = topAppBarTitle, color = when {
-                                username.lowercase().startsWith("bob") -> Color.Green
-                                username.lowercase().startsWith("alice") -> Color.LightGray
-                                username.lowercase().startsWith("eve") -> Color.Magenta
-                                else -> Color.Gray
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                        }
-                    },
-                    actions = {
-                        // Perform sign-out when the sign-out icon is clicked
-                        IconButton(onClick = {
-                            showSignOutDialog = true
-                        }) {
-                            Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
-                        }
-
-                        // Navigate to the InfoScreen when the info icon is clicked
-                        IconButton(onClick = {
-                            onNavigate("info")
-                        }) {
-                            Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                        }
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-
-
-                    // Countdown timer display
-                    CustomCountDownTimer(timerViewModel = timerViewModel)
-
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    if (selectedIndex in userProfiles.indices && !isShowingEdit) {
-                        UserProfileItem(
-                            userProfile = userProfiles[selectedIndex],
-                            onEditClick = {
-                                isShowingEdit = true
-                            },
-                            isEditScreen = isShowingEdit,
-                            onSaveProfession = { updatedProfession ->
-                                userProfiles[selectedIndex].profession = updatedProfession
-                                viewModel.saveProfession(
-                                    userProfiles[selectedIndex].imageResId, updatedProfession
-                                )
-                            },
-                            onInterestsSelected = { selectedInterests ->
-                                userProfiles[selectedIndex].interests = selectedInterests
-                                viewModel.saveInterests(
-                                    userProfiles[selectedIndex].imageResId, selectedInterests
-                                )
-                            },
-                            viewModel = viewModel
-                        )
-                    } else {
-                        UserProfilesList(
-                            userProfiles,
-                            onBackNavigate = onBack,
-                            isEditScreen = isShowingEdit,
-                            viewModel = viewModel
-                        )
-                    }
-                }
-
-                if (showSignOutDialog) {
-                    SignOutDialog(
-                        viewModel = credentialsViewModel,
-                        onSignOut = {
-                            credentialsViewModel.performSignOut() // Perform sign-out
-
-                            showSignOutDialog = false // Dismiss the dialog after sign-out
-                            onNavigate("usernamePasswordLogin")
-                        },
-                        onDismiss = {
-                            showSignOutDialog = false // Dismiss the dialog if canceled
+            TopAppBar(
+                title = {
+                    Text(
+                        text = topAppBarTitle, color = when {
+                            username.lowercase().startsWith("bob") -> Color.Green
+                            username.lowercase().startsWith("alice") -> Color.LightGray
+                            username.lowercase().startsWith("eve") -> Color.Magenta
+                            else -> Color.Gray
                         }
                     )
-                }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    // Perform sign-out when the sign-out icon is clicked
+                    IconButton(onClick = {
+                        showSignOutDialog = true
+                    }) {
+                        Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
+                    }
 
-                Spacer(modifier = Modifier.weight(1f))
+                    // Navigate to the InfoScreen when the info icon is clicked
+                    IconButton(onClick = {
+                        onNavigate("info")
+                    }) {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                    }
 
-                BottomNavigationItems(selectedIndexFlow) { navEvent ->
-                    navigateTo(navEvent, onBack, onNavigate)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Countdown timer display
+                CustomCountDownTimer(timerViewModel = timerViewModel)
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Spacer(modifier = Modifier.width(16.dp))
+
+                if (selectedIndexFlow.value in userProfiles.value.indices && !isShowingEdit) {
+                    UserProfileItem(
+                        userProfile = userProfiles.value[selectedIndexFlow.value],
+                        onEditClick = {
+                            isShowingEdit = true
+                        },
+                        isEditScreen = isShowingEdit,
+                        onSaveProfession = { updatedProfession ->
+                            val userProfile = userProfiles.value[selectedIndexFlow.value]
+                            viewModel.saveProfession(userProfile.imageResId, updatedProfession)
+                        },
+                        onInterestsSelected = { selectedInterests ->
+                            val userProfile = userProfiles.value[selectedIndexFlow.value]
+                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                        },
+                        viewModel = viewModel
+                    )
+                } else {
+                    UserProfilesList(
+                        userProfiles.value,
+                        onBackNavigate = onBack,
+                        isEditScreen = isShowingEdit,
+                        viewModel = viewModel
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            if (showSignOutDialog) {
+                SignOutDialog(
+                    viewModel = credentialsViewModel,
+                    onSignOut = {
+                        credentialsViewModel.performSignOut() // Perform sign-out
+
+                        showSignOutDialog = false // Dismiss the dialog after sign-out
+                        onNavigate("usernamePasswordLogin")
+                    },
+                    onDismiss = {
+                        showSignOutDialog = false // Dismiss the dialog if canceled
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BottomNavigationItems(selectedIndexFlow) { navEvent ->
+                navigateTo(navEvent, onBack, onNavigate)
+            }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 

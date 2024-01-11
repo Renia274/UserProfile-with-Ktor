@@ -1,32 +1,28 @@
 package com.example.practice.profiles.viewmodel.timer
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 
+data class TimerViewState(
+    val timeLeft: Int,
+    var timerIsRunning: Boolean
+)
+@HiltViewModel
 class TimerViewModel @Inject constructor() : ViewModel() {
-    private var _timeLeft = mutableStateOf(60)
-    var timeLeft: State<Int> = _timeLeft
-        private set
 
-    var timerIsRunning by mutableStateOf(true)
+    private val timerStateFlow = MutableStateFlow(TimerViewState(timeLeft = 60, timerIsRunning = true))
+    val stateFlow = timerStateFlow.asStateFlow()
 
     fun decreaseTime() {
-        _timeLeft.value--
+        val currentState = timerStateFlow.value
+        timerStateFlow.value = currentState.copy(timeLeft = currentState.timeLeft - 1)
     }
 
     fun resetTimer() {
-        _timeLeft.value = 60
+        timerStateFlow.value = TimerViewState(timeLeft = 60, timerIsRunning = true)
     }
-
-    fun stopTimer() {
-        timerIsRunning = false
-    }
-
-
-
 }

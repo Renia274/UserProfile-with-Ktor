@@ -7,10 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,48 +21,33 @@ import kotlinx.coroutines.delay
 @Composable
 fun CustomCountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
 
-    var timeLeftState by remember { mutableStateOf(timerViewModel.timeLeft.value) }
-    var isTimerRunning by remember { mutableStateOf(timerViewModel.timerIsRunning) }
+    val timerState by timerViewModel.stateFlow.collectAsState()
 
-
-
-    LaunchedEffect(key1 = timeLeftState) {
-        while (timeLeftState > 0 && isTimerRunning) {
+    LaunchedEffect(key1 = timerState.timeLeft) {
+        while (timerViewModel.stateFlow.value.timeLeft > 0 && timerViewModel.stateFlow.value.timerIsRunning) {
             delay(1000L)
 
-            timeLeftState = timerViewModel.timeLeft.value
-            // Decrease timeLeft each second
             timerViewModel.decreaseTime()
-            // Update the local timeLeft value
-            timeLeftState = timerViewModel.timeLeft.value
+            timerViewModel.stateFlow.value.timeLeft
         }
-
     }
-
-
 
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Time left: $timeLeftState",
+            text = "Time left: ${timerState.timeLeft}",
             fontSize = 16.sp
         )
 
         Spacer(modifier = Modifier.width(90.dp))
 
-
         // Reset button
         TextButton(
             onClick = {
-                // Reset the timer to its initial value (60 seconds)
                 timerViewModel.resetTimer()
-                timerViewModel.timerIsRunning = true
-
-                // Update the local timeLeft value
-                timeLeftState = timerViewModel.timeLeft.value
-
-                // Decrease timeLeft after updating the local value
+                timerViewModel.stateFlow.value.timerIsRunning=true
+                timerViewModel.stateFlow.value.timeLeft
                 timerViewModel.decreaseTime()
             }
         ) {
@@ -73,7 +56,5 @@ fun CustomCountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
                 fontSize = 16.sp
             )
         }
-
     }
 }
-

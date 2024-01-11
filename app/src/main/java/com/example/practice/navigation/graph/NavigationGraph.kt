@@ -49,7 +49,7 @@ data class Navigation(
             val Recovery = Screen("recovery")
             val Settings = Screen("settings")
             val InfoScreen = Screen("info")
-            val PermissionScreen=Screen("permissions")
+            val PermissionScreen = Screen("permissions")
         }
     }
 
@@ -132,12 +132,11 @@ fun NavigationApp() {
             if (isLoading) {
                 LoadingScreen()
             } else {
-                val securityCodeAvailable = credentialsViewModel.credentialsState.value.securityCode != null
-
+                val securityCodeAvailable =
+                    credentialsViewModel.credentialsState.value.securityCode != null
 
                 if (securityCodeAvailable) {
                     authNavigationHandler.navigateToPinLogin()
-
                 } else {
                     UsernamePasswordLoginScreen(
                         onLoginSuccess = { enteredUsername, _, _, _ ->
@@ -165,7 +164,7 @@ fun NavigationApp() {
                             }
 
                             userProfile?.let {
-                                sharedProfilesViewModel.userProfiles = listOf(it)
+                                sharedProfilesViewModel.updateUserProfiles(listOf(it))
                                 authNavigationHandler.navigateToPinLogin()
                             } ?: run {
                                 println("Invalid username")
@@ -185,6 +184,7 @@ fun NavigationApp() {
                 }
             }
         }
+
         composable("settings") {
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
@@ -198,7 +198,7 @@ fun NavigationApp() {
 
                         "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
 
-                        "permissions"->navigationHandler.navigateToPermissionScreen()
+                        "permissions" -> navigationHandler.navigateToPermissionScreen()
                     }
                 }
             ) { newUsername, newPassword ->
@@ -220,13 +220,14 @@ fun NavigationApp() {
         composable("pinLogin") {
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
-                    sharedProfilesViewModel.userProfiles = listOf(userProfile)
+                    sharedProfilesViewModel.updateUserProfiles(listOf(userProfile))
                     navigationHandler.navigateToUserProfile(userProfile.firstName)
                 },
                 onNavigate = { screen: Navigation.Screen -> navigationHandler.navigateTo(screen) },
                 onPostNavigate = { navigationHandler.navigateToPosts() }
             )
         }
+
 
         composable("securityCode") {
             SecurityCodeScreen(
@@ -364,7 +365,7 @@ fun NavigationApp() {
 
         composable("edit") {
             UserProfilesList(
-                userProfiles = sharedProfilesViewModel.userProfiles,
+                userProfiles = sharedProfilesViewModel.userProfiles.value,
                 onBackNavigate = {
                     navigationHandler.navigateBack()
                 },
@@ -372,6 +373,7 @@ fun NavigationApp() {
                 viewModel = sharedProfilesViewModel
             )
         }
+
     }
 }
 

@@ -48,7 +48,8 @@ fun RecoveryScreen(
     onNavigateBack: () -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
-    val signupEmail by viewModel.signupEmail.collectAsState()
+    val sharedState by viewModel.stateFlow.collectAsState()
+    val signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(

@@ -46,7 +46,9 @@ fun OtpScreen(
     var showMessage by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val signupEmail by viewModel.signupEmail.collectAsState()
+    val sharedState by viewModel.stateFlow.collectAsState()
+    var signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
+
 
 
     val viewState by otpViewModel.viewStateFlow.collectAsState()
@@ -126,7 +128,9 @@ fun OtpScreen(
                     showMessage = true
                 } else {
                     // Show an error message if the entered email is different from the signup email
-                    otpViewModel.setErrorEmail(email, signupEmail)
+                    if (signupEmail != null) {
+                        otpViewModel.setErrorEmail(email, signupEmail)
+                    }
                     showMessage = false
                 }
             },
@@ -158,7 +162,9 @@ fun OtpScreen(
                 } else {
                     // Show an error message if the entered email is different from the signup email
                     showMessage = true
-                    otpViewModel.setErrorEmail(email, signupEmail)
+                    if (signupEmail != null) {
+                        otpViewModel.setErrorEmail(email, signupEmail)
+                    }
 
                     // update email error message with through view state
                     emailErrorMessage = "Please enter the email used during signup"

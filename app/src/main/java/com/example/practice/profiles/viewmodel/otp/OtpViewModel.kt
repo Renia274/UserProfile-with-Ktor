@@ -15,7 +15,7 @@ data class FirebaseOtpViewState(
     val isOtpVerified: Boolean = false,
     val verificationErrorMessage: String? = null,
     val codeSentMessage: String? = null,
-    val emailErrorMessage: String? = null
+    val emailErrorMessage: String? = null,
 )
 
 @HiltViewModel

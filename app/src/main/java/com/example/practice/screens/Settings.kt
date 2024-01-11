@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,11 +62,16 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
 
-    var darkMode by remember { mutableStateOf(false) }
-    var notificationEnabled by remember {
-        mutableStateOf(sharedViewModel.notificationEnabled.value)
+
+    var darkMode by remember {
+        mutableStateOf(sharedViewModel.stateFlow.value.darkMode)
     }
 
+    // Observe changes in notificationEnabled
+    var notificationEnabled by remember {
+        mutableStateOf(sharedViewModel.stateFlow.value.notificationEnabled)
+    }
+    var signupEmail = sharedViewModel.stateFlow.value.signupEmail
 
 
 
@@ -83,6 +89,8 @@ fun SettingsScreen(
         )
     }
 
+    val userProfiles by sharedViewModel.userProfiles.collectAsState()
+
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
 
@@ -97,13 +105,12 @@ fun SettingsScreen(
     }
 
 
-
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(sharedViewModel.notificationEnabled) {
-        notificationEnabled = sharedViewModel.notificationEnabled.value
+    LaunchedEffect(notificationEnabled) {
+        notificationEnabled = notificationEnabled
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -111,10 +118,11 @@ fun SettingsScreen(
             when (event) {
                 androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
                     //update the UI based on the lifecycle event
-                    darkMode = sharedViewModel.darkMode.value
-                    notificationEnabled = sharedViewModel.notificationEnabled.value
+                    darkMode = darkMode
+                    notificationEnabled = notificationEnabled
                     isSecurityCodeEditable = notificationEnabled
                 }
+
                 else -> Unit
             }
         }
@@ -163,10 +171,15 @@ fun SettingsScreen(
                     IconButton(onClick = {
                         onNavigate("permissions")
                     }) {
-                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Permissions")
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Permissions"
+                        )
                     }
                 },
-                modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -180,23 +193,25 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Display user account information
-            SettingsField(label = "First Name:",
-                value = sharedViewModel.userProfiles.firstOrNull()?.firstName ?: "",
+            SettingsField(
+                label = "First Name:",
+                value = userProfiles.firstOrNull()?.firstName ?: "",  // Updated this line
                 onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {})
             Spacer(modifier = Modifier.height(8.dp))
 
-            SettingsField(label = "Last Name:",
-                value = sharedViewModel.userProfiles.firstOrNull()?.lastName ?: "",
+            SettingsField(
+                label = "Last Name:",
+                value = userProfiles.firstOrNull()?.lastName ?: "",
                 onValueChange = { /* */ },
                 isEditable = false,
-                onClearClick = {})
-
+                onClearClick = {}
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
             SettingsField(label = "Email:",
-                value = sharedViewModel.signupEmail.value,
+                value = signupEmail,
                 onValueChange = { sharedViewModel.setSignupEmail(it) },
                 isEditable = true,
                 onClearClick = { sharedViewModel.setSignupEmail("") })
@@ -284,7 +299,7 @@ fun SettingsScreen(
                     enteredSecurityCode = ""
                 },
 
-            )
+                )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -374,7 +389,8 @@ fun SettingsScreen(
                     if (newNotificationEnabledState) {
                         Toast.makeText(context, "Security feature is on", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 },
                 modifier = Modifier

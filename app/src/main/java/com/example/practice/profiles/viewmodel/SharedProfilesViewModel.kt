@@ -10,52 +10,63 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 
+data class SharedProfilesViewState(
+    val savedProfessions: String,
+    val signupEmail: String,
+    val recoveryEmail: String,
+    val darkMode: Boolean,
+    val notificationEnabled: Boolean,
+    val savedInterests: List<String>
+)
+
 @HiltViewModel
 class SharedProfilesViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-    private val savedProfessions = MutableStateFlow("")
+    private val _userProfiles = MutableStateFlow<List<UserData>>(emptyList())
+    var userProfiles: StateFlow<List<UserData>> = _userProfiles
+        private set
 
-    private val _signupEmail = MutableStateFlow("")
-    val signupEmail: StateFlow<String> get() = _signupEmail
+    private val state = MutableStateFlow(
+        SharedProfilesViewState(
+            savedProfessions = "",
+            signupEmail = "",
+            recoveryEmail = "",
+            darkMode = false,
+            notificationEnabled = false,
+            savedInterests = emptyList()
+        )
+    )
 
-    private val recoveryEmail = MutableStateFlow("")
-
-    var darkMode = MutableStateFlow(false)
-
-    val notificationEnabled = MutableStateFlow(false)
-
-    private val savedInterests = MutableStateFlow<List<String>>(emptyList())
-
-
-    var userProfiles: List<UserData> = emptyList()
+    val stateFlow: StateFlow<SharedProfilesViewState> get() = state
 
     fun saveProfession(imageResId: Int, profession: String) {
         userRepository.saveProfession(imageResId, profession)
-        savedProfessions.value = profession
+        state.value = state.value.copy(savedProfessions = profession)
     }
 
     fun setSignupEmail(email: String) {
-        _signupEmail.value = email
+        state.value = state.value.copy(signupEmail = email)
     }
 
     fun setRecoveryEmail(email: String) {
-        recoveryEmail.value = email
+        state.value = state.value.copy(recoveryEmail = email)
     }
 
     fun setDarkMode(isDarkMode: Boolean) {
-        darkMode.value = isDarkMode
+        state.value = state.value.copy(darkMode = isDarkMode)
     }
 
     fun setNotificationEnabled(isEnabled: Boolean) {
-        notificationEnabled.value = isEnabled
+        state.value = state.value.copy(notificationEnabled = isEnabled)
     }
 
     fun saveInterests(imageResId: Int, interests: List<String>) {
         userRepository.saveInterests(imageResId, interests)
-        savedInterests.value = interests
+        state.value = state.value.copy(savedInterests = interests)
     }
 
-
-
-
+    // Update userProfiles when needed
+    fun updateUserProfiles(newProfiles: List<UserData>) {
+        _userProfiles.value = newProfiles
+    }
 }
