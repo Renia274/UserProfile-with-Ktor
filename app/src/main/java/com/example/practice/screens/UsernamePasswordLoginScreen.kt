@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsernamePasswordLoginScreen(
@@ -75,7 +76,7 @@ fun UsernamePasswordLoginScreen(
     LaunchedEffect(enteredCredentials) {
         enteredCredentials?.let {
             username = it.username
-            password=it.password
+            password = it.password
         }
     }
 
@@ -137,7 +138,7 @@ fun UsernamePasswordLoginScreen(
                         onClick = { isPasswordVisible = !isPasswordVisible },
                     ) {
                         Icon(
-                            painter = painterResource(id = if (isPasswordVisible)  R.drawable.ic_show  else R.drawable.ic_hide ),
+                            painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
                             contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                         )
                     }
@@ -163,20 +164,30 @@ fun UsernamePasswordLoginScreen(
                         // Save entered credentials to ViewModel
                         viewModel.setEnteredCredentials(username, password)
 
-                        when (username.lowercase()) {
-                            "bob", "alice", "eve","bob1" -> {
+                        when {
+                            username.lowercase().startsWith("bob") ||
+                                    username.lowercase().startsWith("alice") ||
+                                    username.lowercase().startsWith("eve") -> {
                                 println("Login Successful for $username")
                                 updatedUsername = username
                                 updatedPassword = password
 
-                                // Pass both the entered and updated credentials to onLoginSuccess
-                                onLoginSuccess.invoke(username, password, updatedUsername, updatedPassword)
+
+                                onLoginSuccess.invoke(
+                                    username,
+                                    password,
+                                    updatedUsername,
+                                    updatedPassword
+                                )
 
                             }
+
                             else -> {
                                 println("Invalid username")
                             }
                         }
+
+
                     } else {
                         println("Login Failed")
                     }
