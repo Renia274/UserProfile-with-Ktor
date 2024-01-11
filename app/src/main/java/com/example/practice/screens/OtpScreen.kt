@@ -41,8 +41,6 @@ fun OtpScreen(
     viewModel: SharedProfilesViewModel = hiltViewModel(),
     otpViewModel: FirebaseOtpViewModel = hiltViewModel()
 ) {
-
-
     var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
     var showMessage by remember { mutableStateOf(false) }
@@ -50,16 +48,14 @@ fun OtpScreen(
 
     val signupEmail by viewModel.signupEmail.collectAsState()
 
-    val emailErrorMessage by otpViewModel.emailErrorMessage.collectAsState()
-    val codeMessage by otpViewModel.codeSentMessage.collectAsState()
 
-
-
+    val viewState by otpViewModel.viewStateFlow.collectAsState()
+    var emailErrorMessage = viewState.emailErrorMessage
+    val codeMessage = otpViewModel.viewStateFlow.value.codeSentMessage
 
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         // TopAppBar
         TopAppBar(
@@ -72,7 +68,6 @@ fun OtpScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         // email
         OutlinedTextField(
@@ -141,20 +136,17 @@ fun OtpScreen(
             Text("Generate OTP")
         }
 
-
         Spacer(modifier = Modifier.height(8.dp))
 
         if (emailErrorMessage != null) {
             Text(
-                emailErrorMessage.orEmpty(),
+                emailErrorMessage!!,
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
-
 
         Button(
             onClick = {
@@ -166,27 +158,32 @@ fun OtpScreen(
                 } else {
                     // Show an error message if the entered email is different from the signup email
                     showMessage = true
-                    otpViewModel.emailErrorMessageFlow.value =
-                        "Please enter the email used during signup"
+                    otpViewModel.setErrorEmail(email, signupEmail)
+
+                    // update email error message with through view state
+                    emailErrorMessage = "Please enter the email used during signup"
+
+
                     // Log to Crashlytics
                     otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
                 }
             },
-            enabled = true,
+            enabled = email.isNotBlank(),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Verify OTP")
         }
 
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (codeMessage != null) {
             Text(
-                codeMessage.orEmpty(),
+                codeMessage,
                 color = Color.Green,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
-
-
     }
 }
-
