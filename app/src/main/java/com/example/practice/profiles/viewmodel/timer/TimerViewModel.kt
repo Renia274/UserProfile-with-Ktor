@@ -23,5 +23,10 @@ class TimerViewModel @Inject constructor() : ViewModel() {
         _timeLeft.value = 60
     }
 
+    fun stopTimer() {
+        timerIsRunning = false
+    }
+
+
 
 }

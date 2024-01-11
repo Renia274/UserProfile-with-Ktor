@@ -104,7 +104,7 @@ fun SecurityCodeScreen(
         Button(
             onClick = {
                 if (securityCode.isNotEmpty()) {
-                    val savedSecurityCode = viewModel.securityCode.value
+                    val savedSecurityCode = viewModel.credentialsState.value.securityCode
                     if (securityCode == savedSecurityCode) {
                         viewModel.saveSecurityCode(securityCode)
 

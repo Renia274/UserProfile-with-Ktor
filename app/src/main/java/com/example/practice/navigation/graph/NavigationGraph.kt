@@ -132,7 +132,8 @@ fun NavigationApp() {
             if (isLoading) {
                 LoadingScreen()
             } else {
-                val securityCodeAvailable = credentialsViewModel.securityCode.value != null
+                val securityCodeAvailable = credentialsViewModel.credentialsState.value.securityCode != null
+
 
                 if (securityCodeAvailable) {
                     authNavigationHandler.navigateToPinLogin()
@@ -237,10 +238,10 @@ fun NavigationApp() {
                         "pinLogin" -> authNavigationHandler.navigateToPinLogin()
                     }
                 },
-                securityCode = credentialsViewModel.securityCode.value ?: "",
-
-                )
+                securityCode = credentialsViewModel.credentialsState.value.securityCode ?: "",
+            )
         }
+
 
         composable("userProfileBob") { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Bob"

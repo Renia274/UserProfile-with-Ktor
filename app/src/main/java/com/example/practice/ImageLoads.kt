@@ -1,5 +1,6 @@
 package com.example.practice
 
+
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -35,7 +36,7 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.SplashWaitTimeMillis
-import com.example.practice.screens.items.CountDownTimer
+import com.example.practice.screens.items.CustomCountDownTimer
 import com.example.practice.screens.items.CustomVerticalGrid
 import com.example.practice.screens.items.DropDownList
 import com.example.practice.screens.items.InterestsDropDownList
@@ -166,7 +167,7 @@ fun UserProfilesLoading(
 
 
                     // Countdown timer display
-                    CountDownTimer(timerViewModel = timerViewModel)
+                    CustomCountDownTimer(timerViewModel = timerViewModel)
 
                 }
 

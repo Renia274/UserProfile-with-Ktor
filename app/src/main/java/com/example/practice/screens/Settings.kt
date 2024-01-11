@@ -74,12 +74,12 @@ fun SettingsScreen(
 
     var rememberedUsernameState by remember {
         mutableStateOf(
-            credentialsViewModel.enteredCredentials.value?.username ?: ""
+            credentialsViewModel.credentialsState.value.enteredCredentials?.username ?: ""
         )
     }
     var rememberedPasswordState by remember {
         mutableStateOf(
-            credentialsViewModel.enteredCredentials.value?.password ?: ""
+            credentialsViewModel.credentialsState.value.enteredCredentials?.password ?: ""
         )
     }
 
@@ -89,12 +89,14 @@ fun SettingsScreen(
     var enteredSecurityCode by remember {
         mutableStateOf(
             if (notificationEnabled) {
-                credentialsViewModel.securityCode.value ?: ""
+                credentialsViewModel.credentialsState.value.securityCode ?: ""
             } else {
                 ""
             }
         )
     }
+
+
 
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }

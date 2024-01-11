@@ -12,26 +12,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class CredentialsState(
+    val enteredCredentials: UserCredentials?,
+    val securityCode: String?
+)
+
 @HiltViewModel
 class CredentialsViewModel @Inject constructor() : ViewModel() {
 
-    val enteredCredentials = MutableStateFlow<UserCredentials?>(null)
-    private val enteredCredentialsFlow: StateFlow<UserCredentials?> = enteredCredentials
-
-    val securityCode = MutableStateFlow<String?>(null)
-
+    private val _credentialsState = MutableStateFlow(CredentialsState(null, null))
+    val credentialsState: StateFlow<CredentialsState> get() = _credentialsState
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     fun setEnteredCredentials(username: String, password: String) {
         val userCredentials = UserCredentials(username, password)
         viewModelScope.launch {
-            enteredCredentials.value = userCredentials
+            _credentialsState.value = _credentialsState.value.copy(enteredCredentials = userCredentials)
         }
     }
 
     fun isValidCredentials(username: String, password: String): Boolean {
-        return enteredCredentialsFlow.value?.let {
+        return credentialsState.value.enteredCredentials?.let {
             it.username == username && it.password == password
         } ?: false
     }
@@ -42,23 +44,20 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
                 username = updatedUsername,
                 password = updatedPassword
             )
-            enteredCredentials.value = updatedCredentials
+            _credentialsState.value = _credentialsState.value.copy(enteredCredentials = updatedCredentials)
         }
     }
 
     fun saveSecurityCode(code: String): Boolean {
         return try {
             viewModelScope.launch {
-                securityCode.value = code
+                _credentialsState.value = _credentialsState.value.copy(securityCode = code)
             }
             true
         } catch (e: Exception) {
             false
         }
     }
-
-
-
 
     fun performSignOut() {
         viewModelScope.launch {

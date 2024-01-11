@@ -1,4 +1,4 @@
-package com.example.practice.helpers
+package com.example.practice.validators
 
 
 // Helper function to validate email

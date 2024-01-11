@@ -60,7 +60,10 @@ fun UsernamePasswordLoginScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
 
 
-    val enteredCredentials by viewModel.enteredCredentials.collectAsState()
+    val credentialsState by viewModel.credentialsState.collectAsState()
+
+
+    val enteredCredentials = credentialsState.enteredCredentials
 
 
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }

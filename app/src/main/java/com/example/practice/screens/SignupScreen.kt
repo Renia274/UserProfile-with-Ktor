@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
-import com.example.practice.helpers.isValidEmail
-import com.example.practice.helpers.isValidPassword
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.validators.isValidEmail
+import com.example.practice.validators.isValidPassword
 
 
 @Composable
@@ -143,7 +143,6 @@ fun SignupScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-//                .padding(16.dp)
         ) {
             Text("Sign Up")
         }
