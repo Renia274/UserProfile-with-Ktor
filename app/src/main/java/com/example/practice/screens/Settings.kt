@@ -167,7 +167,6 @@ fun SettingsScreen(
                     }
                 },
                 actions = {
-                    // navigating to the Permissions screen through the top app bat
                     IconButton(onClick = {
                         onNavigate("permissions")
                     }) {
