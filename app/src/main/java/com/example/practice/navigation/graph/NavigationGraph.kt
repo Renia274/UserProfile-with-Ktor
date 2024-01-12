@@ -9,10 +9,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.practice.EditProfile
 import com.example.practice.R
-import com.example.practice.UserProfilesList
 import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData
+import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
@@ -73,23 +74,23 @@ fun NavigationApp() {
     val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
     val timerViewModel = viewModel<TimerViewModel>()
     val otpViewModel = viewModel<FirebaseOtpViewModel>()
-    val permissionStateViewModel = viewModel<PermissionStateViewModel>()
 
 
-    val navigationHandler = NavigationHandler(navController, sharedProfilesViewModel)
-    val authNavigationHandler = AuthNavigationHandler(navController, credentialsViewModel)
+
+    val navigationHandler = NavigationHandler(navController)
+    val authNavigationHandler = AuthNavigationHandler(navController)
 
     NavHost(
         navController = navController,
         startDestination = Navigation.Screen.Splash.route
     ) {
-        composable("splash") {
+        composable(Navigation.Screen.Splash.route) {
             SplashScreen {
                 authNavigationHandler.navigateToSignUpSignIn()
             }
         }
 
-        composable("signupsignin") {
+        composable(Navigation.Auth.SignUpSignIn.route) {
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
@@ -97,15 +98,9 @@ fun NavigationApp() {
             )
         }
 
-        composable("recovery") {
-            RecoveryScreen(
-                navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
-                viewModel = sharedProfilesViewModel,
-                onNavigateBack = { navigationHandler.navigateBack() }
-            )
-        }
 
-        composable("signup") {
+
+        composable(Navigation.Auth.Signup.route) {
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
                 sharedViewModel = sharedProfilesViewModel,
@@ -126,7 +121,7 @@ fun NavigationApp() {
             )
         }
 
-        composable("usernamePasswordLogin") {
+        composable(Navigation.Auth.UsernamePasswordLogin.route) {
             var isLoading by remember { mutableStateOf(false) }
 
             if (isLoading) {
@@ -185,39 +180,16 @@ fun NavigationApp() {
             }
         }
 
-        composable("settings") {
-            SettingsScreen(
-                sharedViewModel = sharedProfilesViewModel,
-                credentialsViewModel = credentialsViewModel,
-                onNavigate = { destination ->
-                    when (destination) {
-                        "back" -> navigationHandler.navigateBack()
-                        "securityCode" -> {
-                            authNavigationHandler.navigateToSecurityCode()
-                        }
-
-                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
-
-                        "permissions" -> navigationHandler.navigateToPermissionScreen()
-                    }
-                }
-            ) { newUsername, newPassword ->
-                credentialsViewModel.setEnteredCredentials(
-                    username = newUsername,
-                    password = newPassword
-                )
-            }
-        }
-
-        composable("permissions") {
-            PermissionScreen(
-                permissionStateViewModel = permissionStateViewModel,
-                onBackButtonClick = { navigationHandler.navigateBack() }
+        composable(Navigation.Screen.Recovery.route) {
+            RecoveryScreen(
+                navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
+                viewModel = sharedProfilesViewModel,
+                onNavigateBack = { navigationHandler.navigateBack() }
             )
         }
 
 
-        composable("pinLogin") {
+        composable(Navigation.Auth.PinLogin.route) {
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
                     sharedProfilesViewModel.updateUserProfiles(listOf(userProfile))
@@ -229,22 +201,14 @@ fun NavigationApp() {
         }
 
 
-        composable("securityCode") {
-            SecurityCodeScreen(
-                viewModel = credentialsViewModel,
-                onNavigate = { destination ->
-                    when (destination) {
-                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
-                        "back" -> navigationHandler.navigateBack()
-                        "pinLogin" -> authNavigationHandler.navigateToPinLogin()
-                    }
-                },
-                securityCode = credentialsViewModel.credentialsState.value.securityCode ?: "",
-            )
+        composable(Navigation.Screen.Posts.route) {
+            PostsScreen(onNavigate = {
+                navigationHandler.navigateBack()
+            })
         }
 
 
-        composable("userProfileBob") { navBackStackEntry ->
+        composable(Navigation.Screen.UserProfileBob.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Bob"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
@@ -282,7 +246,7 @@ fun NavigationApp() {
             )
         }
 
-        composable("userProfileAlice") { navBackStackEntry ->
+        composable(Navigation.Screen.UserProfileAlice.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Alice"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
@@ -320,7 +284,7 @@ fun NavigationApp() {
             )
         }
 
-        composable("userProfileEve") { navBackStackEntry ->
+        composable(Navigation.Screen.UserProfileEve.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Eve"
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
@@ -358,13 +322,14 @@ fun NavigationApp() {
             )
         }
 
-        composable("info") {
+        composable(Navigation.Screen.InfoScreen.route) {
             InfoScreen(onNavigateBack = { navigationHandler.navigateBack() })
 
         }
 
-        composable("edit") {
-            UserProfilesList(
+
+        composable(Navigation.Screen.EditProfile.route) {
+            EditProfile(
                 userProfiles = sharedProfilesViewModel.userProfiles.value,
                 onBackNavigate = {
                     navigationHandler.navigateBack()
@@ -374,6 +339,63 @@ fun NavigationApp() {
             )
         }
 
+
+        composable(Navigation.Screen.Settings.route) {
+            SettingsScreen(
+                sharedViewModel = sharedProfilesViewModel,
+                credentialsViewModel = credentialsViewModel,
+                onNavigate = { destination ->
+                    when (destination) {
+                        "back" -> navigationHandler.navigateBack()
+                        "securityCode" -> {
+                            authNavigationHandler.navigateToSecurityCode()
+                        }
+
+                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
+
+                        "permissions" -> navigationHandler.navigateToPermissionScreen()
+                    }
+                }
+            ) { newUsername, newPassword ->
+                credentialsViewModel.setEnteredCredentials(
+                    username = newUsername,
+                    password = newPassword
+                )
+            }
+        }
+
+
+        composable(Navigation.Auth.SecurityCode.route) {
+            SecurityCodeScreen(
+                viewModel = credentialsViewModel,
+                onNavigate = { destination ->
+                    when (destination) {
+                        "usernamePasswordLogin" -> authNavigationHandler.navigateToUsernamePasswordLogin()
+                        "back" -> navigationHandler.navigateBack()
+                        "pinLogin" -> authNavigationHandler.navigateToPinLogin()
+                    }
+                },
+                securityCode = credentialsViewModel.credentialsState.value.securityCode ?: "",
+            )
+        }
+
+
+        composable(Navigation.Screen.PermissionScreen.route) {
+
+            val permissionStateViewModel = viewModel<PermissionStateViewModel>()
+
+            PermissionScreen(
+                permissionStateViewModel = permissionStateViewModel,
+                onBackButtonClick = { navigationHandler.navigateBack() }
+            )
+        }
+
+
+
+
+
+
+
+
     }
 }
-

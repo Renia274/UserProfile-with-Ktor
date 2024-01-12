@@ -84,7 +84,7 @@ fun UserProfilesLoading(
     val mainBackgroundColor by remember(username) {
         derivedStateOf {
             if (viewModel.stateFlow.value.darkMode) {
-               Color.White
+                Color.White
             } else {
                 when {
                     username.lowercase().startsWith("bob") -> Color.Green
@@ -178,7 +178,7 @@ fun UserProfilesLoading(
                         viewModel = viewModel
                     )
                 } else {
-                    UserProfilesList(
+                    EditProfile(
                         userProfiles.value,
                         onBackNavigate = onBack,
                         isEditScreen = isShowingEdit,
@@ -364,9 +364,7 @@ fun UserProfileBob(
                             "Item 3",
                             "Item 4",
                             "Item 5",
-                            "Item 6",
-                            "Item 7",
-                            "Item 8"
+                            "Item 6"
                         )
                     )
 
@@ -437,7 +435,6 @@ fun UserProfileBob(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
 
 
     }
@@ -593,9 +590,8 @@ fun UserProfileAlice(
                             "Item 3",
                             "Item 4",
                             "Item 5",
-                            "Item 6",
-                            "Item 7",
-                            "Item 8"
+                            "Item 6"
+
                         )
                     )
 
@@ -835,9 +831,7 @@ fun UserProfileEve(
                             "Item 3",
                             "Item 4",
                             "Item 5",
-                            "Item 6",
-                            "Item 7",
-                            "Item 8"
+                            "Item 6"
                         )
                     )
 
@@ -912,13 +906,12 @@ fun UserProfileEve(
         Spacer(modifier = Modifier.height(8.dp))
 
 
-
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserProfilesList(
+fun EditProfile(
     userProfiles: List<UserData>,
     onBackNavigate: () -> Unit,
     isEditScreen: Boolean,

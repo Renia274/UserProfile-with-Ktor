@@ -28,7 +28,11 @@ fun CustomCountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
             delay(1000L)
 
             timerViewModel.decreaseTime()
-            timerViewModel.stateFlow.value.timeLeft
+
+            // Check if the timer should be reset
+            if (timerViewModel.stateFlow.value.timeLeft == 0) {
+                timerViewModel.resetTimer()
+            }
         }
     }
 
@@ -42,13 +46,12 @@ fun CustomCountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
 
         Spacer(modifier = Modifier.width(90.dp))
 
-        // Reset button
+
         TextButton(
             onClick = {
+                // Reset the timer first and then decrease the timer
                 timerViewModel.resetTimer()
-                timerViewModel.stateFlow.value.timerIsRunning=true
-                timerViewModel.stateFlow.value.timeLeft
-                timerViewModel.decreaseTime()
+                timerViewModel.stateFlow.value.timerIsRunning = true
             }
         ) {
             Text(

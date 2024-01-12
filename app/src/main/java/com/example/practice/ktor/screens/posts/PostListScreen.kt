@@ -25,8 +25,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,14 +44,11 @@ import com.example.practice.ktor.viewmodel.PostsViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun PostsScreen(
-    onNavigate: () -> Unit,
-    viewModel: PostsViewModel = hiltViewModel()
+    onNavigate: () -> Unit, viewModel: PostsViewModel = hiltViewModel()
 ) {
     var isSearchVisible by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf(TextFieldValue()) }
-    val posts by viewModel.posts.observeAsState(emptyList())
-    val errorMessage by viewModel.errorMessage.observeAsState("")
-    val isLoading by viewModel.isLoading.observeAsState()
+    val postState by viewModel.stateFlow.collectAsState()
 
     val listState = rememberLazyListState()
 
@@ -63,7 +60,7 @@ fun PostsScreen(
 
     DisposableEffect(listState) {
         onDispose {
-            if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == posts.size - 1 && !isLoading!!) {
+            if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == postState.posts.size - 1 && !postState.isLoading) {
                 viewModel.loadNextPage()
             }
         }
@@ -74,60 +71,44 @@ fun PostsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        TopAppBar(
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onNavigate()
-                    }
-                ) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            title = { Text("Posts") },
-            actions = {
-                // Search icon to toggle search bar visibility
-                IconButton(
-                    onClick = {
-                        // Toggle search bar visibility
-                        isSearchVisible = !isSearchVisible
-                    }
-                ) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
+        TopAppBar(navigationIcon = {
+            IconButton(onClick = {
+                onNavigate()
+            }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+        }, title = { Text("Posts") }, actions = {
+            // Search icon to toggle search bar visibility
+            IconButton(onClick = {
+                // Toggle search bar visibility
+                isSearchVisible = !isSearchVisible
+            }) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+            }
+        }, modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(4.dp))
 
         if (isSearchVisible) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    viewModel.setSearchQuery(it.text)
-                },
-                label = { Text("Search") },
-                trailingIcon = {
-                    if (searchQuery.text.isNotEmpty()) {
-                        IconButton(
-                            onClick = {
-                                // Clear search query and hide keyboard
-                                searchQuery = TextFieldValue("")
-                                viewModel.setSearchQuery("")
-                                keyboardController?.hide()
-                                isSearchVisible = false
-                            }
-                        ) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
-                        }
+            OutlinedTextField(value = searchQuery, onValueChange = {
+                searchQuery = it
+                viewModel.setSearchQuery(it.text)
+            }, label = { Text("Search") }, trailingIcon = {
+                if (searchQuery.text.isNotEmpty()) {
+                    IconButton(onClick = {
+                        // Clear search query and hide keyboard
+                        searchQuery = TextFieldValue("")
+                        viewModel.setSearchQuery("")
+                        keyboardController?.hide()
+                        isSearchVisible = false
+                    }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                }
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -142,39 +123,34 @@ fun PostsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (errorMessage.isNotBlank()) {
-            Text(text = errorMessage, color = Color.Red)
+        if (postState.errorMessage?.isNotBlank() == true) {
+            Text(text = postState.errorMessage ?: "", color = Color.Red)
+
         } else {
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxWidth()
+                state = listState, modifier = Modifier.fillMaxWidth()
             ) {
-                items(posts.filter { post ->
-                    post.title.contains(searchQuery.text, ignoreCase = true) ||
-                            post.body.contains(searchQuery.text, ignoreCase = true) ||
-                            post.title.startsWith(searchQuery.text, ignoreCase = true)
+                items(postState.posts.filter { post ->
+                    post.title.contains(searchQuery.text, ignoreCase = true) || post.body.contains(
+                        searchQuery.text,
+                        ignoreCase = true
+                    ) || post.title.startsWith(searchQuery.text, ignoreCase = true)
                 }.distinctBy { it.id }, key = { post -> post.id }) { post ->
-                    PostItem(
-                        post,
-                        onUpdateClick = { updatedPost, updatedTitle, updatedBody ->
-                            viewModel.updatePost(
-                                updatedPost.id,
-                                PostRequest(updatedBody, updatedTitle, 1)
-                            )
-                        },
-                        onDeleteClick = { postId ->
-                            viewModel.deletePost(postId)
-                        }
-                    )
+                    PostItem(post, onUpdateClick = { updatedPost, updatedTitle, updatedBody ->
+                        viewModel.updatePost(
+                            updatedPost.id, PostRequest(updatedBody, updatedTitle, 1)
+                        )
+                    }, onDeleteClick = { postId ->
+                        viewModel.deletePost(postId)
+                    })
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-
         }
 
-        if (isLoading == true) {
+        if (postState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -186,4 +162,3 @@ fun PostsScreen(
         }
     }
 }
-

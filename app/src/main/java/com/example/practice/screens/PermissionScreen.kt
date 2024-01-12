@@ -1,7 +1,5 @@
 package com.example.practice.screens
 
-import CameraButton
-import MicButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +16,15 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
+import com.example.practice.screens.items.CameraButton
 import com.example.practice.screens.items.CameraPermissionDialog
+import com.example.practice.screens.items.MicButton
 import com.example.practice.screens.items.MicrophonePermissionDialog
 
 @Composable
@@ -30,11 +32,11 @@ fun PermissionScreen(
     permissionStateViewModel: PermissionStateViewModel,
     onBackButtonClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    val permissionState by permissionStateViewModel.permissionState.collectAsState()
 
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(
             title = { Text("Permissions") },
@@ -48,9 +50,9 @@ fun PermissionScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Show CameraPermissionDialog if camera permissions are not granted
-        if (permissionStateViewModel.isCameraPermissionDialogShown.value) {
+        if (permissionState.isCameraPermissionDialogShown) {
             CameraPermissionDialog(
-                isPermissionDialogShown = permissionStateViewModel.isCameraPermissionDialogShown.value,
+                isPermissionDialogShown = permissionState.isCameraPermissionDialogShown,
                 onDismiss = {
                     permissionStateViewModel.setCameraPermissionDialogShown(false)
                 },
@@ -65,15 +67,16 @@ fun PermissionScreen(
                 onLater = {
                     // Handle camera permission later
                     permissionStateViewModel.setCameraPermissionDialogShown(false)
-                })
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Show MicrophonePermissionDialog if microphone permissions are not granted
-        if (permissionStateViewModel.isMicrophonePermissionDialogShown.value) {
+        if (permissionState.isMicrophonePermissionDialogShown) {
             MicrophonePermissionDialog(
-                isPermissionDialogShown = permissionStateViewModel.isMicrophonePermissionDialogShown.value,
+                isPermissionDialogShown = permissionState.isMicrophonePermissionDialogShown,
                 onDismiss = {
                     permissionStateViewModel.setMicrophonePermissionDialogShown(false)
                 },
@@ -88,13 +91,15 @@ fun PermissionScreen(
                 onLater = {
                     // Handle microphone permission later
                     permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                })
+                }
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             "PERMISSIONS FOR THE APP",
             style = MaterialTheme.typography.h6,
-
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -102,7 +107,6 @@ fun PermissionScreen(
         Text(
             "Click the camera button for camera permission. ",
             style = MaterialTheme.typography.body1,
-
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -110,8 +114,7 @@ fun PermissionScreen(
         Text(
             "Click the mic button for microphone  permission. ",
             style = MaterialTheme.typography.body1,
-
-            )
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

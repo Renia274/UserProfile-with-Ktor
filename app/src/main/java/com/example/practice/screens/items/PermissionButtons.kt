@@ -1,3 +1,5 @@
+package com.example.practice.screens.items
+
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -24,7 +26,7 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
         onClick = {
             permissionStateViewModel.setMicrophonePermissionDialogShown(true)
         },
-        modifier = Modifier.size(width = 100 .dp, height = 40.dp)
+        modifier = Modifier.size(width = 100.dp, height = 40.dp)
     ) {
         Text(text = "MIC")
     }
@@ -33,9 +35,8 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 
 
 
-
 //@Composable
-//fun CameraButton(permissionStateViewModel: PermissionStateViewModel) {
+//fun com.example.practice.screens.items.CameraButton() {
 //
 //    val context = LocalContext.current
 //    val launcher = rememberLauncherForActivityResult(
@@ -79,7 +80,7 @@ fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
 //
 //
 //@Composable
-//fun MicButton(permissionStateViewModel: PermissionStateViewModel) {
+//fun com.example.practice.screens.items.MicButton() {
 //
 //    val context = LocalContext.current
 //

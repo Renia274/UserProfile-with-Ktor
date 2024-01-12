@@ -1,8 +1,6 @@
 package com.example.practice.ktor.viewmodel
 
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.practice.ktor.dto.PostRequest
@@ -10,58 +8,63 @@ import com.example.practice.ktor.dto.PostResponse
 import com.example.practice.ktor.repository.PostsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class PostsViewState(
+    val posts: List<PostResponse>,
+    val errorMessage: String?,
+    val isLoading: Boolean,
+    val searchQuery: String?
+)
 
 @HiltViewModel
 class PostsViewModel @Inject constructor(private val repository: PostsRepository) : ViewModel() {
 
-    private val _posts = MutableLiveData<List<PostResponse>>()
-    val posts: LiveData<List<PostResponse>> get() = _posts
-
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
-
-    private val _searchQuery = MutableLiveData<String>()
-
-    //val searchQuery: LiveData<String> get() = _searchQuery
+    private val state = MutableStateFlow(PostsViewState(
+        posts = emptyList(),
+        errorMessage = null,
+        isLoading = false,
+        searchQuery = null
+    ))
+    val stateFlow: StateFlow<PostsViewState> get() = state
 
     private var currentPage = 1
     private val pageSize = 10
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
     fun setSearchQuery(query: String) {
-        _searchQuery.value = query
+        state.value = state.value.copy(searchQuery = query)
     }
 
     fun fetchPosts() {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
+                state.value = state.value.copy(isLoading = true)
 
                 delay(2000)
 
                 val fetchedPosts = repository.getPosts(currentPage, pageSize)
 
-                val filteredPosts = if (_searchQuery.value.isNullOrBlank()) {
+                val filteredPosts = if (state.value.searchQuery.isNullOrBlank()) {
                     fetchedPosts
                 } else {
                     fetchedPosts.filter { post ->
-                        post.title.contains(_searchQuery.value!!, ignoreCase = true) ||
-                                post.body.contains(_searchQuery.value!!, ignoreCase = true)
+                        post.title.contains(state.value.searchQuery!!, ignoreCase = true) ||
+                                post.body.contains(state.value.searchQuery!!, ignoreCase = true)
                     }
                 }
 
-                _posts.value = (_posts.value?.plus(filteredPosts) ?: filteredPosts)
-                    .distinctBy { it.id }
-                    .sortedBy { it.title }
-
-                _isLoading.value = false
+                state.value = state.value.copy(
+                    posts = (state.value.posts.plus(filteredPosts))
+                        .distinctBy { it.id }
+                        .sortedBy { it.title },
+                    isLoading = false
+                )
 
             } catch (e: Exception) {
-                _isLoading.value = false
-                _errorMessage.value = "Error fetching posts: ${e.message}"
+                state.value = state.value.copy(isLoading = false, errorMessage = "Error fetching posts: ${e.message}")
             }
         }
     }
@@ -83,14 +86,16 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
                 if (newPost != null) {
                     newPost.id = timestamp.toInt()
                     println("New post key: ${newPost.id}")
-                    _posts.value = (_posts.value?.plus(newPost) ?: listOf(newPost))
-                        .sortedBy { it.title }
+                    state.value = state.value.copy(
+                        posts = (state.value.posts.plus(newPost))
+                            .sortedBy { it.title }
+                    )
 
-                    val newIndex = _posts.value?.indexOf(newPost) ?: -1
+                    val newIndex = state.value.posts.indexOf(newPost)
                     listState.scrollToItem(newIndex)
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error creating post: ${e.message}"
+                state.value = state.value.copy(errorMessage = "Error creating post: ${e.message}")
             }
         }
     }
@@ -105,21 +110,23 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
                 if (isDelete) {
                     val isDeleted = repository.deletePost(postId)
                     if (isDeleted) {
-                        _posts.value = _posts.value?.filter { it.id != postId }
+                        state.value = state.value.copy(
+                            posts = state.value.posts.filter { it.id != postId }
+                        )
                     }
                 } else {
                     val updatedResponse = repository.updatePost(postId, updatedPost!!)
                     updatedResponse?.let { updated ->
-                        val index = _posts.value?.indexOfFirst { it.id == postId } ?: -1
+                        val index = state.value.posts.indexOfFirst { it.id == postId }
                         if (index != -1) {
-                            val updatedList = _posts.value!!.toMutableList()
+                            val updatedList = state.value.posts.toMutableList()
                             updatedList[index] = updated
-                            _posts.value = updatedList.toList()
+                            state.value = state.value.copy(posts = updatedList.toList())
                         }
                     }
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error updating/deleting post: ${e.message}"
+                state.value = state.value.copy(errorMessage = "Error updating/deleting post: ${e.message}")
             }
         }
     }
@@ -129,14 +136,13 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
             try {
                 val isDeleted = repository.deletePost(postId)
                 if (isDeleted) {
-                    _posts.value = _posts.value?.filter { it.id != postId }
+                    state.value = state.value.copy(
+                        posts = state.value.posts.filter { it.id != postId }
+                    )
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error deleting post: ${e.message}"
+                state.value = state.value.copy(errorMessage = "Error deleting post: ${e.message}")
             }
         }
     }
 }
-
-
-
