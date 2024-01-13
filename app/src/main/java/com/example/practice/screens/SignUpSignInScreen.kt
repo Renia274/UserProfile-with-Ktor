@@ -28,7 +28,7 @@ fun SignUpSignInScreen(
     onSignInClick: () -> Unit,
     viewModel: CredentialsViewModel = hiltViewModel()
 ) {
-    // Define the username and password variables
+
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -39,7 +39,7 @@ fun SignUpSignInScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Sign Up Button with a green background color
+
         Button(
             onClick = {
                 // Save entered credentials to ViewModel
@@ -58,7 +58,7 @@ fun SignUpSignInScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sign In Button with a blue background color
+
         Button(
             onClick = onSignInClick,
             modifier = Modifier

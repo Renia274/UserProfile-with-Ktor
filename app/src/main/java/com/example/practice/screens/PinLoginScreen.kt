@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -35,12 +36,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
-
 import com.example.practice.data.UserData
 import com.example.practice.navigation.graph.Navigation
+import com.example.practice.ui.theme.PracticeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,11 +51,14 @@ fun PinLoginScreen(
     onNavigate: (Navigation.Screen) -> Unit,
     onPostNavigate: () -> Unit,
 ) {
+    // entered PIN
     var pin by remember { mutableStateOf("") }
+
+
     var isPinVisible by remember { mutableStateOf(false) }
 
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
+    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
         fontSize = 18.sp,
         platformStyle = overrideFontPadding
@@ -64,6 +69,7 @@ fun PinLoginScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+
         TopAppBar(
             title = { Text("") },
             navigationIcon = {
@@ -73,6 +79,7 @@ fun PinLoginScreen(
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
 
+                    // navigate to postlist screen
                     IconButton(
                         onClick = {
                             onPostNavigate.invoke()
@@ -84,8 +91,8 @@ fun PinLoginScreen(
             }
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
+
 
         Text(
             text = "Enter Your Pin",
@@ -98,6 +105,7 @@ fun PinLoginScreen(
         )
 
         Spacer(modifier = Modifier.height(64.dp))
+
 
         OutlinedTextField(
             value = pin,
@@ -117,6 +125,7 @@ fun PinLoginScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(4.dp))
+
                     IconButton(
                         onClick = { isPinVisible = !isPinVisible },
                     ) {
@@ -134,6 +143,7 @@ fun PinLoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         Button(
             onClick = {
                 val userProfile = when (pin.lowercase()) {
@@ -143,6 +153,7 @@ fun PinLoginScreen(
                     else -> null
                 }
 
+                // Trigger login success or reset PIN if not recognized
                 userProfile?.let {
                     onLoginSuccess.invoke(it)
                 } ?: run {
@@ -154,6 +165,25 @@ fun PinLoginScreen(
                 .padding(16.dp)
         ) {
             Text("Log In")
+        }
+    }
+}
+
+
+
+
+@Preview
+@Composable
+fun PinLoginScreenPreview() {
+
+
+    PracticeTheme {
+        Surface {
+            PinLoginScreen(
+                onLoginSuccess = { /**/ },
+                onNavigate = { /* */ },
+                onPostNavigate = { /*  */ }
+            )
         }
     }
 }

@@ -20,8 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.practice.ktor.dto.PostResponse
+import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun PostItem(
@@ -104,5 +106,20 @@ fun PostItem(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+@Preview
+fun PostItemPreview() {
+    val post = PostResponse(id = 1, title = "Sample Title", body = "Sample Body", userId = 1)
+
+    PracticeTheme {
+        PostItem(
+            post = post,
+            onUpdateClick = { _, _, _ -> },
+            onDeleteClick = { }
+        )
     }
 }

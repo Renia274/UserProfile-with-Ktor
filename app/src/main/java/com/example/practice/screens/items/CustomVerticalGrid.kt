@@ -21,13 +21,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun CustomVerticalGrid(
     items: List<String>
 ) {
+    // State to track the selected item
     var selectedItem by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -37,6 +40,7 @@ fun CustomVerticalGrid(
             .wrapContentHeight()
     ) {
         Spacer(modifier = Modifier.height(8.dp))
+
 
         items.chunked(2).forEachIndexed { rowIndex, rowItems ->
             Row(
@@ -48,7 +52,6 @@ fun CustomVerticalGrid(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 rowItems.forEach { item ->
-
                     CustomGridItem(
                         text = item,
                         isSelected = selectedItem == item,
@@ -90,6 +93,7 @@ fun CustomGridItem(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
+
             Text(
                 text = text,
                 color = Color.Black,
@@ -99,6 +103,7 @@ fun CustomGridItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Description for the selected item
             if (isSelected && description.isNotEmpty()) {
                 Text(
                     text = description,
@@ -112,6 +117,11 @@ fun CustomGridItem(
     }
 }
 
+/**
+ * Function to get a color based on the index.
+ * @param index Index to determine the color.
+ * @return Color for the specified index.
+ */
 fun getColorForIndex(index: Int): Color {
     val itemColors = listOf(
         Color.Blue,
@@ -128,4 +138,15 @@ fun getColorForIndex(index: Int): Color {
 
     // Using the index to select a color from the list
     return itemColors.getOrElse(index % itemColors.size) { Color.Gray }
+}
+
+
+@Preview
+@Composable
+fun CustomVerticalGridPreview() {
+    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6")
+
+    PracticeTheme {
+        CustomVerticalGrid(items = items)
+    }
 }

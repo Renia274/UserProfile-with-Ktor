@@ -58,28 +58,28 @@ fun UserProfilesLoading(
     username: String,
     topAppBarTitle: String,
 ) {
+    // State for showing the edit profile screen
     var isShowingEdit by remember { mutableStateOf(false) }
+
+
     var showSignOutDialog by remember { mutableStateOf(false) }
 
-    // Provide an initial value for selectedIndex
+
     val initialSelectedIndex = 0
     val selectedIndexFlow = remember { MutableStateFlow(initialSelectedIndex) }
+
 
     val timerState by timerViewModel.stateFlow.collectAsState()
     val timeLeft = timerState.timeLeft
 
-
-
+    // Effect to check if the timer has run out and trigger navigation
     LaunchedEffect(timeLeft) {
-        // Check if the timer has run out
         if (timerViewModel.stateFlow.value.timeLeft <= 0) {
-            // Update the current destination
             onNavigate("usernamePasswordLogin")
-
-            // Reset the timer
             timerViewModel.resetTimer()
         }
     }
+
 
     val mainBackgroundColor by remember(username) {
         derivedStateOf {
@@ -96,20 +96,24 @@ fun UserProfilesLoading(
         }
     }
 
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(mainBackgroundColor)
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+
             TopAppBar(
                 title = {
                     Text(
-                        text = topAppBarTitle, color = when {
+                        text = topAppBarTitle,
+                        color = when {
                             username.lowercase().startsWith("bob") -> Color.Green
                             username.lowercase().startsWith("alice") -> Color.LightGray
                             username.lowercase().startsWith("eve") -> Color.Magenta
@@ -123,25 +127,25 @@ fun UserProfilesLoading(
                     }
                 },
                 actions = {
-                    // Perform sign-out when the sign-out icon is clicked
+                    // triggers the sign-out dialog
                     IconButton(onClick = {
                         showSignOutDialog = true
                     }) {
                         Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
                     }
 
-                    // Navigate to the InfoScreen when the info icon is clicked
+                    // navigates to the InfoScreen
                     IconButton(onClick = {
                         onNavigate("info")
                     }) {
                         Icon(imageVector = Icons.Default.Info, contentDescription = null)
                     }
-
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
             )
+
 
             Row(
                 modifier = Modifier
@@ -150,9 +154,10 @@ fun UserProfilesLoading(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // Countdown timer display
+                // CustomCountDownTimer composable
                 CustomCountDownTimer(timerViewModel = timerViewModel)
             }
+
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -160,6 +165,7 @@ fun UserProfilesLoading(
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
 
+                // Choose between UserProfileItem and EditProfile based on edit mode
                 if (selectedIndexFlow.value in userProfiles.value.indices && !isShowingEdit) {
                     UserProfileItem(
                         userProfile = userProfiles.value[selectedIndexFlow.value],
@@ -187,12 +193,12 @@ fun UserProfilesLoading(
                 }
             }
 
+
             if (showSignOutDialog) {
                 SignOutDialog(
                     viewModel = credentialsViewModel,
                     onSignOut = {
-                        credentialsViewModel.performSignOut() // Perform sign-out
-
+                        credentialsViewModel.performSignOut()
                         showSignOutDialog = false // Dismiss the dialog after sign-out
                         onNavigate("usernamePasswordLogin")
                     },
@@ -204,6 +210,7 @@ fun UserProfilesLoading(
 
             Spacer(modifier = Modifier.weight(1f))
 
+
             BottomNavigationItems(selectedIndexFlow) { navEvent ->
                 navigateTo(navEvent, onBack, onNavigate)
             }
@@ -212,6 +219,7 @@ fun UserProfilesLoading(
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
 
 
 @Composable

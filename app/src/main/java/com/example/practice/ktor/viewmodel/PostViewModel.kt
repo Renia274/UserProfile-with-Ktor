@@ -38,11 +38,15 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
         state.value = state.value.copy(searchQuery = query)
     }
 
+    /**
+     * Fetches posts from the repository and updates the ViewModel state accordingly
+     */
     fun fetchPosts() {
         viewModelScope.launch {
             try {
                 state.value = state.value.copy(isLoading = true)
 
+                // Simulate a delay for the API call
                 delay(2000)
 
                 val fetchedPosts = repository.getPosts(currentPage, pageSize)
@@ -69,11 +73,18 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
         }
     }
 
+    /**
+     * Loads the next page for pagination purposes.
+     */
     fun loadNextPage() {
         currentPage++
         fetchPosts()
     }
 
+    /**
+     * Creates new posts and adds them to the ViewModel state.
+     * @param listState LazyListState for scrolling to the newly created post.
+     */
     fun createPosts(listState: LazyListState) {
         viewModelScope.launch {
             try {
@@ -84,7 +95,10 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
                 val newPost = repository.createPost(newPostRequest)
 
                 if (newPost != null) {
+
+                    //for every new post use timestamp as unique id
                     newPost.id = timestamp.toInt()
+
                     println("New post key: ${newPost.id}")
                     state.value = state.value.copy(
                         posts = (state.value.posts.plus(newPost))
@@ -100,10 +114,23 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
         }
     }
 
+    /**
+     * Helper function for creating a  PostRequest.
+     * @param body Body of the post.
+     * @param title Title of the post.
+     * @param userId User ID associated with the post.
+     * @return PostRequest object.
+     */
     private fun createSamplePostRequest(body: String, title: String, userId: Int): PostRequest {
         return PostRequest(body = body, title = title, userId = userId)
     }
 
+    /**
+     * Updates or deletes a post in the ViewModel state based on the provided parameters.
+     * @param postId ID of the post to be updated or deleted.
+     * @param updatedPost Updated post data.
+     * @param isDelete Boolean indicating whether the operation is a delete operation.
+     */
     fun updatePost(postId: Int, updatedPost: PostRequest? = null, isDelete: Boolean = false) {
         viewModelScope.launch {
             try {
@@ -131,6 +158,10 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
         }
     }
 
+    /**
+     * Deletes a post in the ViewModel state.
+     * @param postId ID of the post to be deleted.
+     */
     fun deletePost(postId: Int) {
         viewModelScope.launch {
             try {

@@ -33,9 +33,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.ui.theme.PracticeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,5 +126,22 @@ fun SecurityCodeScreen(
         ) {
             Text("Continue")
         }
+    }
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun SecurityCodeScreenPreview() {
+    val viewModel = CredentialsViewModel()
+    val securityCode = "123456"
+
+    PracticeTheme {
+        SecurityCodeScreen(
+            viewModel = viewModel,
+            onNavigate = { },
+            securityCode = securityCode
+        )
     }
 }

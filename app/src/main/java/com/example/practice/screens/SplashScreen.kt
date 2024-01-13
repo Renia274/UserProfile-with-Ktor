@@ -64,7 +64,7 @@ fun SplashScreen(onLoadingComplete: () -> Unit) {
                 )
             }
 
-            // Welcome text
+
             Text(
                 text = "Welcome!",
                 color = Color.Black,

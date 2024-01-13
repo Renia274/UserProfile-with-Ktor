@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -20,12 +21,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
 import com.example.practice.screens.items.CameraButton
 import com.example.practice.screens.items.CameraPermissionDialog
 import com.example.practice.screens.items.MicButton
 import com.example.practice.screens.items.MicrophonePermissionDialog
+import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun PermissionScreen(
@@ -127,6 +130,21 @@ fun PermissionScreen(
             CameraButton(permissionStateViewModel)
             Spacer(modifier = Modifier.width(64.dp))
             MicButton(permissionStateViewModel)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PermissionScreenPreview() {
+    val mockPermissionStateViewModel = PermissionStateViewModel()
+
+    PracticeTheme {
+        Surface {
+            PermissionScreen(
+                permissionStateViewModel = mockPermissionStateViewModel,
+                onBackButtonClick = {}
+            )
         }
     }
 }

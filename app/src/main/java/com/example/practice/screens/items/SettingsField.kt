@@ -21,9 +21,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
+import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun SettingsField(
@@ -104,5 +106,21 @@ fun SettingsField(
                 style = TextStyle(fontSize = 16.sp)
             )
         }
+    }
+}
+
+
+
+@Preview
+@Composable
+fun SettingsFieldPreview() {
+    PracticeTheme {
+        SettingsField(
+            label = "Password:",
+            value = "1234",
+            onValueChange = { /* */ },
+            isEditable = true,
+            onClearClick = { /* */ }
+        )
     }
 }

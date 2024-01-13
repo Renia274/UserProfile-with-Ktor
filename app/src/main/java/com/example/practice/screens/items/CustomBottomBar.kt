@@ -44,7 +44,7 @@ fun CustomBottomBar(
                         modifier = Modifier
                             .size(iconSize)
                             .fillMaxHeight()
-                            .background(item.itemColor) // Set background color for the item
+                            .background(item.itemColor) // Set background color for the bottom navigation item
                     ) {
                         Image(
                             painter = painterResource(id = item.iconResId),

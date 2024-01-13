@@ -74,7 +74,7 @@ fun RecoveryScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        // Top App Bar with back arrow
+
         TopAppBar(
             title = { Text(text = "Password Recovery", style = h4, textAlign = TextAlign.Center) },
             navigationIcon = {
@@ -154,3 +154,6 @@ fun RecoveryScreen(
         }
     }
 }
+
+
+

@@ -26,8 +26,10 @@ import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.ui.theme.PracticeTheme
 
 private fun navigateToDeepLink(url: String, context: Context) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -78,9 +80,8 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button to open the link
+
         Button(onClick = {
-            // Handle the deep link directly
             navigateToDeepLink(url, context)
         }) {
             Text("Open Link")
@@ -88,3 +89,12 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
 
     }
 }
+
+@Preview
+@Composable
+fun InfoScreenPreview() {
+    PracticeTheme {
+        InfoScreen(onNavigateBack = {})
+    }
+}
+

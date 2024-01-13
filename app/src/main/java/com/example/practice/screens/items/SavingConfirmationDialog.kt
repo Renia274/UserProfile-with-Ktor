@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -56,4 +58,15 @@ fun SaveConfirmationDialog(
             Text("Cancel")
         }
     })
+}
+
+@Preview
+@Composable
+fun SaveConfirmationDialogPreview() {
+    PracticeTheme {
+        SaveConfirmationDialog(
+            onConfirm = { /* */ },
+            onDismiss = { /*  */ }
+        )
+    }
 }

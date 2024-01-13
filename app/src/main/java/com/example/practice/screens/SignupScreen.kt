@@ -69,7 +69,7 @@ fun SignupScreen(
     ) {
         Spacer(modifier = Modifier.height(64.dp))
 
-        // Title
+
         Text(
             text = "Create an Account",
             style = h4,
@@ -81,7 +81,7 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Username Input
+
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -92,7 +92,7 @@ fun SignupScreen(
                 .padding(bottom = 16.dp)
         )
 
-        // Email Input
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -128,7 +128,7 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Signup Button
+
         Button(
             onClick = {
                 // navigate to login screen upon successful signup
@@ -158,3 +158,5 @@ fun SignupScreen(
         }
     }
 }
+
+

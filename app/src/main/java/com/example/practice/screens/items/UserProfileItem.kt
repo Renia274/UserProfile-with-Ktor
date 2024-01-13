@@ -17,7 +17,10 @@ fun UserProfileItem(
     onInterestsSelected: (List<String>) -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
+    // Extracting username from the user profile
     val username = userProfile.firstName.lowercase()
+
+    // Displaying different user profiles based on the username prefix
     when {
         username.startsWith("bob") -> {
             UserProfileBob(
@@ -37,8 +40,7 @@ fun UserProfileItem(
                 isEditScreen,
                 onSaveProfession,
                 onInterestsSelected,
-                viewModel,
-
+                viewModel
             )
         }
 
@@ -49,8 +51,7 @@ fun UserProfileItem(
                 isEditScreen,
                 onSaveProfession,
                 onInterestsSelected,
-                viewModel,
-
+                viewModel
             )
         }
     }

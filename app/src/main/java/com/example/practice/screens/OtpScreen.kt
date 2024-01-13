@@ -59,7 +59,7 @@ fun OtpScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // TopAppBar
+
         TopAppBar(
             title = { Text("OTP") },
             navigationIcon = {
@@ -193,3 +193,5 @@ fun OtpScreen(
         }
     }
 }
+
+

@@ -35,11 +35,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.ui.theme.PracticeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,14 +52,17 @@ fun UsernamePasswordLoginScreen(
     onBack: () -> Unit,
     viewModel: CredentialsViewModel = hiltViewModel()
 ) {
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
 
+    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
         fontSize = 16.sp,
         platformStyle = overrideFontPadding
     )
 
+
     var isLoginSuccessful by remember { mutableStateOf(false) }
+
+
     var isPasswordVisible by remember { mutableStateOf(false) }
 
 
@@ -66,13 +71,15 @@ fun UsernamePasswordLoginScreen(
 
     val enteredCredentials = credentialsState.enteredCredentials
 
-
+    // Initialize username and password states with entered credentials or empty if null
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }
     var password by remember { mutableStateOf(enteredCredentials?.password ?: "") }
+
 
     var updatedUsername by remember { mutableStateOf("") }
     var updatedPassword by remember { mutableStateOf("") }
 
+    // update username and password when entered credentials change
     LaunchedEffect(enteredCredentials) {
         enteredCredentials?.let {
             username = it.username
@@ -80,12 +87,13 @@ fun UsernamePasswordLoginScreen(
         }
     }
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-
+        // TopAppBar
         TopAppBar(
             title = { Text("") },
             navigationIcon = {
@@ -98,12 +106,14 @@ fun UsernamePasswordLoginScreen(
                 .wrapContentHeight()
         )
 
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
+
 
             Text(
                 text = "Sign In",
@@ -114,6 +124,7 @@ fun UsernamePasswordLoginScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
 
             OutlinedTextField(
                 value = username,
@@ -126,6 +137,7 @@ fun UsernamePasswordLoginScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
 
             OutlinedTextField(
                 value = password,
@@ -150,28 +162,30 @@ fun UsernamePasswordLoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             Button(
                 onClick = {
                     // Set loading state to true before initiating login
                     onLoading.invoke(true)
 
+                    // Validate credentials and update login success state
                     isLoginSuccessful = viewModel.isValidCredentials(username, password)
 
                     // Set loading state to false after login attempt
                     onLoading.invoke(false)
 
+                    // Perform actions based on login success or failure
                     if (isLoginSuccessful) {
                         // Save entered credentials to ViewModel
                         viewModel.setEnteredCredentials(username, password)
 
+                        // Check username prefix and trigger login success callback
                         when {
                             username.lowercase().startsWith("bob") ||
                                     username.lowercase().startsWith("alice") ||
                                     username.lowercase().startsWith("eve") -> {
-                                println("Login Successful for $username")
                                 updatedUsername = username
                                 updatedPassword = password
-
 
                                 onLoginSuccess.invoke(
                                     username,
@@ -179,14 +193,12 @@ fun UsernamePasswordLoginScreen(
                                     updatedUsername,
                                     updatedPassword
                                 )
-
                             }
 
                             else -> {
                                 println("Invalid username")
                             }
                         }
-
 
                     } else {
                         println("Login Failed")
@@ -199,7 +211,7 @@ fun UsernamePasswordLoginScreen(
                 Text("Login")
             }
 
-            // Forgot Password TextButton
+
             TextButton(
                 onClick = onNavigateToRecovery,
                 modifier = Modifier
@@ -210,4 +222,23 @@ fun UsernamePasswordLoginScreen(
             }
         }
     }
+}
+
+
+@Composable
+@Preview(showBackground = true)
+fun UsernamePasswordLoginScreenPreview() {
+
+    val viewModel = CredentialsViewModel()
+
+    PracticeTheme {
+        UsernamePasswordLoginScreen(
+            onLoginSuccess = { _, _, _, _ -> },
+            onLoading = { },
+            onNavigateToRecovery = { },
+            onBack = { },
+            viewModel = viewModel
+        )
+    }
+
 }
