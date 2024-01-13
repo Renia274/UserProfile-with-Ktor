@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -69,13 +71,8 @@ data class Navigation(
 
 @Composable
 fun NavigationApp() {
+
     val navController = rememberNavController()
-    val credentialsViewModel = viewModel<CredentialsViewModel>()
-    val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>()
-    val timerViewModel = viewModel<TimerViewModel>()
-    val otpViewModel = viewModel<FirebaseOtpViewModel>()
-
-
 
     val navigationHandler = NavigationHandler(navController)
     val authNavigationHandler = AuthNavigationHandler(navController)
@@ -91,6 +88,11 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Auth.SignUpSignIn.route) {
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
@@ -101,6 +103,13 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.Signup.route) {
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
                 sharedViewModel = sharedProfilesViewModel,
@@ -111,6 +120,16 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.OtpScreen.route) {
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val otpViewModel = viewModel<FirebaseOtpViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             OtpScreen(
                 onNavigate = {
                     authNavigationHandler.navigateToUsernamePasswordLogin()
@@ -123,6 +142,15 @@ fun NavigationApp() {
 
         composable(Navigation.Auth.UsernamePasswordLogin.route) {
             var isLoading by remember { mutableStateOf(false) }
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
 
             if (isLoading) {
                 LoadingScreen()
@@ -181,6 +209,12 @@ fun NavigationApp() {
         }
 
         composable(Navigation.Screen.Recovery.route) {
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
                 viewModel = sharedProfilesViewModel,
@@ -190,6 +224,12 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.PinLogin.route) {
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
                     sharedProfilesViewModel.updateUserProfiles(listOf(userProfile))
@@ -210,6 +250,19 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileBob.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Bob"
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val timerViewModel = viewModel<TimerViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -248,6 +301,19 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileAlice.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Alice"
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val timerViewModel = viewModel<TimerViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -286,6 +352,19 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.UserProfileEve.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Eve"
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val timerViewModel = viewModel<TimerViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -329,6 +408,12 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.EditProfile.route) {
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             EditProfile(
                 userProfiles = sharedProfilesViewModel.userProfiles.value,
                 onBackNavigate = {
@@ -341,6 +426,16 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.Settings.route) {
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             SettingsScreen(
                 sharedViewModel = sharedProfilesViewModel,
                 credentialsViewModel = credentialsViewModel,
@@ -366,6 +461,12 @@ fun NavigationApp() {
 
 
         composable(Navigation.Auth.SecurityCode.route) {
+
+            val credentialsViewModel = viewModel<CredentialsViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+
             SecurityCodeScreen(
                 viewModel = credentialsViewModel,
                 onNavigate = { destination ->
@@ -389,12 +490,6 @@ fun NavigationApp() {
                 onBackButtonClick = { navigationHandler.navigateBack() }
             )
         }
-
-
-
-
-
-
 
 
     }
