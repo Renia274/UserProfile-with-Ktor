@@ -1,12 +1,14 @@
 package com.example.practice.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,14 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
 
@@ -53,8 +53,7 @@ fun SecurityCodeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
-            .padding(16.dp),
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TopAppBar(
@@ -107,42 +106,41 @@ fun SecurityCodeScreenContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Security Code TextField
-        TextField(
-            value = customSecurityCode,
-            onValueChange = {
-                onSecurityCodeChange(it)
-                onShowErrorChange(false)
-            },
-            label = { Text("Enter Security Code") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(onDone = {}),
-            isError = showError,
-            singleLine = true,
-            visualTransformation = if (isSecurityCodeVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            trailingIcon = {
-                IconButton(
-                    onClick = { onSecurityCodeVisibilityChange(!isSecurityCodeVisible) },
-                ) {
-                    Icon(
-                        painter = painterResource(id = if (isSecurityCodeVisible) R.drawable.ic_show else R.drawable.ic_hide),
-                        contentDescription = if (isSecurityCodeVisible) "Hide security code" else "Show security code"
-                    )
-                }
-            }
-        )
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
 
-        // Show error message if showError is true
+            TextField(
+                value = customSecurityCode,
+                onValueChange = {
+                    onSecurityCodeChange(it)
+                    onShowErrorChange(false)
+                },
+                label = { Text("Enter Security Code") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(onDone = {}),
+                isError = showError,
+                singleLine = true,
+                visualTransformation = if (isSecurityCodeVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                modifier = Modifier
+                    .weight(1f)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+
         if (showError) {
             Text(
                 text = "Invalid security code. Please try again.",
@@ -151,7 +149,7 @@ fun SecurityCodeScreenContent(
             )
         }
 
-        // Continue Button
+
         Button(
             onClick = onContinueClick,
             modifier = Modifier
@@ -163,7 +161,6 @@ fun SecurityCodeScreenContent(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

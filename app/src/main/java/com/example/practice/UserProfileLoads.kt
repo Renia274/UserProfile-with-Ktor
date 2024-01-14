@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.data.UserData
 import com.example.practice.navigation.bottom.handler.navigateTo
 import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
@@ -229,7 +228,7 @@ fun UserProfileBob(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -455,7 +454,7 @@ fun UserProfileAlice(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -696,7 +695,7 @@ fun UserProfileEve(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel
 ) {
     var isEditingProfession by remember { mutableStateOf(false) }
     var selectedProfession by remember { mutableStateOf(userProfile.profession) }
@@ -923,7 +922,7 @@ fun EditProfile(
     userProfiles: List<UserData>,
     onBackNavigate: () -> Unit,
     isEditScreen: Boolean,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize()

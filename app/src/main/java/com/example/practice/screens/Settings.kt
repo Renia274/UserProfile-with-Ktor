@@ -51,10 +51,8 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.items.SaveConfirmationDialog
 import com.example.practice.screens.items.SettingsField
+import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.launch
-
-
-
 
 
 @Composable
@@ -70,7 +68,6 @@ fun SettingsScreen(
     var darkMode by remember {
         mutableStateOf(sharedViewModel.stateFlow.value.darkMode)
     }
-
 
 
     var notificationEnabled by rememberSaveable {
@@ -120,6 +117,7 @@ fun SettingsScreen(
                     notificationEnabled = sharedViewModel.stateFlow.value.notificationEnabled
                     isSecurityCodeEditable = notificationEnabled
                 }
+
                 else -> Unit
             }
         }
@@ -222,8 +220,6 @@ fun SettingsScreen(
         )
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -330,7 +326,7 @@ fun SettingsContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Username
+
             SettingsField(
                 label = "Username:",
                 value = username,
@@ -346,7 +342,7 @@ fun SettingsContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password
+
             SettingsField(
                 label = "Password:",
                 value = password,
@@ -398,14 +394,13 @@ fun SettingsContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Save Security Code Button
+
             Button(
                 onClick = {
                     onSecurityCodeSave()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
             ) {
                 Text("Save Security Code")
             }
@@ -416,7 +411,6 @@ fun SettingsContent(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
                     .height(64.dp)
             )
 
@@ -435,7 +429,11 @@ fun SettingsContent(
 
             // Dark Mode
             // Dark Mode
-            Text("Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth())
+            Text(
+                "Dark Mode",
+                style = TextStyle(fontSize = 16.sp),
+                modifier = Modifier.fillMaxWidth()
+            )
             Switch(
                 checked = darkModeState,
                 onCheckedChange = {
@@ -484,7 +482,6 @@ fun SettingsContent(
 }
 
 
-
 @Composable
 @Preview(showBackground = true)
 fun SettingsContentPreview() {
@@ -495,25 +492,28 @@ fun SettingsContentPreview() {
     val password = "********"
     val enteredSecurityCode = "1234"
 
-    SettingsContent(
-        darkMode = darkMode,
-        notificationEnabled = notificationEnabled,
-        signupEmail = signupEmail,
-        username = username,
-        password = password,
-        enteredSecurityCode = enteredSecurityCode,
-        onNavigate = {},
-        onSaveCredentials = { _, _ -> },
-        onSignupEmailChange = {},
-        onUsernameChange = {},
-        onPasswordChange = {},
-        onSecurityCodeChange = {},
-        onSecurityCodeSave = {},
-        onShowConfirmationDialog = {},
-        onDismissConfirmationDialog = {},
-        setDarkMode = {},
-        setSecuritySwitch = {}
-    )
+    PracticeTheme {
+        SettingsContent(
+            darkMode = darkMode,
+            notificationEnabled = notificationEnabled,
+            signupEmail = signupEmail,
+            username = username,
+            password = password,
+            enteredSecurityCode = enteredSecurityCode,
+            onNavigate = {},
+            onSaveCredentials = { _, _ -> },
+            onSignupEmailChange = {},
+            onUsernameChange = {},
+            onPasswordChange = {},
+            onSecurityCodeChange = {},
+            onSecurityCodeSave = {},
+            onShowConfirmationDialog = {},
+            onDismissConfirmationDialog = {},
+            setDarkMode = {},
+            setSecuritySwitch = {}
+        )
+    }
+
 }
 
 

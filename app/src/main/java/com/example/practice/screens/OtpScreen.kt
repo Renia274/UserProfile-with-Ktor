@@ -109,6 +109,7 @@ fun OtpScreen(
 
 @Composable
 fun OtpScreenContent(
+    // Parameterized content for OTP screen
     email: String,
     onEmailChange: (String) -> Unit,
     otp: String,
@@ -120,16 +121,15 @@ fun OtpScreenContent(
     showMessage: Boolean,
     signupEmail: String
 ) {
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
-
-
         Spacer(modifier = Modifier.height(4.dp))
 
         // email
-        OutlinedTextField(value = email,
+        OutlinedTextField(
+            value = email,
             onValueChange = { onEmailChange(it) },
             label = { Text("Enter Email Address") },
             keyboardOptions = KeyboardOptions(
@@ -147,8 +147,9 @@ fun OtpScreenContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // OTP
-        OutlinedTextField(value = otp,
+        //OTP
+        OutlinedTextField(
+            value = otp,
             onValueChange = { onOtpChange(it) },
             label = { Text("Enter OTP") },
             keyboardOptions = KeyboardOptions(
@@ -160,8 +161,8 @@ fun OtpScreenContent(
                 .background(Color.Transparent)
         )
 
+        // Buttons for OTP actions
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = { onGenerateClick() },
             enabled = email.isNotBlank(),
@@ -180,8 +181,8 @@ fun OtpScreenContent(
             Text("Verify OTP")
         }
 
+        // Display code message when the user creates OTP code with signup email
         Spacer(modifier = Modifier.height(8.dp))
-
         if (codeMessage != null) {
             Text(
                 codeMessage,
@@ -190,6 +191,8 @@ fun OtpScreenContent(
             )
         }
 
+
+        // Display code error message when the user tries to create OTP code with any email
         if (emailErrorMessage != null ) {
             Text(
                 emailErrorMessage,
@@ -199,7 +202,6 @@ fun OtpScreenContent(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun OtpScreenPreview() {

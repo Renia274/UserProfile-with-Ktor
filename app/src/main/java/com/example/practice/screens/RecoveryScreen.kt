@@ -50,19 +50,23 @@ fun RecoveryScreen(
     onNavigateBack: () -> Unit,
     viewModel: SharedProfilesViewModel = hiltViewModel()
 ) {
+
     val sharedState by viewModel.stateFlow.collectAsState()
     val signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
+
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
         fontSize = 16.sp, platformStyle = overrideFontPadding
     )
 
+
     var email by remember { mutableStateOf("") }
     var isRecoveryEmailSent by remember { mutableStateOf(false) }
     var isDelayComplete by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
 
+    // handle delays for UI updates
     LaunchedEffect(isRecoveryEmailSent) {
         delay(8000)
         isRecoveryEmailSent = false
@@ -70,12 +74,14 @@ fun RecoveryScreen(
         delay(8000)
     }
 
+    // Column layout for the recovery screen
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
 
+        // Top App Bar
         TopAppBar(
             title = { Text(text = "Password Recovery", style = h4, textAlign = TextAlign.Center) },
             navigationIcon = {
@@ -86,7 +92,9 @@ fun RecoveryScreen(
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
         )
 
-        RecoveryScreenContent(email = email,
+        // Content of the recovery screen
+        RecoveryScreenContent(
+            email = email,
             onEmailChange = { email = it },
             onButtonClick = {
                 if (email == signupEmail) {
@@ -114,14 +122,17 @@ fun RecoveryScreenContent(
     isDelayComplete: Boolean,
     navigateToLogin: () -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        OutlinedTextField(value = email,
+
+        OutlinedTextField(
+            value = email,
             onValueChange = { onEmailChange(it) },
             label = { Text("Enter your email") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
@@ -132,6 +143,7 @@ fun RecoveryScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         Button(
             onClick = onButtonClick, modifier = Modifier
                 .fillMaxWidth()
@@ -140,6 +152,7 @@ fun RecoveryScreenContent(
             Text("Recover Password")
         }
 
+        // Display error message if showError is true
         if (showError) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -149,6 +162,7 @@ fun RecoveryScreenContent(
             )
         }
 
+        // Display message and loading indicator if recovery email is sent
         if (isRecoveryEmailSent) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -161,12 +175,14 @@ fun RecoveryScreenContent(
                 modifier = Modifier.size(50.dp), color = MaterialTheme.colorScheme.primary
             )
 
+            // Navigate to login screen after delay
             if (isDelayComplete) {
                 navigateToLogin.invoke()
             }
         }
     }
 }
+
 
 
 @Composable

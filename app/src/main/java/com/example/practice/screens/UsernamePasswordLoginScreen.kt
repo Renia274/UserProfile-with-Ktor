@@ -42,7 +42,8 @@ import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun UsernamePasswordLoginScreen(
     onLoginSuccess: (String, String, String, String) -> Unit,
@@ -51,34 +52,24 @@ fun UsernamePasswordLoginScreen(
     onBack: () -> Unit,
     viewModel: CredentialsViewModel
 ) {
-
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
         fontSize = 16.sp,
         platformStyle = overrideFontPadding
     )
 
-
     var isLoginSuccessful by remember { mutableStateOf(false) }
-
-
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-
     val credentialsState by viewModel.credentialsState.collectAsState()
-
-
     val enteredCredentials = credentialsState.enteredCredentials
 
-    // Initialize username and password states with entered credentials or empty if null
     var username by remember { mutableStateOf(enteredCredentials?.username ?: "") }
     var password by remember { mutableStateOf(enteredCredentials?.password ?: "") }
-
 
     var updatedUsername by remember { mutableStateOf("") }
     var updatedPassword by remember { mutableStateOf("") }
 
-    // update username and password when entered credentials change
     LaunchedEffect(enteredCredentials) {
         enteredCredentials?.let {
             username = it.username
@@ -86,13 +77,78 @@ fun UsernamePasswordLoginScreen(
         }
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        // TopAppBar
+
+
+        UsernamePasswordLoginContent(
+            username = username,
+            onUsernameChange = { username = it },
+            password = password,
+            onPasswordChange = { password = it },
+            isPasswordVisible = isPasswordVisible,
+            onTogglePasswordVisibility = { isPasswordVisible = !isPasswordVisible },
+            onLoginClick = {
+                onLoading.invoke(true)
+                isLoginSuccessful = viewModel.isValidCredentials(username, password)
+                onLoading.invoke(false)
+
+                if (isLoginSuccessful) {
+                    viewModel.setEnteredCredentials(username, password)
+
+                    when {
+                        username.lowercase().startsWith("bob") ||
+                                username.lowercase().startsWith("alice") ||
+                                username.lowercase().startsWith("eve") -> {
+                            updatedUsername = username
+                            updatedPassword = password
+
+                            onLoginSuccess.invoke(
+                                username,
+                                password,
+                                updatedUsername,
+                                updatedPassword
+                            )
+                        }
+                        else -> {
+                            println("Invalid username")
+                        }
+                    }
+
+                } else {
+                    println("Login Failed")
+                }
+            },
+            onNavigateToRecovery = onNavigateToRecovery,
+            onBack=onBack
+        )
+    }
+}
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UsernamePasswordLoginContent(
+    username: String,
+    onUsernameChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    isPasswordVisible: Boolean,
+    onTogglePasswordVisibility: () -> Unit,
+    onLoginClick: () -> Unit,
+    onNavigateToRecovery: () -> Unit,
+    onBack: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+
         TopAppBar(
             title = { Text("") },
             navigationIcon = {
@@ -105,139 +161,93 @@ fun UsernamePasswordLoginScreen(
                 .wrapContentHeight()
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Column(
+        Text(
+            text = "Sign In",
+            style = TextStyle(
+                fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(includeFontPadding = false)
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { onUsernameChange(it) },
+            label = { Text("Username") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { onPasswordChange(it) },
+            label = { Text("Password") },
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
+            trailingIcon = {
+                IconButton(
+                    onClick = onTogglePasswordVisibility
+                ) {
+                    Icon(
+                        painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
+                        contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onLoginClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Text("Login")
+        }
 
-
-            Text(
-                text = "Sign In",
-                style = h4,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                trailingIcon = {
-                    IconButton(
-                        onClick = { isPasswordVisible = !isPasswordVisible },
-                    ) {
-                        Icon(
-                            painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            Button(
-                onClick = {
-                    // Set loading state to true before initiating login
-                    onLoading.invoke(true)
-
-                    // Validate credentials and update login success state
-                    isLoginSuccessful = viewModel.isValidCredentials(username, password)
-
-                    // Set loading state to false after login attempt
-                    onLoading.invoke(false)
-
-                    // Perform actions based on login success or failure
-                    if (isLoginSuccessful) {
-                        // Save entered credentials to ViewModel
-                        viewModel.setEnteredCredentials(username, password)
-
-                        // Check username prefix and trigger login success callback
-                        when {
-                            username.lowercase().startsWith("bob") ||
-                                    username.lowercase().startsWith("alice") ||
-                                    username.lowercase().startsWith("eve") -> {
-                                updatedUsername = username
-                                updatedPassword = password
-
-                                onLoginSuccess.invoke(
-                                    username,
-                                    password,
-                                    updatedUsername,
-                                    updatedPassword
-                                )
-                            }
-
-                            else -> {
-                                println("Invalid username")
-                            }
-                        }
-
-                    } else {
-                        println("Login Failed")
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Login")
-            }
-
-
-            TextButton(
-                onClick = onNavigateToRecovery,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Forgot Password?")
-            }
+        TextButton(
+            onClick = onNavigateToRecovery,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text("Forgot Password?")
         }
     }
 }
 
-
-@Composable
 @Preview(showBackground = true)
-fun UsernamePasswordLoginScreenPreview() {
+@Composable
+fun UsernamePasswordLoginContentPreview() {
+    val username = "example_user"
+    val password = "password123"
 
-    val viewModel = CredentialsViewModel()
 
     PracticeTheme {
-        UsernamePasswordLoginScreen(
-            onLoginSuccess = { _, _, _, _ -> },
-            onLoading = { },
-            onNavigateToRecovery = { },
-            onBack = { },
-            viewModel = viewModel
+        UsernamePasswordLoginContent(
+            username = username,
+            onUsernameChange = {  },
+            password = password,
+            onPasswordChange = { password },
+            isPasswordVisible = false,
+            onTogglePasswordVisibility = {  },
+            onLoginClick = {},
+            onNavigateToRecovery = {},
+            onBack = {}
         )
     }
-
 }

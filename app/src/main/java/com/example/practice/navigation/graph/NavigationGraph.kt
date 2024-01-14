@@ -87,19 +87,16 @@ fun NavigationApp() {
             }
         }
 
+
         composable(Navigation.Auth.SignUpSignIn.route) {
 
-            val credentialsViewModel = viewModel<CredentialsViewModel>(
-                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
-            )
 
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
-                viewModel = credentialsViewModel
+
             )
         }
-
 
 
         composable(Navigation.Auth.Signup.route) {
