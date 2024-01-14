@@ -1,5 +1,6 @@
 package com.example.practice.screens
 
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,18 +30,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -52,7 +53,10 @@ import com.example.practice.screens.items.SaveConfirmationDialog
 import com.example.practice.screens.items.SettingsField
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
+
+
 @Composable
 fun SettingsScreen(
     sharedViewModel: SharedProfilesViewModel,
@@ -61,22 +65,22 @@ fun SettingsScreen(
     onSaveCredentials: (String, String) -> Unit,
 ) {
     val context = LocalContext.current
-
+    var showConfirmationDialog by remember { mutableStateOf(false) }
 
     var darkMode by remember {
         mutableStateOf(sharedViewModel.stateFlow.value.darkMode)
     }
 
-    // Observe changes in notificationEnabled
-    var notificationEnabled by remember {
+
+
+    var notificationEnabled by rememberSaveable {
         mutableStateOf(sharedViewModel.stateFlow.value.notificationEnabled)
     }
-    var signupEmail = sharedViewModel.stateFlow.value.signupEmail
+    var signupEmail by remember {
+        mutableStateOf(sharedViewModel.stateFlow.value.signupEmail)
+    }
 
-
-
-    var isSecurityCodeEditable by remember { mutableStateOf(false) }
-    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var isSecurityCodeEditable by rememberSaveable { mutableStateOf(false) }
 
     var rememberedUsernameState by remember {
         mutableStateOf(
@@ -88,8 +92,6 @@ fun SettingsScreen(
             credentialsViewModel.credentialsState.value.enteredCredentials?.password ?: ""
         )
     }
-
-    val userProfiles by sharedViewModel.userProfiles.collectAsState()
 
     var username by remember { mutableStateOf(rememberedUsernameState) }
     var password by remember { mutableStateOf(rememberedPasswordState) }
@@ -109,20 +111,15 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(notificationEnabled) {
-        notificationEnabled = notificationEnabled
-    }
-
     DisposableEffect(lifecycleOwner) {
         val onEvent: (LifecycleOwner, Lifecycle.Event) -> Unit = { owner, event ->
             when (event) {
-                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
+                Lifecycle.Event.ON_RESUME -> {
                     //update the UI based on the lifecycle event
-                    darkMode = darkMode
-                    notificationEnabled = notificationEnabled
+                    darkMode = sharedViewModel.stateFlow.value.darkMode
+                    notificationEnabled = sharedViewModel.stateFlow.value.notificationEnabled
                     isSecurityCodeEditable = notificationEnabled
                 }
-
                 else -> Unit
             }
         }
@@ -144,7 +141,125 @@ fun SettingsScreen(
         }
     }
 
+    SettingsContent(
+        darkMode = darkMode,
+        notificationEnabled = notificationEnabled,
+        signupEmail = signupEmail,
+        username = username,
+        password = password,
+        enteredSecurityCode = enteredSecurityCode,
+        onNavigate = onNavigate,
+        onSaveCredentials = onSaveCredentials,
+        onSignupEmailChange = { sharedViewModel.setSignupEmail(it) },
+        onUsernameChange = { newValue ->
+            username = newValue
+            credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
+        },
+        onPasswordChange = { newValue ->
+            password = newValue
+            credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
+        },
+        onSecurityCodeChange = { enteredSecurityCode = it },
+        onSecurityCodeSave = {
+            if (enteredSecurityCode.isNotEmpty()) {
+                credentialsViewModel.saveSecurityCode(enteredSecurityCode)
+                onNavigate("securityCode")
+                Toast.makeText(context, "Security Code saved", Toast.LENGTH_SHORT).show()
+            } else {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        "Security code cannot be empty",
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
+        },
+        onShowConfirmationDialog = { showConfirmationDialog = true },
+        onDismissConfirmationDialog = { showConfirmationDialog = false },
+        setDarkMode = { newDarkModeState ->
+            darkMode = newDarkModeState
+            onNavigate("toggleDarkMode")
+            val toastMessage = if (darkMode) {
+                "Dark Mode is enabled"
+            } else {
+                "Dark Mode is disabled"
+            }
+            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            sharedViewModel.setDarkMode(darkMode)
+        },
+        setSecuritySwitch = { newSecuritySwitchState ->
+            notificationEnabled = newSecuritySwitchState
+            isSecurityCodeEditable = newSecuritySwitchState
 
+            val toastMessage = if (newSecuritySwitchState) {
+                "Security feature is on"
+            } else {
+                "Security feature is off"
+            }
+            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+            sharedViewModel.setNotificationEnabled(notificationEnabled)
+        },
+    )
+
+    // Confirmation Dialog
+    if (showConfirmationDialog) {
+        SaveConfirmationDialog(
+            onConfirm = {
+                val updatedUsername = username
+                val updatedPassword = password
+                // Save the updated username and password
+                onSaveCredentials.invoke(updatedUsername, updatedPassword)
+                // update Credentials
+                credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
+                // navigate to login screen
+                onNavigate("usernamePasswordLogin")
+                showConfirmationDialog = false
+            },
+            onDismiss = {
+                // Dismiss the dialog if the user cancels the save operation
+                showConfirmationDialog = false
+            }
+        )
+    }
+}
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsContent(
+    darkMode: Boolean,
+    notificationEnabled: Boolean,
+    signupEmail: String,
+    username: String,
+    password: String,
+    enteredSecurityCode: String,
+    onNavigate: (String) -> Unit,
+    onSaveCredentials: (String, String) -> Unit,
+    onSignupEmailChange: (String) -> Unit,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onSecurityCodeChange: (String) -> Unit,
+    onSecurityCodeSave: () -> Unit,
+    onShowConfirmationDialog: () -> Unit,
+    onDismissConfirmationDialog: () -> Unit,
+    setDarkMode: (Boolean) -> Unit,
+    setSecuritySwitch: (Boolean) -> Unit,
+) {
+
+
+    val context = LocalContext.current
+
+    var darkModeState by rememberSaveable { mutableStateOf(darkMode) }
+
+
+    var securitySwitchState by rememberSaveable {
+        mutableStateOf(notificationEnabled)
+    }
+
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Box(
         modifier = Modifier
@@ -156,7 +271,6 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-
             TopAppBar(
                 title = { Text("Settings") },
                 navigationIcon = {
@@ -189,12 +303,10 @@ fun SettingsScreen(
                 style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             // Display user account information
             SettingsField(
                 label = "First Name:",
-                value = userProfiles.firstOrNull()?.firstName ?: "",  // Updated this line
+                value = "John",
                 onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {})
@@ -202,44 +314,51 @@ fun SettingsScreen(
 
             SettingsField(
                 label = "Last Name:",
-                value = userProfiles.firstOrNull()?.lastName ?: "",
+                value = "Doe",
                 onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {}
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            SettingsField(label = "Email:",
+            SettingsField(
+                label = "Email:",
                 value = signupEmail,
-                onValueChange = { sharedViewModel.setSignupEmail(it) },
+                onValueChange = { onSignupEmailChange(it) },
                 isEditable = true,
-                onClearClick = { sharedViewModel.setSignupEmail("") })
+                onClearClick = { onSignupEmailChange("") })
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Username
-            SettingsField(label = "Username:", value = username, onValueChange = { newValue ->
-                username = newValue
-                credentialsViewModel.setEnteredCredentials(
-                    username = newValue, password = password
-                )
-            }, isEditable = true, onClearClick = {
-                username = ""
-                credentialsViewModel.setEnteredCredentials(username = "", password = "")
-            })
+            SettingsField(
+                label = "Username:",
+                value = username,
+                onValueChange = { newValue ->
+                    onUsernameChange(newValue)
+                    onSaveCredentials.invoke(newValue, password)
+                },
+                isEditable = true,
+                onClearClick = {
+                    onUsernameChange("")
+                    onSaveCredentials.invoke("", password)
+                })
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Password
-            SettingsField(label = "Password:", value = password, onValueChange = { newValue ->
-                password = newValue
-                credentialsViewModel.setEnteredCredentials(
-                    username = username, password = newValue
-                )
-            }, isEditable = true, onClearClick = {
-                password = ""
-                credentialsViewModel.setEnteredCredentials(username = username, password = "")
-            }
+            SettingsField(
+                label = "Password:",
+                value = password,
+                onValueChange = { newValue ->
+                    onPasswordChange(newValue)
+                    onSaveCredentials.invoke(username, newValue)
+                },
+                isEditable = true,
+                onClearClick = {
+                    onPasswordChange("")
+                    onSaveCredentials.invoke(username, "")
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -247,34 +366,12 @@ fun SettingsScreen(
             Button(
                 onClick = {
                     // Show the confirmation dialog before saving changes
-                    showConfirmationDialog = true
+                    onShowConfirmationDialog()
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text("Save Changes")
-            }
-
-            // Confirmation Dialog
-            if (showConfirmationDialog) {
-                SaveConfirmationDialog(onConfirm = {
-
-                    val updatedUsername = username
-                    val updatedPassword = password
-                    // Save the updated username and password
-                    onSaveCredentials.invoke(updatedUsername, updatedPassword)
-
-                    //update Credentials
-                    credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
-
-                    //navigate to login screen
-                    onNavigate("usernamePasswordLogin")
-
-                    showConfirmationDialog = false
-                }, onDismiss = {
-                    // Dismiss the dialog if the user cancels the save operation
-                    showConfirmationDialog = false
-                })
             }
 
             Divider(
@@ -291,35 +388,20 @@ fun SettingsScreen(
                 label = "Security Code:",
                 value = enteredSecurityCode,
                 onValueChange = { updatedSecurityCode ->
-                    enteredSecurityCode = updatedSecurityCode
+                    onSecurityCodeChange(updatedSecurityCode)
                 },
-                isEditable = isSecurityCodeEditable,
+                isEditable = notificationEnabled,
                 onClearClick = {
-                    enteredSecurityCode = ""
+                    onSecurityCodeChange("")
                 },
-
-                )
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Save Security Code Button
             Button(
                 onClick = {
-                    if (enteredSecurityCode.isNotEmpty()) {
-                        // Save the entered security code
-                        credentialsViewModel.saveSecurityCode(enteredSecurityCode)
-
-                        // Navigate to the security code screen
-                        onNavigate("securityCode")
-
-                        Toast.makeText(context, "Security Code saved", Toast.LENGTH_SHORT).show()
-                    } else {
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(
-                                "Security code cannot be empty",
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
+                    onSecurityCodeSave()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -327,6 +409,8 @@ fun SettingsScreen(
             ) {
                 Text("Save Security Code")
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             SnackbarHost(
                 hostState = snackbarHostState,
@@ -336,7 +420,6 @@ fun SettingsScreen(
                     .height(64.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
 
             Divider(
                 modifier = Modifier
@@ -351,54 +434,86 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Dark Mode
-            Text(
-                "Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            // Dark Mode
+            Text("Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth())
             Switch(
-                checked = darkMode, onCheckedChange = {
-                    darkMode = it
-                    sharedViewModel.setDarkMode(it)
-                    if (it) {
-                        Toast.makeText(context, "Dark Mode turned on", Toast.LENGTH_SHORT).show()
+                checked = darkModeState,
+                onCheckedChange = {
+                    darkModeState = !darkModeState
+                    setDarkMode(darkModeState)
+                    val toastMessage = if (darkModeState) {
+                        "Dark Mode is enabled"
                     } else {
-                        Toast.makeText(context, "Dark Mode turned off", Toast.LENGTH_SHORT).show()
+                        "Dark Mode is disabled"
                     }
-
-                }, modifier = Modifier.fillMaxWidth()
+                    Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Security switch
-            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 "Enable Security Code",
                 style = TextStyle(fontSize = 16.sp),
                 modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = notificationEnabled,
-                onCheckedChange = { newNotificationEnabledState ->
-                    notificationEnabled = newNotificationEnabledState
-                    isSecurityCodeEditable = newNotificationEnabledState
-
-                    sharedViewModel.setNotificationEnabled(newNotificationEnabledState)
-
-                    if (newNotificationEnabledState) {
-                        Toast.makeText(context, "Security feature is on", Toast.LENGTH_SHORT).show()
+                checked = securitySwitchState,
+                onCheckedChange = {
+                    securitySwitchState = !securitySwitchState
+                    setSecuritySwitch(securitySwitchState)
+                    val toastMessage = if (securitySwitchState) {
+                        "Security feature is enabled"
                     } else {
-                        Toast.makeText(context, "Security feature is off", Toast.LENGTH_SHORT)
-                            .show()
+                        "Security feature is disabled"
                     }
+                    Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             )
+
+
             Spacer(modifier = Modifier.weight(1f))
         }
     }
+}
+
+
+
+@Composable
+@Preview(showBackground = true)
+fun SettingsContentPreview() {
+    val darkMode = true
+    val notificationEnabled = true
+    val signupEmail = "john.doe@example.com"
+    val username = "john_doe"
+    val password = "********"
+    val enteredSecurityCode = "1234"
+
+    SettingsContent(
+        darkMode = darkMode,
+        notificationEnabled = notificationEnabled,
+        signupEmail = signupEmail,
+        username = username,
+        password = password,
+        enteredSecurityCode = enteredSecurityCode,
+        onNavigate = {},
+        onSaveCredentials = { _, _ -> },
+        onSignupEmailChange = {},
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onSecurityCodeChange = {},
+        onSecurityCodeSave = {},
+        onShowConfirmationDialog = {},
+        onDismissConfirmationDialog = {},
+        setDarkMode = {},
+        setSecuritySwitch = {}
+    )
 }
 
 

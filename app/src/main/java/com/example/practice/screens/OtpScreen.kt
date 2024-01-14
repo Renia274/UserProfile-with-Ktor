@@ -28,61 +28,112 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
+import com.example.practice.ui.theme.PracticeTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OtpScreen(
     onNavigate: () -> Unit,
     onBackPressed: () -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-    otpViewModel: FirebaseOtpViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel,
+    otpViewModel: FirebaseOtpViewModel
 ) {
     var email by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
-    var showMessage by remember { mutableStateOf(false) }
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val sharedState by viewModel.stateFlow.collectAsState()
     var signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
 
-
-
     val viewState by otpViewModel.viewStateFlow.collectAsState()
     var emailErrorMessage = viewState.emailErrorMessage
     val codeMessage = otpViewModel.viewStateFlow.value.codeSentMessage
-
+    var showMessage by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        TopAppBar(
-            title = { Text("OTP") },
-            navigationIcon = {
-                IconButton(onClick = { onBackPressed() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
+        TopAppBar(title = { Text("OTP") }, navigationIcon = {
+            IconButton(onClick = { onBackPressed() }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
             }
-        )
+        })
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // email
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                // Clear email error message when email changes
-                otpViewModel.clearEmailErrorMessage()
+        OtpScreenContent(
+            email = email,
+            onEmailChange = { email = it; otpViewModel.clearEmailErrorMessage() },
+            otp = otp,
+            onOtpChange = { otp = it },
+            onGenerateClick = {
+                if (email == signupEmail) {
+                    otpViewModel.clearEmailErrorMessage()
+                    val generatedOtp = otpViewModel.createOtp(email, signupEmail)
+                    otp = generatedOtp
+                    showMessage = true
+                } else {
+                    if (signupEmail != null) {
+                        otpViewModel.setErrorEmail(email, signupEmail)
+                    }
+                    showMessage = false
+                }
             },
+            onVerifyClick = {
+                if (email == signupEmail) {
+                    otpViewModel.verifyOtp(otp)
+                    onNavigate()
+                    keyboardController?.hide()
+                } else {
+                    showMessage = true
+                    if (signupEmail != null) {
+                        otpViewModel.setErrorEmail(email, signupEmail)
+                    }
+                    emailErrorMessage = "Please enter the email used during signup"
+                    otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
+                }
+            },
+            emailErrorMessage = emailErrorMessage,
+            codeMessage = codeMessage,
+            showMessage = showMessage,
+            signupEmail = signupEmail
+        )
+    }
+}
+
+@Composable
+fun OtpScreenContent(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    otp: String,
+    onOtpChange: (String) -> Unit,
+    onGenerateClick: () -> Unit,
+    onVerifyClick: () -> Unit,
+    emailErrorMessage: String?,
+    codeMessage: String?,
+    showMessage: Boolean,
+    signupEmail: String
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // email
+        OutlinedTextField(value = email,
+            onValueChange = { onEmailChange(it) },
             label = { Text("Enter Email Address") },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                autoCorrect = false
+                keyboardType = KeyboardType.Email, autoCorrect = false
             ),
             maxLines = 1,
             modifier = Modifier
@@ -94,18 +145,14 @@ fun OtpScreen(
                 )
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // OTP
-        OutlinedTextField(
-            value = otp,
-            onValueChange = {
-                otp = it
-            },
+        OutlinedTextField(value = otp,
+            onValueChange = { onOtpChange(it) },
             label = { Text("Enter OTP") },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                autoCorrect = false
+                keyboardType = KeyboardType.Number, autoCorrect = false
             ),
             maxLines = 1,
             modifier = Modifier
@@ -115,25 +162,8 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button to generate OTP
         Button(
-            onClick = {
-                if (email == signupEmail) {
-                    // Clear email error message when Generate OTP is clicked
-                    otpViewModel.clearEmailErrorMessage()
-                    // Generate and send OTP
-                    val generatedOtp = otpViewModel.createOtp(email, signupEmail)
-                    // Automatically fill the OTP field
-                    otp = generatedOtp
-                    showMessage = true
-                } else {
-                    // Show an error message if the entered email is different from the signup email
-                    if (signupEmail != null) {
-                        otpViewModel.setErrorEmail(email, signupEmail)
-                    }
-                    showMessage = false
-                }
-            },
+            onClick = { onGenerateClick() },
             enabled = email.isNotBlank(),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
@@ -142,45 +172,13 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (emailErrorMessage != null) {
-            Text(
-                emailErrorMessage!!,
-                color = Color.Red,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         Button(
-            onClick = {
-                // Check if the entered email matches the signup email before verifying OTP
-                if (email == signupEmail) {
-                    otpViewModel.verifyOtp(otp)
-                    onNavigate()
-                    keyboardController?.hide()
-                } else {
-                    // Show an error message if the entered email is different from the signup email
-                    showMessage = true
-                    if (signupEmail != null) {
-                        otpViewModel.setErrorEmail(email, signupEmail)
-                    }
-
-                    // update email error message with through view state
-                    emailErrorMessage = "Please enter the email used during signup"
-
-
-                    // Log to Crashlytics
-                    otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
-                }
-            },
+            onClick = { onVerifyClick() },
             enabled = email.isNotBlank(),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Verify OTP")
         }
-
-
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -191,7 +189,34 @@ fun OtpScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
+
+        if (emailErrorMessage != null ) {
+            Text(
+                emailErrorMessage,
+                color = Color.Red,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun OtpScreenPreview() {
 
+    PracticeTheme {
+        OtpScreenContent(email = "example@email.com",
+            onEmailChange = {},
+            otp = "123456",
+            onOtpChange = {},
+            onGenerateClick = {},
+            onVerifyClick = {},
+            emailErrorMessage = "Invalid email",
+            codeMessage = "OTP sent successfully",
+            showMessage = true,
+            signupEmail = "test@gmail.com"
+        )
+    }
+
+
+}

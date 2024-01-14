@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
@@ -50,7 +49,7 @@ fun UsernamePasswordLoginScreen(
     onLoading: (Boolean) -> Unit,
     onNavigateToRecovery: () -> Unit,
     onBack: () -> Unit,
-    viewModel: CredentialsViewModel = hiltViewModel()
+    viewModel: CredentialsViewModel
 ) {
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)

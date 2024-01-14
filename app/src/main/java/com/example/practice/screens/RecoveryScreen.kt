@@ -1,7 +1,6 @@
 package com.example.practice.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,10 +35,12 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,8 +55,7 @@ fun RecoveryScreen(
 
     val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
     val h4 = TextStyle(
-        fontSize = 16.sp,
-        platformStyle = overrideFontPadding
+        fontSize = 16.sp, platformStyle = overrideFontPadding
     )
 
     var email by remember { mutableStateOf("") }
@@ -85,75 +86,102 @@ fun RecoveryScreen(
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
+        RecoveryScreenContent(email = email,
+            onEmailChange = { email = it },
+            onButtonClick = {
+                if (email == signupEmail) {
+                    isRecoveryEmailSent = true
+                    viewModel.setSignupEmail(email)
+                    navigateToLogin.invoke()
+                } else {
+                    showError = true
+                }
+            },
+            showError = showError,
+            isRecoveryEmailSent = isRecoveryEmailSent,
+            isDelayComplete = isDelayComplete,
+            navigateToLogin = { viewModel.setRecoveryEmail(email) })
+    }
+}
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Enter your email") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+@Composable
+fun RecoveryScreenContent(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onButtonClick: () -> Unit,
+    showError: Boolean,
+    isRecoveryEmailSent: Boolean,
+    isDelayComplete: Boolean,
+    navigateToLogin: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(value = email,
+            onValueChange = { onEmailChange(it) },
+            label = { Text("Enter your email") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onButtonClick, modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text("Recover Password")
+        }
+
+        if (showError) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Entered email doesn't match the signup email.",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        if (isRecoveryEmailSent) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Recovery email sent to $email. Please check your email.",
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp), color = MaterialTheme.colorScheme.primary
+            )
 
-            Button(
-                onClick = {
-                    if (email == signupEmail) {
-                        isRecoveryEmailSent = true
-                        viewModel.setSignupEmail(email)
-                        navigateToLogin.invoke()
-                    } else {
-                        // Show an error message If you put different mail that the signup mail
-                        showError = true
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Recover Password")
-            }
-
-            if (showError) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Entered email doesn't match the signup email.",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-
-            if (isRecoveryEmailSent) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Recovery email sent to $email. Please check your email.",
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-                CircularProgressIndicator(
-                    modifier = Modifier.size(50.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                if (isDelayComplete) {
-                    isRecoveryEmailSent = true
-                    viewModel.setRecoveryEmail(email)
-                    navigateToLogin.invoke()
-                }
+            if (isDelayComplete) {
+                navigateToLogin.invoke()
             }
         }
     }
 }
 
 
+@Composable
+@Preview(showBackground = true)
+fun RecoveryScreenContentPreview() {
+    PracticeTheme {
+        Surface {
+            RecoveryScreenContent(email = "example@example.com",
+                onEmailChange = { /* */ },
+                showError = false,
+                isRecoveryEmailSent = false,
+                isDelayComplete = false,
+                onButtonClick = {},
+                navigateToLogin = {})
+        }
+    }
 
+}

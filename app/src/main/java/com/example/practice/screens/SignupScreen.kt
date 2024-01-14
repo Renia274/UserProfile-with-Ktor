@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
@@ -44,8 +43,8 @@ import com.example.practice.validators.isValidPassword
 fun SignupScreen(
     onNavigateToLogin: () -> Unit,
     onNavigate: () -> Unit,
-    credentialsViewModel: CredentialsViewModel = hiltViewModel(),
-    sharedViewModel: SharedProfilesViewModel = hiltViewModel(),
+    credentialsViewModel: CredentialsViewModel,
+    sharedViewModel: SharedProfilesViewModel,
 
 ) {
     val h4 = TextStyle(

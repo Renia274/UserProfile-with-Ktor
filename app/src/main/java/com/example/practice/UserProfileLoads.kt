@@ -50,9 +50,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun UserProfilesLoading(
     userProfiles: StateFlow<List<UserData>>,
-    viewModel: SharedProfilesViewModel = hiltViewModel(),
-    timerViewModel: TimerViewModel = hiltViewModel(),
-    credentialsViewModel: CredentialsViewModel = hiltViewModel(),
+    viewModel: SharedProfilesViewModel ,
+    timerViewModel: TimerViewModel ,
+    credentialsViewModel: CredentialsViewModel ,
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String,

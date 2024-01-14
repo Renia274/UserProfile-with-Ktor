@@ -16,7 +16,8 @@ data class SharedProfilesViewState(
     val recoveryEmail: String,
     val darkMode: Boolean,
     val notificationEnabled: Boolean,
-    val savedInterests: List<String>
+    val savedInterests: List<String>,
+
 )
 
 @HiltViewModel
@@ -33,7 +34,8 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
             recoveryEmail = "",
             darkMode = false,
             notificationEnabled = false,
-            savedInterests = emptyList()
+            savedInterests = emptyList(),
+
         )
     )
 
@@ -70,3 +72,6 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
         userProfilesStateFlow.value = newProfiles
     }
 }
+
+
+

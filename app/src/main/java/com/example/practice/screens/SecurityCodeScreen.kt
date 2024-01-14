@@ -45,15 +45,10 @@ fun SecurityCodeScreen(
     viewModel: CredentialsViewModel,
     onNavigate: (String) -> Unit,
     securityCode: String,
-
-
 ) {
     var customSecurityCode by remember { mutableStateOf(securityCode) }
     var showError by remember { mutableStateOf(false) }
     var isSecurityCodeVisible by remember { mutableStateOf(false) }
-
-
-
 
     Column(
         modifier = Modifier
@@ -62,21 +57,71 @@ fun SecurityCodeScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TopAppBar(title = { Text("Enter your security code") }, navigationIcon = {
-            IconButton(onClick = { onNavigate("back") }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-            }
-        }, modifier = Modifier.fillMaxWidth()
+        TopAppBar(
+            title = { Text("Enter your security code") },
+            navigationIcon = {
+                IconButton(onClick = { onNavigate("back") }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(64.dp))
-        TextField(value = customSecurityCode,
+
+        // Content
+        SecurityCodeScreenContent(
+            customSecurityCode = customSecurityCode,
+            onSecurityCodeChange = { customSecurityCode = it },
+            showError = showError,
+            onShowErrorChange = { showError = it },
+            isSecurityCodeVisible = isSecurityCodeVisible,
+            onSecurityCodeVisibilityChange = { isSecurityCodeVisible = it },
+            onContinueClick = {
+                if (securityCode.isNotEmpty()) {
+                    val savedSecurityCode = viewModel.credentialsState.value.securityCode
+                    if (securityCode == savedSecurityCode) {
+                        viewModel.saveSecurityCode(securityCode)
+                        onNavigate.invoke("usernamePasswordLogin")
+                    } else {
+                        showError = true
+                        println("Entered security code does not match the saved one.")
+                    }
+                } else {
+                    showError = true
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun SecurityCodeScreenContent(
+    customSecurityCode: String,
+    onSecurityCodeChange: (String) -> Unit,
+    showError: Boolean,
+    onShowErrorChange: (Boolean) -> Unit,
+    isSecurityCodeVisible: Boolean,
+    onSecurityCodeVisibilityChange: (Boolean) -> Unit,
+    onContinueClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Security Code TextField
+        TextField(
+            value = customSecurityCode,
             onValueChange = {
-                customSecurityCode = it
-                showError = false
+                onSecurityCodeChange(it)
+                onShowErrorChange(false)
             },
             label = { Text("Enter Security Code") },
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done, keyboardType = KeyboardType.Number
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
             ),
             keyboardActions = KeyboardActions(onDone = {}),
             isError = showError,
@@ -87,14 +132,17 @@ fun SecurityCodeScreen(
                 .padding(8.dp),
             trailingIcon = {
                 IconButton(
-                    onClick = { isSecurityCodeVisible = !isSecurityCodeVisible },
+                    onClick = { onSecurityCodeVisibilityChange(!isSecurityCodeVisible) },
                 ) {
                     Icon(
                         painter = painterResource(id = if (isSecurityCodeVisible) R.drawable.ic_show else R.drawable.ic_hide),
                         contentDescription = if (isSecurityCodeVisible) "Hide security code" else "Show security code"
                     )
                 }
-            })
+            }
+        )
+
+        // Show error message if showError is true
         if (showError) {
             Text(
                 text = "Invalid security code. Please try again.",
@@ -103,22 +151,9 @@ fun SecurityCodeScreen(
             )
         }
 
+        // Continue Button
         Button(
-            onClick = {
-                if (securityCode.isNotEmpty()) {
-                    val savedSecurityCode = viewModel.credentialsState.value.securityCode
-                    if (securityCode == savedSecurityCode) {
-                        viewModel.saveSecurityCode(securityCode)
-
-                        onNavigate.invoke("usernamePasswordLogin")
-                    } else {
-                        showError = true
-                        println("Entered security code does not match the saved one.")
-                    }
-                } else {
-                    showError = true
-                }
-            },
+            onClick = onContinueClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
@@ -130,18 +165,22 @@ fun SecurityCodeScreen(
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
-fun SecurityCodeScreenPreview() {
-    val viewModel = CredentialsViewModel()
-    val securityCode = "123456"
+fun SecurityCodeScreenContentPreview() {
+    val customSecurityCode = "123456"
+    val showError = false
+    val isSecurityCodeVisible = false
 
     PracticeTheme {
-        SecurityCodeScreen(
-            viewModel = viewModel,
-            onNavigate = { },
-            securityCode = securityCode
+        SecurityCodeScreenContent(
+            customSecurityCode = customSecurityCode,
+            onSecurityCodeChange = {},
+            showError = showError,
+            onShowErrorChange = {},
+            isSecurityCodeVisible = isSecurityCodeVisible,
+            onSecurityCodeVisibilityChange = {},
+            onContinueClick = {}
         )
     }
 }
