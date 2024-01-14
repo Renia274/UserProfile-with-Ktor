@@ -6,15 +6,21 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -22,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,12 +41,23 @@ private fun navigateToDeepLink(url: String, context: Context) {
     context.startActivity(intent)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun InfoScreen(onNavigateBack: () -> Unit) {
-    val url = "https://pl-coding.com/"
     val context = LocalContext.current
 
+    InfoScreenContent(
+        onNavigateBack = onNavigateBack,
+        onOpenLink = { navigateToDeepLink("https://pl-coding.com", context) }
+    )
+
+
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InfoScreenContent(onNavigateBack: () -> Unit, onOpenLink: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,11 +73,10 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Yellow)
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Text(
             "Welcome to the Info Screen!",
@@ -72,29 +87,45 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            "Feel free to explore and interact with the content when you open the link.",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
+
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Spacer(modifier = Modifier.width(32.dp))
+            Text(
+                "Open the link to explore and interact with the content:",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        Button(onClick = {
-            navigateToDeepLink(url, context)
-        }) {
-            Text("Open Link")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(onClick = onOpenLink) {
+                Text("Open Link")
+            }
         }
-
     }
 }
 
-@Preview
+
+@Preview(showBackground = true)
 @Composable
-fun InfoScreenPreview() {
+fun InfoScreenContentPreview() {
     PracticeTheme {
-        InfoScreen(onNavigateBack = {})
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            InfoScreenContent(
+                onNavigateBack = {},
+                onOpenLink = {}
+            )
+        }
     }
 }
-

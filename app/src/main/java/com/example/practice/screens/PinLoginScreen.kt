@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -19,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -29,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,32 +43,48 @@ import com.example.practice.data.UserData
 import com.example.practice.navigation.graph.Navigation
 import com.example.practice.ui.theme.PracticeTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun PinLoginScreen(
     onLoginSuccess: (UserData) -> Unit,
     onNavigate: (Navigation.Screen) -> Unit,
     onPostNavigate: () -> Unit,
 ) {
-    // entered PIN
     var pin by remember { mutableStateOf("") }
-
-
     var isPinVisible by remember { mutableStateOf(false) }
 
-
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
-    val h4 = TextStyle(
-        fontSize = 18.sp,
-        platformStyle = overrideFontPadding
+    PinLoginContent(
+        pin = pin,
+        onPinChange = { newPin -> pin = newPin },
+        isPinVisible = isPinVisible,
+        onTogglePinVisibility = { isPinVisible = !isPinVisible },
+        onLogin = { userProfile ->
+            userProfile?.let {
+                onLoginSuccess.invoke(it)
+            } ?: run {
+                pin = ""
+            }
+        },
+        onPostNavigate = onPostNavigate
     )
+}
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PinLoginContent(
+    pin: String,
+    onPinChange: (String) -> Unit,
+    isPinVisible: Boolean,
+    onTogglePinVisibility: () -> Unit,
+    onLogin: (UserData?) -> Unit,
+    onPostNavigate: () -> Unit
+) {
     val maxPinLength = 6
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
         TopAppBar(
             title = { Text("") },
             navigationIcon = {
@@ -79,11 +94,9 @@ fun PinLoginScreen(
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // navigate to postlist screen
+                    // Navigate to postlist screen
                     IconButton(
-                        onClick = {
-                            onPostNavigate.invoke()
-                        }
+                        onClick = { onPostNavigate.invoke() }
                     ) {
                         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                     }
@@ -93,56 +106,64 @@ fun PinLoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
         Text(
             text = "Enter Your Pin",
-            style = h4,
+            style = TextStyle(fontSize = 18.sp),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-
-        OutlinedTextField(
-            value = pin,
-            onValueChange = {
-                if (it.length <= maxPinLength) {
-                    pin = it
-                }
-            },
-            label = { Text("Enter PIN") },
-            visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.NumberPassword,
-                imeAction = ImeAction.Done
-            ),
-            trailingIcon = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    IconButton(
-                        onClick = { isPinVisible = !isPinVisible },
-                    ) {
-                        Icon(
-                            painter = painterResource(id = if (isPinVisible) R.drawable.ic_show else R.drawable.ic_hide),
-                            contentDescription = if (isPinVisible) "Hide pin" else "Show pin"
-                        )
-                    }
-                }
-            },
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-        )
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+
+            OutlinedTextField(
+                value = pin,
+                onValueChange = {
+                    if (it.length <= maxPinLength) {
+                        onPinChange(it)
+                    }
+                },
+                label = { Text("Enter PIN") },
+                visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Done
+                ),
+                trailingIcon = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        IconButton(
+                            onClick = { onTogglePinVisibility() },
+                        ) {
+                            Icon(
+                                painter = painterResource(id = if (isPinVisible) R.drawable.ic_show else R.drawable.ic_hide),
+                                contentDescription = if (isPinVisible) "Hide pin" else "Show pin"
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Button(
             onClick = {
@@ -154,36 +175,32 @@ fun PinLoginScreen(
                 }
 
                 // Trigger login success or reset PIN if not recognized
-                userProfile?.let {
-                    onLoginSuccess.invoke(it)
-                } ?: run {
-                    pin = ""
-                }
+                onLogin(userProfile)
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Log In")
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 
-
-
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PinLoginScreenPreview() {
-
-
+fun PinLoginContentPreview() {
     PracticeTheme {
         Surface {
-            PinLoginScreen(
-                onLoginSuccess = { /**/ },
-                onNavigate = { /* */ },
+            PinLoginContent(
+                pin = "123456",
+                onPinChange = { /*  */ },
+                isPinVisible = true,
+                onTogglePinVisibility = { /*  */ },
+                onLogin = { /*  */ },
                 onPostNavigate = { /*  */ }
             )
         }
     }
 }
+
