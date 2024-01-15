@@ -53,7 +53,7 @@ fun UserProfilesLoading(
     val timerState by timerViewModel.stateFlow.collectAsState()
     val timeLeft = timerState.timeLeft
 
-    // Effect to check if the timer has run out and trigger navigation
+    //check if the timer has run out and trigger navigation
     LaunchedEffect(timeLeft) {
         if (timerViewModel.stateFlow.value.timeLeft <= 0) {
             onNavigate("usernamePasswordLogin")
