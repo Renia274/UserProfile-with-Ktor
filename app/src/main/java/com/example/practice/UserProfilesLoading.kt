@@ -145,7 +145,7 @@ fun UserProfilesLoading(
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Choose between UserProfileItem and EditProfile based on edit mode
+                // Choose between UserProfile and EditProfile based on edit mode
                 if (selectedIndexFlow.value in userProfiles.value.indices && !isShowingEdit) {
                     UserProfileItem(
                         userProfile = userProfiles.value[selectedIndexFlow.value],
