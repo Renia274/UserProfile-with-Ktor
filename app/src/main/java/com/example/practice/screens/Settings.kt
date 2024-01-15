@@ -299,6 +299,8 @@ fun SettingsContent(
                 style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Display user account information
             SettingsField(
                 label = "First Name:",

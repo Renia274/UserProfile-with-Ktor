@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.practice.EditProfile
+import com.example.practice.screens.EditProfile
 import com.example.practice.R
 import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData

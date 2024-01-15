@@ -168,7 +168,7 @@ fun SignupContent(
                 label = { Text("Email") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier
-                    .weight(1f) // Occupy remaining space
+                    .weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
         }

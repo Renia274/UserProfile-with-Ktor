@@ -161,7 +161,7 @@ fun UsernamePasswordLoginContent(
                 .wrapContentHeight()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(64.dp))
 
         Text(
             text = "Sign In",

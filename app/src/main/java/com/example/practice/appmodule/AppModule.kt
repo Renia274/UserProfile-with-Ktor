@@ -1,5 +1,7 @@
-package com.example.practice.ktor.services
+package com.example.practice.appmodule
 
+import com.example.practice.ktor.services.PostsService
+import com.example.practice.ktor.services.PostsServiceImpl
 import com.example.practice.services.FirebaseAuthService
 import com.example.practice.services.FirebaseAuthServiceImpl
 import com.google.firebase.auth.FirebaseAuth
