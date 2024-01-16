@@ -87,8 +87,8 @@ fun SignUpSignInContentPreview() {
 
     PracticeTheme {
         SignUpSignInContent(
-            onSignUpClick = { /*  */ },
-            onSignInClick = { /*  */ },
+            onSignUpClick = {},
+            onSignInClick = {},
 
         )
     }

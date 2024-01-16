@@ -2,6 +2,7 @@ package com.example.practice.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +45,6 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryScreen(
     navigateToLogin: () -> Unit,
@@ -53,13 +54,6 @@ fun RecoveryScreen(
 
     val sharedState by viewModel.stateFlow.collectAsState()
     val signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
-
-
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
-    val h4 = TextStyle(
-        fontSize = 16.sp, platformStyle = overrideFontPadding
-    )
-
 
     var email by remember { mutableStateOf("") }
     var isRecoveryEmailSent by remember { mutableStateOf(false) }
@@ -74,25 +68,12 @@ fun RecoveryScreen(
         delay(8000)
     }
 
-    // Column layout for the recovery screen
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
 
-        // Top App Bar
-        TopAppBar(
-            title = { Text(text = "Password Recovery", style = h4, textAlign = TextAlign.Center) },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
-        )
-
-        // Content of the recovery screen
         RecoveryScreenContent(
             email = email,
             onEmailChange = { email = it },
@@ -108,10 +89,13 @@ fun RecoveryScreen(
             showError = showError,
             isRecoveryEmailSent = isRecoveryEmailSent,
             isDelayComplete = isDelayComplete,
-            navigateToLogin = { viewModel.setRecoveryEmail(email) })
+            navigateToLogin = { viewModel.setRecoveryEmail(email) },
+            onNavigateBack = onNavigateBack
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryScreenContent(
     email: String,
@@ -120,36 +104,67 @@ fun RecoveryScreenContent(
     showError: Boolean,
     isRecoveryEmailSent: Boolean,
     isDelayComplete: Boolean,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
+
+    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
+    val h4 = TextStyle(
+        fontSize = 16.sp, platformStyle = overrideFontPadding
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
 
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { onEmailChange(it) },
-            label = { Text("Enter your email") },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+        TopAppBar(
+            title = { Text(text = "Password Recovery", style = h4, textAlign = TextAlign.Center) },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+            },
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
         )
+
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = onEmailChange,
+                label = { Text("Enter your email") },
+                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        Button(
-            onClick = onButtonClick, modifier = Modifier
+        Row(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Text("Recover Password")
+            Button(
+                onClick = onButtonClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                Text("Recover Password")
+            }
         }
 
         // Display error message if showError is true
@@ -158,7 +173,7 @@ fun RecoveryScreenContent(
             Text(
                 "Entered email doesn't match the signup email.",
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 32.dp)
             )
         }
 
@@ -167,12 +182,13 @@ fun RecoveryScreenContent(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "Recovery email sent to $email. Please check your email.",
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 32.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
             CircularProgressIndicator(
-                modifier = Modifier.size(50.dp), color = MaterialTheme.colorScheme.primary
+                modifier = Modifier.size(50.dp),
+                color = MaterialTheme.colorScheme.primary
             )
 
             // Navigate to login screen after delay
@@ -185,19 +201,23 @@ fun RecoveryScreenContent(
 
 
 
-@Composable
 @Preview(showBackground = true)
+@Composable
 fun RecoveryScreenContentPreview() {
     PracticeTheme {
         Surface {
-            RecoveryScreenContent(email = "example@example.com",
-                onEmailChange = { /* */ },
+            RecoveryScreenContent(
+                email = "example@example.com",
+                onEmailChange = {},
                 showError = false,
                 isRecoveryEmailSent = false,
                 isDelayComplete = false,
                 onButtonClick = {},
-                navigateToLogin = {})
+                navigateToLogin = {},
+                onNavigateBack = {}
+            )
         }
     }
-
 }
+
+

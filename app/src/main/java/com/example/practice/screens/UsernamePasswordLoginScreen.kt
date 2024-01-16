@@ -2,6 +2,7 @@ package com.example.practice.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,11 +53,7 @@ fun UsernamePasswordLoginScreen(
     onBack: () -> Unit,
     viewModel: CredentialsViewModel
 ) {
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
-    val h4 = TextStyle(
-        fontSize = 16.sp,
-        platformStyle = overrideFontPadding
-    )
+
 
     var isLoginSuccessful by remember { mutableStateOf(false) }
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -146,7 +143,7 @@ fun UsernamePasswordLoginContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
     ) {
 
         TopAppBar(
@@ -161,7 +158,7 @@ fun UsernamePasswordLoginContent(
                 .wrapContentHeight()
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
             text = "Sign In",
@@ -176,48 +173,63 @@ fun UsernamePasswordLoginContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = username,
-            onValueChange = { onUsernameChange(it) },
-            label = { Text("Username") },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
+                .padding(horizontal = 32.dp)
+        ) {
+            OutlinedTextField(
+                value = username,
+                onValueChange = { onUsernameChange(it) },
+                label = { Text("Username") },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { onPasswordChange(it) },
-            label = { Text("Password") },
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-            trailingIcon = {
-                IconButton(
-                    onClick = onTogglePasswordVisibility
-                ) {
-                    Icon(
-                        painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
-                        contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
-                    )
-                }
-            },
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
+                .padding(horizontal = 32.dp)
+        ) {
+            OutlinedTextField(
+                value = password,
+                onValueChange = { onPasswordChange(it) },
+                label = { Text("Password") },
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
+                trailingIcon = {
+                    IconButton(
+                        onClick = onTogglePasswordVisibility
+                    ) {
+                        Icon(
+                            painter = painterResource(id = if (isPasswordVisible) R.drawable.ic_show else R.drawable.ic_hide),
+                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = onLoginClick,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Text("Login")
+            Button(
+                onClick = onLoginClick,
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text("Login")
+            }
         }
 
         TextButton(

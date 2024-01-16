@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -134,15 +133,13 @@ fun SignupContent(
                 .fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Spacer(modifier = Modifier.width(16.dp))
-
             OutlinedTextField(
                 value = username,
                 onValueChange = onUsernameChange,
@@ -150,8 +147,8 @@ fun SignupContent(
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
             )
-            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -159,9 +156,8 @@ fun SignupContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
                 value = email,
                 onValueChange = onEmailChange,
@@ -169,8 +165,8 @@ fun SignupContent(
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
             )
-            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -178,9 +174,8 @@ fun SignupContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
                 value = password,
                 onValueChange = onPasswordChange,
@@ -200,8 +195,8 @@ fun SignupContent(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
             )
-            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -209,17 +204,16 @@ fun SignupContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = onSignUpClick,
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
             ) {
                 Text("Sign Up")
             }
-            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))

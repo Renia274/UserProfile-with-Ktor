@@ -1,5 +1,6 @@
 package com.example.practice.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -19,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -30,16 +30,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun SecurityCodeScreen(
     viewModel: CredentialsViewModel,
@@ -52,25 +55,15 @@ fun SecurityCodeScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding(),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TopAppBar(
-            title = { Text("Enter your security code") },
-            navigationIcon = {
-                IconButton(onClick = { onNavigate("back") }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
 
-        Spacer(modifier = Modifier.height(64.dp))
 
-        // Content
+
         SecurityCodeScreenContent(
             customSecurityCode = customSecurityCode,
+            onNavigate=onNavigate,
             onSecurityCodeChange = { customSecurityCode = it },
             showError = showError,
             onShowErrorChange = { showError = it },
@@ -94,9 +87,11 @@ fun SecurityCodeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityCodeScreenContent(
     customSecurityCode: String,
+    onNavigate: (String) -> Unit,
     onSecurityCodeChange: (String) -> Unit,
     showError: Boolean,
     onShowErrorChange: (Boolean) -> Unit,
@@ -107,17 +102,44 @@ fun SecurityCodeScreenContent(
     Column(
         modifier = Modifier
             .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+
+
+
+        TopAppBar(
+            title = { Text("") },
+            navigationIcon = {
+                IconButton(onClick = { onNavigate("back") }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = "Enter Your Security code",
+            style = TextStyle(fontSize = 18.sp),
+            modifier = Modifier
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 32.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(32.dp))
+
 
             TextField(
                 value = customSecurityCode,
@@ -137,9 +159,10 @@ fun SecurityCodeScreenContent(
                 modifier = Modifier
                     .weight(1f)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(32.dp))
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (showError) {
             Text(
@@ -149,15 +172,23 @@ fun SecurityCodeScreenContent(
             )
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = onContinueClick,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
-            colors = ButtonDefaults.buttonColors(contentColor = Color.Cyan)
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text("Continue")
+            Button(
+                onClick = onContinueClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text("Continue")
+            }
         }
     }
 }
@@ -172,6 +203,7 @@ fun SecurityCodeScreenContentPreview() {
     PracticeTheme {
         SecurityCodeScreenContent(
             customSecurityCode = customSecurityCode,
+            onNavigate = {},
             onSecurityCodeChange = {},
             showError = showError,
             onShowErrorChange = {},

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -120,12 +119,8 @@ fun PinLoginContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 32.dp)
         ) {
-            Spacer(modifier = Modifier.width(8.dp))
-
             OutlinedTextField(
                 value = pin,
                 onValueChange = {
@@ -143,8 +138,6 @@ fun PinLoginContent(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Spacer(modifier = Modifier.width(4.dp))
-
                         IconButton(
                             onClick = { onTogglePinVisibility() },
                         ) {
@@ -159,32 +152,40 @@ fun PinLoginContent(
                     .fillMaxWidth()
                     .weight(1f)
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                val userProfile = when (pin.lowercase()) {
-                    "123456" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
-                    "987654" -> UserData("Alice", "Smith", R.drawable.alice_smith)
-                    "555555" -> UserData("Eve", "Brown", R.drawable.eve_brown)
-                    else -> null
-                }
-
-                // Trigger login success or reset PIN if not recognized
-                onLogin(userProfile)
-            },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
         ) {
-            Text("Log In")
+            Button(
+                onClick = {
+                    val userProfile = when (pin.lowercase()) {
+                        "123456" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
+                        "987654" -> UserData("Alice", "Smith", R.drawable.alice_smith)
+                        "555555" -> UserData("Eve", "Brown", R.drawable.eve_brown)
+                        else -> null
+                    }
+
+                    // Trigger login success or reset PIN if not recognized
+                    onLogin(userProfile)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                Text("Log In")
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
+
 
 
 @Preview(showBackground = true)
