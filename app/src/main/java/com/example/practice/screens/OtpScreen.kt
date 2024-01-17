@@ -127,7 +127,7 @@ fun OtpScreenContent(
     ) {
         Spacer(modifier = Modifier.height(4.dp))
 
-        // First Row
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,7 +153,7 @@ fun OtpScreenContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Second Row
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -175,7 +175,7 @@ fun OtpScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Buttons
+
         Button(
             onClick = { onGenerateClick() },
             enabled = email.isNotBlank(),
