@@ -3,10 +3,12 @@ package com.example.practice.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -109,7 +111,6 @@ fun OtpScreen(
 
 @Composable
 fun OtpScreenContent(
-    // Parameterized content for OTP screen
     email: String,
     onEmailChange: (String) -> Unit,
     otp: String,
@@ -121,48 +122,60 @@ fun OtpScreenContent(
     showMessage: Boolean,
     signupEmail: String
 ) {
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(4.dp))
 
-        // email
-        OutlinedTextField(
-            value = email,
-            onValueChange = { onEmailChange(it) },
-            label = { Text("Enter Email Address") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email, autoCorrect = false
-            ),
-            maxLines = 1,
+        // First Row
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent)
-                .border(
-                    width = 1.dp,
-                    color = if (email.isNotBlank() && email != signupEmail) Color.Red else Color.Transparent
-                )
-        )
+                .padding(horizontal = 16.dp)
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { onEmailChange(it) },
+                label = { Text("Enter Email Address") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email, autoCorrect = false
+                ),
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+                    .border(
+                        width = 1.dp,
+                        color = if (email.isNotBlank() && email != signupEmail) Color.Red else Color.Transparent
+                    )
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        //OTP
-        OutlinedTextField(
-            value = otp,
-            onValueChange = { onOtpChange(it) },
-            label = { Text("Enter OTP") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number, autoCorrect = false
-            ),
-            maxLines = 1,
+        // Second Row
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent)
-        )
+                .padding(horizontal = 16.dp)
+        ) {
+            OutlinedTextField(
+                value = otp,
+                onValueChange = { onOtpChange(it) },
+                label = { Text("Enter OTP") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number, autoCorrect = false
+                ),
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+            )
+        }
 
-        // Buttons for OTP actions
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Buttons
         Button(
             onClick = { onGenerateClick() },
             enabled = email.isNotBlank(),
@@ -191,7 +204,6 @@ fun OtpScreenContent(
             )
         }
 
-
         // Display code error message when the user tries to create OTP code with any email
         if (emailErrorMessage != null ) {
             Text(
@@ -202,6 +214,8 @@ fun OtpScreenContent(
         }
     }
 }
+
+
 @Preview(showBackground = true)
 @Composable
 fun OtpScreenPreview() {
