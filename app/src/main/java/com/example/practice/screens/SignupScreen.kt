@@ -238,6 +238,6 @@ fun SignupContentPreview() {
         onPasswordChange = { password = it },
         isPasswordVisible = false,
         onTogglePasswordVisibility = { },
-        onSignUpClick = { /*  */ }
+        onSignUpClick = {}
     )
 }

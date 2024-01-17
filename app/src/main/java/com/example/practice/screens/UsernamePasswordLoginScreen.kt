@@ -256,7 +256,7 @@ fun UsernamePasswordLoginContentPreview() {
             password = password,
             onPasswordChange = { password },
             isPasswordVisible = false,
-            onTogglePasswordVisibility = {  },
+            onTogglePasswordVisibility = {},
             onLoginClick = {},
             onNavigateToRecovery = {},
             onBack = {}

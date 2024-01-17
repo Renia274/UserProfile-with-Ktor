@@ -69,6 +69,8 @@ fun SettingsScreen(
         mutableStateOf(sharedViewModel.stateFlow.value.darkMode)
     }
 
+    val firstName = sharedViewModel.getFirstName()
+    val lastName = sharedViewModel.getLastName()
 
     var notificationEnabled by rememberSaveable {
         mutableStateOf(sharedViewModel.stateFlow.value.notificationEnabled)
@@ -78,6 +80,7 @@ fun SettingsScreen(
     }
 
     var isSecurityCodeEditable by rememberSaveable { mutableStateOf(false) }
+
 
     var rememberedUsernameState by remember {
         mutableStateOf(
@@ -140,6 +143,8 @@ fun SettingsScreen(
     }
 
     SettingsContent(
+        firstName = firstName,
+        lastName = lastName,
         darkMode = darkMode,
         notificationEnabled = notificationEnabled,
         signupEmail = signupEmail,
@@ -225,6 +230,8 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
+    firstName: String,
+    lastName: String,
     darkMode: Boolean,
     notificationEnabled: Boolean,
     signupEmail: String,
@@ -246,6 +253,7 @@ fun SettingsContent(
 
 
     val context = LocalContext.current
+
 
     var darkModeState by rememberSaveable { mutableStateOf(darkMode) }
 
@@ -304,7 +312,7 @@ fun SettingsContent(
             // Display user account information
             SettingsField(
                 label = "First Name:",
-                value = "John",
+                value = firstName,
                 onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {})
@@ -312,7 +320,7 @@ fun SettingsContent(
 
             SettingsField(
                 label = "Last Name:",
-                value = "Doe",
+                value = lastName,
                 onValueChange = { /* */ },
                 isEditable = false,
                 onClearClick = {}
@@ -429,8 +437,7 @@ fun SettingsContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Dark Mode
-            // Dark Mode
+
             Text(
                 "Dark Mode",
                 style = TextStyle(fontSize = 16.sp),
@@ -496,6 +503,8 @@ fun SettingsContentPreview() {
 
     PracticeTheme {
         SettingsContent(
+            firstName = "John",
+            lastName = "Doe",
             darkMode = darkMode,
             notificationEnabled = notificationEnabled,
             signupEmail = signupEmail,

@@ -195,11 +195,11 @@ fun PinLoginContentPreview() {
         Surface {
             PinLoginContent(
                 pin = "123456",
-                onPinChange = { /*  */ },
+                onPinChange = {},
                 isPinVisible = true,
-                onTogglePinVisibility = { /*  */ },
-                onLogin = { /*  */ },
-                onPostNavigate = { /*  */ }
+                onTogglePinVisibility = {},
+                onLogin = { },
+                onPostNavigate = { }
             )
         }
     }

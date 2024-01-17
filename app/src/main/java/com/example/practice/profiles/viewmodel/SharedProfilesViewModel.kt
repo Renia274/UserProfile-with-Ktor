@@ -23,7 +23,7 @@ data class SharedProfilesViewState(
 @HiltViewModel
 class SharedProfilesViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-    private val userProfilesStateFlow = MutableStateFlow<List<UserData>>(emptyList())
+     private val userProfilesStateFlow = MutableStateFlow<List<UserData>>(emptyList())
     var userProfiles: StateFlow<List<UserData>> = userProfilesStateFlow
         private set
 
@@ -40,6 +40,16 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
     )
 
     val stateFlow: StateFlow<SharedProfilesViewState> get() = state
+
+
+    fun getFirstName(): String {
+        return userProfiles.value.firstOrNull()?.firstName ?: ""
+    }
+
+    fun getLastName(): String {
+        return userProfiles.value.firstOrNull()?.lastName ?: ""
+    }
+
 
     fun saveProfession(imageResId: Int, profession: String) {
         userRepository.saveProfession(imageResId, profession)
