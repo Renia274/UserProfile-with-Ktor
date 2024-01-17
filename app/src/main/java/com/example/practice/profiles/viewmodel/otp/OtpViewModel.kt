@@ -82,6 +82,12 @@ class FirebaseOtpViewModel @Inject constructor(
         viewStateFlow.value = viewStateFlow.value.copy(emailErrorMessage = null)
     }
 
+    fun clearCodeMessage() {
+        viewStateFlow.value = viewStateFlow.value.copy(codeSentMessage = null)
+    }
+
+
+
     // set error message for non-matching email
     fun setErrorEmail(email: String, signupEmail: String) {
         val emailErrorMessage = createEmailErrorMessage(email, signupEmail)

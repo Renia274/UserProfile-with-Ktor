@@ -19,6 +19,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,15 @@ fun OtpScreen(
     var emailErrorMessage = viewState.emailErrorMessage
     val codeMessage = otpViewModel.viewStateFlow.value.codeSentMessage
     var showMessage by remember { mutableStateOf(false) }
+
+
+    DisposableEffect(Unit) {
+        onDispose {
+            // Reset the codeMessage and errorMessage when navigating away from the OTP screen
+            otpViewModel.clearCodeMessage()
+            otpViewModel.clearEmailErrorMessage()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -153,7 +163,7 @@ fun OtpScreenContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-
+        // Second Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,7 +184,6 @@ fun OtpScreenContent(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Button(
             onClick = { onGenerateClick() },
@@ -205,7 +214,7 @@ fun OtpScreenContent(
         }
 
         // Display code error message when the user tries to create OTP code with any email
-        if (emailErrorMessage != null ) {
+        if (emailErrorMessage != null) {
             Text(
                 emailErrorMessage,
                 color = Color.Red,
@@ -221,7 +230,8 @@ fun OtpScreenContent(
 fun OtpScreenPreview() {
 
     PracticeTheme {
-        OtpScreenContent(email = "example@email.com",
+        OtpScreenContent(
+            email = "example@email.com",
             onEmailChange = {},
             otp = "123456",
             onOtpChange = {},
