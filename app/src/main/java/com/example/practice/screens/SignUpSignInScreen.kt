@@ -2,11 +2,13 @@ package com.example.practice.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -41,45 +43,60 @@ fun SignUpSignInScreen(
 fun SignUpSignInContent(
     onSignUpClick: () -> Unit,
     onSignInClick: () -> Unit,
-
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-
-
-        Button(
-            onClick = {
-                // Continue with the sign-up
-                onSignUpClick.invoke()
-            },
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(contentColor = Color.Green)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text("Sign Up", color = Color.White)
+            Spacer(modifier = Modifier.width(16.dp))
+            Button(
+                onClick = {
+                    // Continue with the sign-up
+                    onSignUpClick.invoke()
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(contentColor = Color.Green)
+            ) {
+                Text("Sign Up", color = Color.White)
+            }
+            Spacer(modifier = Modifier.width(16.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = onSignInClick,
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text("Sign In", color = Color.White)
+            Spacer(modifier = Modifier.width(16.dp))
+            Button(
+                onClick = onSignInClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text("Sign In", color = Color.White)
+            }
+            Spacer(modifier = Modifier.width(16.dp))
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
