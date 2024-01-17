@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -44,8 +46,6 @@ import com.example.practice.R
 import com.example.practice.data.UserData
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.items.CustomVerticalGrid
-import com.example.practice.screens.items.DropDownList
-import com.example.practice.screens.items.InterestsDropDownList
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
@@ -102,66 +102,67 @@ fun UserProfileBob(
 
         when {
             isEditScreen && isEditingProfession -> {
-                OutlinedTextField(
-                    value = selectedProfession,
-                    onValueChange = { newProfession ->
-                        selectedProfession = newProfession
-                    },
-                    label = { Text("Enter Profession") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            isDropDownListVisible = !isDropDownListVisible
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    OutlinedTextField(
+                        value = selectedProfession,
+                        onValueChange = { newProfession ->
+                            selectedProfession = newProfession
+                        },
+                        label = { Text("Enter Profession") },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                        modifier = Modifier
+                            .weight(1f),
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                isDropDownListVisible = !isDropDownListVisible
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
+                            }
                         }
-                    }
-                )
-
-                if (isDropDownListVisible) {
-                    DropDownList(
-                        onOptionSelected = { selectedProfession = it },
-                        expanded = isDropDownListVisible,
-                        onDismissRequest = { isDropDownListVisible = false }
                     )
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             }
 
             isEditingInterests -> {
-                InterestsDropDownList(
-                    onInterestsSelected = { selectedInterests = it },
-                    selectedInterests = selectedInterests,
-                    expanded = isInterestsDropDownListVisible,
-                    onDismissRequest = { isInterestsDropDownListVisible = false }
-                )
-
-                OutlinedTextField(
-                    value = selectedInterests.joinToString(", "),
-                    onValueChange = { newInterests ->
-                        selectedInterests = newInterests.split(", ").map { it.trim() }
-                    },
-                    label = { Text("Enter Interests") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            isInterestsDropDownListVisible = !isInterestsDropDownListVisible
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    OutlinedTextField(
+                        value = selectedInterests.joinToString(", "),
+                        onValueChange = { newInterests ->
+                            selectedInterests = newInterests.split(", ").map { it.trim() }
+                        },
+                        label = { Text("Enter Interests") },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                        modifier = Modifier
+                            .weight(1f),
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                isInterestsDropDownListVisible = !isInterestsDropDownListVisible
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
             }
 
             else -> {
@@ -284,6 +285,7 @@ fun UserProfileBobContent(userProfile: UserData, isEditScreen: Boolean) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 
