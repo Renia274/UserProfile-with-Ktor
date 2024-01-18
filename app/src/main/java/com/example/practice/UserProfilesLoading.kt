@@ -22,7 +22,7 @@ import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.EditProfile
 import com.example.practice.screens.items.CustomCountDownTimer
 import com.example.practice.screens.items.UserProfileItem
-import com.example.practice.utils.SignOutDialog
+import com.example.practice.screens.items.SignOutDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
