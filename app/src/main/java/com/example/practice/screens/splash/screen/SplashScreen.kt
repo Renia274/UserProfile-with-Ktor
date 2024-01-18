@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.splash.screen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

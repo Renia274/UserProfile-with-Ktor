@@ -1,4 +1,4 @@
-package com.example.practice.profiles.components
+package com.example.practice.screens.userprofile.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

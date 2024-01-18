@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.recovery
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

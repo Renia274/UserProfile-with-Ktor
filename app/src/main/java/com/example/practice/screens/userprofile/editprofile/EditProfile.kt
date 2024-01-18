@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.userprofile.editprofile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

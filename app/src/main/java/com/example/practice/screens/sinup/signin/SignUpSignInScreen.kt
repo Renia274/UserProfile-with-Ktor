@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.sinup.signin
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.userprofile.profile
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -23,18 +23,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
 import com.example.practice.data.UserData
-import com.example.practice.profiles.components.EditInterestsSection
-import com.example.practice.profiles.components.EditProfessionSection
-import com.example.practice.profiles.components.UserProfileButtons
-import com.example.practice.profiles.components.UserProfileImage
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.items.CustomVerticalGrid
+import com.example.practice.screens.userprofile.components.EditInterestsSection
+import com.example.practice.screens.userprofile.components.EditProfessionSection
+import com.example.practice.screens.userprofile.components.UserProfileButtons
+import com.example.practice.screens.userprofile.components.UserProfileImage
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
-
 @Composable
-fun UserProfileEve(
+fun UserProfileBob(
     userProfile: UserData,
     onEditClick: () -> Unit,
     isEditScreen: Boolean,
@@ -90,7 +89,7 @@ fun UserProfileEve(
             }
 
             else -> {
-                UserProfileEveContent(userProfile = userProfile, isEditScreen = isEditScreen)
+                UserProfileBobContent(userProfile = userProfile, isEditScreen = isEditScreen)
             }
         }
 
@@ -109,7 +108,7 @@ fun UserProfileEve(
 }
 
 @Composable
-fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean) {
+fun UserProfileBobContent(userProfile: UserData, isEditScreen: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -162,15 +161,16 @@ fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean) {
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 
-fun UserProfileContentPreview() {
+fun UserProfileBobContentPreview() {
     val userProfile = UserData(
         imageResId = R.drawable.bob_johnson,
-        firstName = "Eve",
-        lastName = "Brown",
-        profession = "Tester",
+        firstName = "Bob",
+        lastName = "Johnson",
+        profession = "Software Engineer",
         interests = listOf("Programming", "Reading", "Music")
     )
 

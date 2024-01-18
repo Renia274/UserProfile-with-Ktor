@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.info
 
 import android.content.Context
 import android.content.Intent

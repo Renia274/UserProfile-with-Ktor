@@ -2,9 +2,9 @@ package com.example.practice.screens.items
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.practice.screens.UserProfileAlice
-import com.example.practice.screens.UserProfileBob
-import com.example.practice.screens.UserProfileEve
+import com.example.practice.screens.userprofile.profile.UserProfileAlice
+import com.example.practice.screens.userprofile.profile.UserProfileBob
+import com.example.practice.screens.userprofile.profile.UserProfileEve
 import com.example.practice.data.UserData
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 

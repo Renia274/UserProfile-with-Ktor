@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.settings
 
 
 import android.widget.Toast

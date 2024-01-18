@@ -1,4 +1,4 @@
-package com.example.practice.appmodule
+package com.example.practice.module
 
 import com.example.practice.ktor.services.PostsService
 import com.example.practice.ktor.services.PostsServiceImpl

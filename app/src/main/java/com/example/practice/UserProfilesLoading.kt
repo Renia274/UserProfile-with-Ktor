@@ -19,7 +19,7 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
-import com.example.practice.screens.EditProfile
+import com.example.practice.screens.userprofile.editprofile.EditProfile
 import com.example.practice.screens.items.CustomCountDownTimer
 import com.example.practice.screens.items.UserProfileItem
 import com.example.practice.screens.items.SignOutDialog

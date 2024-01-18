@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice.screens.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

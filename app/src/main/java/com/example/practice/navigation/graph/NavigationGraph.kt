@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.practice.screens.EditProfile
+import com.example.practice.screens.userprofile.editprofile.EditProfile
 import com.example.practice.R
 import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData
@@ -23,18 +23,18 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
 import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
-import com.example.practice.screens.InfoScreen
-import com.example.practice.screens.LoadingScreen
-import com.example.practice.screens.OtpScreen
-import com.example.practice.screens.PermissionScreen
-import com.example.practice.screens.PinLoginScreen
-import com.example.practice.screens.RecoveryScreen
-import com.example.practice.screens.SecurityCodeScreen
-import com.example.practice.screens.SettingsScreen
-import com.example.practice.screens.SignUpSignInScreen
-import com.example.practice.screens.SignupScreen
-import com.example.practice.screens.SplashScreen
-import com.example.practice.screens.UsernamePasswordLoginScreen
+import com.example.practice.screens.info.InfoScreen
+import com.example.practice.Loader
+import com.example.practice.screens.otp.OtpScreen
+import com.example.practice.screens.permission.PermissionScreen
+import com.example.practice.screens.pin.PinLoginScreen
+import com.example.practice.screens.recovery.RecoveryScreen
+import com.example.practice.screens.security.code.SecurityCodeScreen
+import com.example.practice.screens.settings.SettingsScreen
+import com.example.practice.screens.sinup.signin.SignUpSignInScreen
+import com.example.practice.screens.signup.SignupScreen
+import com.example.practice.screens.splash.screen.SplashScreen
+import com.example.practice.screens.login.UsernamePasswordLoginScreen
 
 data class Navigation(
     val route: String,
@@ -150,7 +150,7 @@ fun NavigationApp() {
 
 
             if (isLoading) {
-                LoadingScreen()
+                Loader()
             } else {
                 val securityCodeAvailable =
                     credentialsViewModel.credentialsState.value.securityCode != null

@@ -1,4 +1,4 @@
-package com.example.practice.screens
+package com.example.practice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun LoadingScreen() {
+fun Loader() {
     Box(
         modifier = Modifier
             .fillMaxSize()
