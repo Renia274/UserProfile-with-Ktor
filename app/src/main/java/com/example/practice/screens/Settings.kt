@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -299,12 +298,12 @@ fun SettingsContent(
                     .wrapContentHeight()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Account Information Section
             Text(
                 "Account Information",
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -313,15 +312,17 @@ fun SettingsContent(
             SettingsField(
                 label = "First Name:",
                 value = firstName,
-                onValueChange = { /* */ },
+                onValueChange = {},
                 isEditable = false,
                 onClearClick = {})
+
+
             Spacer(modifier = Modifier.height(8.dp))
 
             SettingsField(
                 label = "Last Name:",
                 value = lastName,
-                onValueChange = { /* */ },
+                onValueChange = {},
                 isEditable = false,
                 onClearClick = {}
             )
@@ -367,7 +368,7 @@ fun SettingsContent(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
@@ -387,8 +388,8 @@ fun SettingsContent(
             )
 
             // Security Section
-            Text("Security", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
-            Spacer(modifier = Modifier.height(16.dp))
+            Text("Security", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+            Spacer(modifier = Modifier.height(8.dp))
 
             SettingsField(
                 label = "Security Code:",
@@ -402,7 +403,7 @@ fun SettingsContent(
                 },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
 
             Button(
@@ -411,18 +412,12 @@ fun SettingsContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Text("Save Security Code")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
 
             Divider(
@@ -431,7 +426,7 @@ fun SettingsContent(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text("Settings", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
 
@@ -491,20 +486,21 @@ fun SettingsContent(
 }
 
 
-@Composable
+
 @Preview(showBackground = true)
+@Composable
 fun SettingsContentPreview() {
     val darkMode = true
     val notificationEnabled = true
-    val signupEmail = "john.doe@example.com"
-    val username = "john_doe"
+    val signupEmail = "bob1@example.com"
+    val username = "bob1"
     val password = "********"
     val enteredSecurityCode = "1234"
 
     PracticeTheme {
         SettingsContent(
-            firstName = "John",
-            lastName = "Doe",
+            firstName = "Bob",
+            lastName = "Johnson",
             darkMode = darkMode,
             notificationEnabled = notificationEnabled,
             signupEmail = signupEmail,

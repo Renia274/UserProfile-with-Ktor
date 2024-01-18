@@ -1,9 +1,11 @@
 package com.example.practice.screens.items
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,7 +44,6 @@ fun SettingsField(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
     ) {
         Text(
             text = label,
@@ -50,7 +51,15 @@ fun SettingsField(
         )
         if (isEditable) {
             val editableState = remember { mutableStateOf(displayedValue) }
-            OutlinedTextField(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ){
+
+                Spacer(modifier=Modifier.width(8.dp))
+
+                OutlinedTextField(
                 value = editableState.value,
                 onValueChange = {
                     editableState.value = it
@@ -71,7 +80,7 @@ fun SettingsField(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp),
+                    .weight(1f),
                 trailingIcon = {
                     if (label.equals(
                             "Password:",
@@ -92,6 +101,10 @@ fun SettingsField(
                     }
                 }
             )
+
+            Spacer(modifier=Modifier.width(8.dp))
+            }
+
 
             if (label.equals(
                     "Security Code:",

@@ -245,8 +245,8 @@ fun UsernamePasswordLoginContent(
 @Preview(showBackground = true)
 @Composable
 fun UsernamePasswordLoginContentPreview() {
-    val username = "example_user"
-    val password = "password123"
+    val username = "bob1"
+    val password = "1234567A"
 
 
     PracticeTheme {

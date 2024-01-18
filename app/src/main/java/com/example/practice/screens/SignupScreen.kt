@@ -225,9 +225,8 @@ fun SignupContent(
 
 @Preview(showBackground = true)
 @Composable
-
 fun SignupContentPreview() {
-    var username ="john_doe"
+    var username ="bob1"
     var email ="test@gm.com"
     var password ="1234567A"
 
