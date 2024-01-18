@@ -199,4 +199,3 @@ fun UserProfilesLoading(
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
-

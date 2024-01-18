@@ -18,12 +18,12 @@ data class SharedProfilesViewState(
     val notificationEnabled: Boolean,
     val savedInterests: List<String>,
 
-)
+    )
 
 @HiltViewModel
 class SharedProfilesViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-     private val userProfilesStateFlow = MutableStateFlow<List<UserData>>(emptyList())
+    private val userProfilesStateFlow = MutableStateFlow<List<UserData>>(emptyList())
     var userProfiles: StateFlow<List<UserData>> = userProfilesStateFlow
         private set
 
@@ -36,7 +36,7 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
             notificationEnabled = false,
             savedInterests = emptyList(),
 
-        )
+            )
     )
 
     val stateFlow: StateFlow<SharedProfilesViewState> get() = state
@@ -82,6 +82,3 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
         userProfilesStateFlow.value = newProfiles
     }
 }
-
-
-

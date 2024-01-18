@@ -46,8 +46,209 @@ import com.example.practice.R
 import com.example.practice.data.UserData
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.items.CustomVerticalGrid
+import com.example.practice.screens.items.DropDownList
+import com.example.practice.screens.items.InterestsDropDownList
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
+
+
+
+@Composable
+fun UserProfileImage(userProfile: UserData, onEditClick: () -> Unit, isEditingProfession: Boolean) {
+    val imageSize by animateDpAsState(
+        targetValue = if (isEditingProfession) 150.dp else 200.dp,
+        animationSpec = tween(durationMillis = 500),
+        label = "imageSizeAnimation"
+    )
+
+    Image(
+        painter = painterResource(id = userProfile.imageResId),
+        contentDescription = null,
+        modifier = Modifier
+            .size(imageSize)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onSecondary)
+            .clickable {
+                if (!isEditingProfession) {
+                    onEditClick()
+                }
+            }
+    )
+}
+
+@Composable
+fun EditProfessionSection(
+    selectedProfession: String,
+    onProfessionValueChange: (String) -> Unit,
+    isDropDownListVisible: Boolean,
+    onDropDownClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.width(16.dp))
+        OutlinedTextField(
+            value = selectedProfession,
+            onValueChange = { newProfession ->
+                onProfessionValueChange(newProfession)
+            },
+            label = { Text("Enter Profession") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .weight(1f),
+            trailingIcon = {
+                IconButton(onClick = {
+                    onDropDownClick()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                }
+            }
+        )
+
+        // Show the DropDownList when isDropDownListVisible is true
+        if (isDropDownListVisible) {
+            DropDownList(
+                onOptionSelected = { selectedOption ->
+                    // Handle the selected option
+                    onProfessionValueChange(selectedOption)
+                },
+                expanded = isDropDownListVisible,
+                onDismissRequest = {
+                    // Close the DropDownList when dismissed
+                    onDropDownClick()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
+
+@Composable
+fun EditInterestsSection(
+    selectedInterests: List<String>,
+    onInterestsValueChange: (List<String>) -> Unit,
+    isInterestsDropDownListVisible: Boolean,
+    onInterestsDropDownClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.width(16.dp))
+        OutlinedTextField(
+            value = selectedInterests.joinToString(", "),
+            onValueChange = { newInterests ->
+                onInterestsValueChange(newInterests.split(", ").map { it.trim() })
+            },
+            label = { Text("Enter Interests") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .weight(1f),
+            trailingIcon = {
+                IconButton(onClick = {
+                    onInterestsDropDownClick()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                }
+            }
+        )
+
+        // Show the InterestsDropDownList when isInterestsDropDownListVisible is true
+        if (isInterestsDropDownListVisible) {
+            InterestsDropDownList(
+                onInterestsSelected = { selectedOptions ->
+                    // Handle the selected options
+                    onInterestsValueChange(selectedOptions)
+                },
+                selectedInterests = selectedInterests,
+                expanded = isInterestsDropDownListVisible,
+                onDismissRequest = {
+                    // Close the InterestsDropDownList when dismissed
+                    onInterestsDropDownClick()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
+
+@Composable
+fun UserProfileButtons(
+    isEditingProfession: Boolean,
+    onSaveProfession: () -> Unit,
+    onEditProfessionClick: () -> Unit,
+    isEditingInterests: Boolean,
+    onSaveInterests: () -> Unit,
+    onEditInterestsClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        if (isEditingProfession) {
+            Button(
+                onClick = {
+                    onSaveProfession()
+                    onEditProfessionClick()
+                }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Blue
+                )
+            ) {
+                Text("Save Profession", color = Color.White)
+            }
+        } else {
+            Button(
+                onClick = {
+                    onEditProfessionClick()
+                }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+            ) {
+                Text("Edit Profession", color = Color.White)
+            }
+        }
+
+        if (isEditingInterests) {
+            Button(
+                onClick = {
+                    onSaveInterests()
+                   onEditInterestsClick()
+                }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Blue
+                )
+            ) {
+                Text("Save Interests", color = Color.White)
+            }
+        } else {
+            Button(
+                onClick = {
+                    onEditInterestsClick()
+                }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+            ) {
+                Text("Edit Interests", color = Color.White)
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
 
 @Composable
 fun UserProfileBob(
@@ -86,85 +287,15 @@ fun UserProfileBob(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = userProfile.imageResId),
-            contentDescription = null,
-            modifier = Modifier
-                .size(imageSize)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSecondary)
-                .clickable {
-                    if (!isEditingProfession) {
-                        onEditClick()
-                    }
-                }
-        )
+        UserProfileImage(userProfile, onEditClick, isEditingProfession)
 
         when {
             isEditScreen && isEditingProfession -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-                    OutlinedTextField(
-                        value = selectedProfession,
-                        onValueChange = { newProfession ->
-                            selectedProfession = newProfession
-                        },
-                        label = { Text("Enter Profession") },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                        modifier = Modifier
-                            .weight(1f),
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                isDropDownListVisible = !isDropDownListVisible
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                    tint = Color.Gray
-                                )
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
+                EditProfessionSection(selectedProfession, { newProfession -> selectedProfession = newProfession }, isDropDownListVisible, { isDropDownListVisible = !isDropDownListVisible })
             }
-
             isEditingInterests -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-                    OutlinedTextField(
-                        value = selectedInterests.joinToString(", "),
-                        onValueChange = { newInterests ->
-                            selectedInterests = newInterests.split(", ").map { it.trim() }
-                        },
-                        label = { Text("Enter Interests") },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                        modifier = Modifier
-                            .weight(1f),
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                isInterestsDropDownListVisible = !isInterestsDropDownListVisible
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                    tint = Color.Gray
-                                )
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
+                EditInterestsSection(selectedInterests, { newInterests -> selectedInterests = newInterests }, isInterestsDropDownListVisible, { isInterestsDropDownListVisible = !isInterestsDropDownListVisible })
             }
-
             else -> {
                 UserProfileBobContent(userProfile = userProfile, isEditScreen = isEditScreen)
             }
@@ -173,61 +304,7 @@ fun UserProfileBob(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (isEditScreen) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isEditingProfession) {
-                    Button(
-                        onClick = {
-                            onSaveProfession(selectedProfession)
-                            isEditingProfession = false
-                            viewModel.saveProfession(userProfile.imageResId, selectedProfession)
-                        }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Profession", color = Color.White)
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingProfession = !isEditingProfession
-                        }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Profession", color = Color.White)
-                    }
-                }
-
-                if (isEditingInterests) {
-                    Button(
-                        onClick = {
-                            onInterestsSelected(selectedInterests)
-                            viewModel.saveInterests(userProfile.imageResId, selectedInterests)
-                            isEditingInterests = false
-                        }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue
-                        )
-                    ) {
-                        Text("Save Interests", color = Color.White)
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            isEditingInterests = !isEditingInterests
-                        }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
-                        )
-                    ) {
-                        Text("Edit Interests", color = Color.White)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+            UserProfileButtons(isEditingProfession, { onSaveProfession(selectedProfession) }, { isEditingProfession = !isEditingProfession }, isEditingInterests, { onInterestsSelected(selectedInterests) }, { isEditingInterests = !isEditingInterests })
         }
     }
 }
@@ -285,6 +362,10 @@ fun UserProfileBobContent(userProfile: UserData, isEditScreen: Boolean) {
         }
     }
 }
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable
