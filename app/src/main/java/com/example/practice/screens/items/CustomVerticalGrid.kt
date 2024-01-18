@@ -41,7 +41,6 @@ fun CustomVerticalGrid(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-
         items.chunked(2).forEachIndexed { rowIndex, rowItems ->
             Row(
                 modifier = Modifier
@@ -58,7 +57,7 @@ fun CustomVerticalGrid(
                         onClick = {
                             selectedItem = if (selectedItem == item) null else item
                         },
-                        description = "Description for $item",
+                        description = "Info: $item",
                         color = getColorForIndex(rowIndex)
                     )
 
@@ -81,18 +80,16 @@ fun CustomGridItem(
 ) {
     Box(
         modifier = Modifier
-            .width(40.dp)
-            .height(40.dp)
+            .width(100.dp)
+            .height(60.dp)
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.secondary
                 else color
             )
             .clickable(onClick = onClick)
     ) {
-        Column(
-        ) {
+        Column {
             Spacer(modifier = Modifier.height(8.dp))
-
 
             Text(
                 text = text,
@@ -105,16 +102,21 @@ fun CustomGridItem(
 
             // Description for the selected item
             if (isSelected && description.isNotEmpty()) {
-                Text(
-                    text = description,
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
+                DescriptionText(description)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
+}
+
+@Composable
+fun DescriptionText(description: String) {
+    Text(
+        text = description,
+        color = Color.Black,
+        fontSize = 14.sp
+    )
 }
 
 /**
