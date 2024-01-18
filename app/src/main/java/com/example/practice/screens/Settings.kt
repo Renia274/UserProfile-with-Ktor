@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -51,7 +50,6 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.items.SaveConfirmationDialog
 import com.example.practice.screens.items.SettingsField
 import com.example.practice.ui.theme.PracticeTheme
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -168,13 +166,10 @@ fun SettingsScreen(
                 onNavigate("securityCode")
                 Toast.makeText(context, "Security Code saved", Toast.LENGTH_SHORT).show()
             } else {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        "Security code cannot be empty",
-                        duration = SnackbarDuration.Short
-                    )
-                }
+                Toast.makeText(context, "Security code cannot be empty", Toast.LENGTH_SHORT).show()
+
             }
+
         },
         onShowConfirmationDialog = { showConfirmationDialog = true },
         onDismissConfirmationDialog = { showConfirmationDialog = false },
@@ -262,7 +257,6 @@ fun SettingsContent(
     }
 
 
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Box(
         modifier = Modifier
@@ -484,7 +478,6 @@ fun SettingsContent(
         }
     }
 }
-
 
 
 @Preview(showBackground = true)
