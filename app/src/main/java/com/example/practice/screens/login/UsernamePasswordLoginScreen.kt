@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -42,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.example.practice.R
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
-
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -54,7 +55,7 @@ fun UsernamePasswordLoginScreen(
     viewModel: CredentialsViewModel
 ) {
 
-
+    var coroutineScope = rememberCoroutineScope()
     var isLoginSuccessful by remember { mutableStateOf(false) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -89,43 +90,50 @@ fun UsernamePasswordLoginScreen(
             isPasswordVisible = isPasswordVisible,
             onTogglePasswordVisibility = { isPasswordVisible = !isPasswordVisible },
             onLoginClick = {
-                onLoading.invoke(true)
-                isLoginSuccessful = viewModel.isValidCredentials(username, password)
-                onLoading.invoke(false)
 
-                if (isLoginSuccessful) {
-                    viewModel.setEnteredCredentials(username, password)
+                coroutineScope.launch {
+                    onLoading.invoke(true)
+                    isLoginSuccessful = viewModel.isValidCredentials(username, password)
+                    onLoading.invoke(false)
 
-                    when {
-                        username.lowercase().startsWith("bob") ||
-                                username.lowercase().startsWith("alice") ||
-                                username.lowercase().startsWith("eve") -> {
-                            updatedUsername = username
-                            updatedPassword = password
+                    val storedCredentials = viewModel.loadCredentialsForLogin(username,password)
 
-                            onLoginSuccess.invoke(
-                                username,
-                                password,
-                                updatedUsername,
-                                updatedPassword
-                            )
+
+                    if (isLoginSuccessful) {
+                        viewModel.setEnteredCredentials(username, password)
+
+                        when {
+                            // Your existing logic based on the username
+                            username.lowercase().startsWith("bob") ||
+                                    username.lowercase().startsWith("alice") ||
+                                    username.lowercase().startsWith("eve") -> {
+                                // Use stored credentials for successful login
+                                updatedUsername = storedCredentials?.username ?: ""
+                                updatedPassword = storedCredentials?.password ?: ""
+
+                                onLoginSuccess.invoke(
+                                    username,
+                                    password,
+                                    updatedUsername,
+                                    updatedPassword
+                                )
+                            }
+
+                            else -> {
+                                println("Invalid username")
+                            }
                         }
-                        else -> {
-                            println("Invalid username")
-                        }
+
+                    } else {
+                        println("Login Failed")
                     }
-
-                } else {
-                    println("Login Failed")
                 }
             },
             onNavigateToRecovery = onNavigateToRecovery,
-            onBack=onBack
+            onBack = onBack
         )
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -252,7 +260,7 @@ fun UsernamePasswordLoginContentPreview() {
     PracticeTheme {
         UsernamePasswordLoginContent(
             username = username,
-            onUsernameChange = {  },
+            onUsernameChange = { },
             password = password,
             onPasswordChange = { password },
             isPasswordVisible = false,

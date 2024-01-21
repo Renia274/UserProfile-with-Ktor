@@ -4,6 +4,8 @@ package com.example.practice.profiles.viewmodel.credentials
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.practice.data.UserCredentials
+import com.example.practice.room.UserCredentialsDao
+import com.example.practice.room.UserCredentialsEntity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +20,7 @@ data class CredentialsState(
 )
 
 @HiltViewModel
-class CredentialsViewModel @Inject constructor() : ViewModel() {
+class CredentialsViewModel @Inject constructor(private val userCredentialsDao: UserCredentialsDao) : ViewModel() {
 
     private val credentialsStateFlow = MutableStateFlow(CredentialsState(null, null))
     val credentialsState: StateFlow<CredentialsState> get() = credentialsStateFlow
@@ -28,8 +30,20 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
     fun setEnteredCredentials(username: String, password: String) {
         val userCredentials = UserCredentials(username, password)
         viewModelScope.launch {
-            credentialsStateFlow.value = CredentialsState(enteredCredentials = userCredentials, securityCode = credentialsStateFlow.value.securityCode)
+            credentialsStateFlow.value = CredentialsState(
+                enteredCredentials = userCredentials,
+                securityCode = credentialsStateFlow.value.securityCode
+            )
         }
+    }
+
+    suspend fun saveUserCredentials(username: String, password: String) {
+        val userCredentials = UserCredentialsEntity(username = username, password = password)
+        userCredentialsDao.insertUserCredentials(userCredentials)
+    }
+
+    suspend fun loadCredentialsForLogin(username: String,password: String): UserCredentialsEntity? {
+        return userCredentialsDao.getUserCredentials(username,password)
     }
 
     fun isValidCredentials(username: String, password: String): Boolean {
@@ -44,14 +58,20 @@ class CredentialsViewModel @Inject constructor() : ViewModel() {
                 username = updatedUsername,
                 password = updatedPassword
             )
-            credentialsStateFlow.value = CredentialsState(enteredCredentials = updatedCredentials, securityCode = credentialsStateFlow.value.securityCode)
+            credentialsStateFlow.value = CredentialsState(
+                enteredCredentials = updatedCredentials,
+                securityCode = credentialsStateFlow.value.securityCode
+            )
         }
     }
 
     fun saveSecurityCode(code: String): Boolean {
         return try {
             viewModelScope.launch {
-                credentialsStateFlow.value = CredentialsState(enteredCredentials = credentialsStateFlow.value.enteredCredentials, securityCode = code)
+                credentialsStateFlow.value = CredentialsState(
+                    enteredCredentials = credentialsStateFlow.value.enteredCredentials,
+                    securityCode = code
+                )
             }
             true
         } catch (e: Exception) {

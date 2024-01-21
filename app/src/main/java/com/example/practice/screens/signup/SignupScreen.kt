@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,9 +42,7 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.validators.isValidEmail
 import com.example.practice.validators.isValidPassword
-
-
-
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -54,7 +53,7 @@ fun SignupScreen(
     sharedViewModel: SharedProfilesViewModel,
 ) {
 
-
+    var scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -80,9 +79,13 @@ fun SignupScreen(
             onSignUpClick = {
                 // navigate to login screen upon successful signup
                 if (isValidEmail(email) && isValidPassword(password)) {
-                    credentialsViewModel.setEnteredCredentials(username, password)
-                    sharedViewModel.setSignupEmail(email)
-                    onNavigate.invoke()
+                    scope.launch {
+                        credentialsViewModel.setEnteredCredentials(username, password)
+                        credentialsViewModel.saveUserCredentials(username, password)
+                        sharedViewModel.setSignupEmail(email)
+                        onNavigate.invoke()
+                    }
+
                 }
             }
         )
@@ -226,9 +229,9 @@ fun SignupContent(
 @Preview(showBackground = true)
 @Composable
 fun SignupContentPreview() {
-    var username ="bob1"
-    var email ="test@gm.com"
-    var password ="1234567A"
+    var username = "bob1"
+    var email = "test@gm.com"
+    var password = "1234567A"
 
 
     SignupContent(

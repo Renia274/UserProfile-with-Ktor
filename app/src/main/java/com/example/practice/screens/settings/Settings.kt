@@ -50,6 +50,7 @@ import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.items.SaveConfirmationDialog
 import com.example.practice.screens.items.SettingsField
 import com.example.practice.ui.theme.PracticeTheme
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -152,12 +153,21 @@ fun SettingsScreen(
         onSaveCredentials = onSaveCredentials,
         onSignupEmailChange = { sharedViewModel.setSignupEmail(it) },
         onUsernameChange = { newValue ->
-            username = newValue
-            credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
+            coroutineScope.launch {
+                username = newValue
+                credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
+                credentialsViewModel.saveUserCredentials(newValue, password)
+            }
+
         },
         onPasswordChange = { newValue ->
-            password = newValue
-            credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
+
+            coroutineScope.launch {
+                password = newValue
+                credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
+                credentialsViewModel.saveUserCredentials(username = username, password = newValue)
+            }
+
         },
         onSecurityCodeChange = { enteredSecurityCode = it },
         onSecurityCodeSave = {
@@ -200,23 +210,20 @@ fun SettingsScreen(
 
     // Confirmation Dialog
     if (showConfirmationDialog) {
-        SaveConfirmationDialog(
-            onConfirm = {
-                val updatedUsername = username
-                val updatedPassword = password
-                // Save the updated username and password
-                onSaveCredentials.invoke(updatedUsername, updatedPassword)
-                // update Credentials
-                credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
-                // navigate to login screen
-                onNavigate("usernamePasswordLogin")
-                showConfirmationDialog = false
-            },
-            onDismiss = {
-                // Dismiss the dialog if the user cancels the save operation
-                showConfirmationDialog = false
-            }
-        )
+        SaveConfirmationDialog(onConfirm = {
+            val updatedUsername = username
+            val updatedPassword = password
+            // Save the updated username and password
+            onSaveCredentials.invoke(updatedUsername, updatedPassword)
+            // update Credentials
+            credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
+            // navigate to login screen
+            onNavigate("usernamePasswordLogin")
+            showConfirmationDialog = false
+        }, onDismiss = {
+            // Dismiss the dialog if the user cancels the save operation
+            showConfirmationDialog = false
+        })
     }
 }
 
@@ -268,28 +275,23 @@ fun SettingsContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        onNavigate("back")
-                    }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        onNavigate("permissions")
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Permissions"
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+            TopAppBar(title = { Text("Settings") }, navigationIcon = {
+                IconButton(onClick = {
+                    onNavigate("back")
+                }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            }, actions = {
+                IconButton(onClick = {
+                    onNavigate("permissions")
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Settings, contentDescription = "Permissions"
+                    )
+                }
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -303,8 +305,7 @@ fun SettingsContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Display user account information
-            SettingsField(
-                label = "First Name:",
+            SettingsField(label = "First Name:",
                 value = firstName,
                 onValueChange = {},
                 isEditable = false,
@@ -313,17 +314,14 @@ fun SettingsContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SettingsField(
-                label = "Last Name:",
+            SettingsField(label = "Last Name:",
                 value = lastName,
                 onValueChange = {},
                 isEditable = false,
-                onClearClick = {}
-            )
+                onClearClick = {})
             Spacer(modifier = Modifier.height(8.dp))
 
-            SettingsField(
-                label = "Email:",
+            SettingsField(label = "Email:",
                 value = signupEmail,
                 onValueChange = { onSignupEmailChange(it) },
                 isEditable = true,
@@ -332,35 +330,24 @@ fun SettingsContent(
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            SettingsField(
-                label = "Username:",
-                value = username,
-                onValueChange = { newValue ->
-                    onUsernameChange(newValue)
-                    onSaveCredentials.invoke(newValue, password)
-                },
-                isEditable = true,
-                onClearClick = {
-                    onUsernameChange("")
-                    onSaveCredentials.invoke("", password)
-                })
+            SettingsField(label = "Username:", value = username, onValueChange = { newValue ->
+                onUsernameChange(newValue)
+                onSaveCredentials.invoke(newValue, password)
+            }, isEditable = true, onClearClick = {
+                onUsernameChange("")
+                onSaveCredentials.invoke("", password)
+            })
 
             Spacer(modifier = Modifier.height(8.dp))
 
 
-            SettingsField(
-                label = "Password:",
-                value = password,
-                onValueChange = { newValue ->
-                    onPasswordChange(newValue)
-                    onSaveCredentials.invoke(username, newValue)
-                },
-                isEditable = true,
-                onClearClick = {
-                    onPasswordChange("")
-                    onSaveCredentials.invoke(username, "")
-                }
-            )
+            SettingsField(label = "Password:", value = password, onValueChange = { newValue ->
+                onPasswordChange(newValue)
+                onSaveCredentials.invoke(username, newValue)
+            }, isEditable = true, onClearClick = {
+                onPasswordChange("")
+                onSaveCredentials.invoke(username, "")
+            })
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -403,8 +390,7 @@ fun SettingsContent(
             Button(
                 onClick = {
                     onSecurityCodeSave()
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
@@ -428,13 +414,10 @@ fun SettingsContent(
 
 
             Text(
-                "Dark Mode",
-                style = TextStyle(fontSize = 16.sp),
-                modifier = Modifier.fillMaxWidth()
+                "Dark Mode", style = TextStyle(fontSize = 16.sp), modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = darkModeState,
-                onCheckedChange = {
+                checked = darkModeState, onCheckedChange = {
                     darkModeState = !darkModeState
                     setDarkMode(darkModeState)
                     val toastMessage = if (darkModeState) {
@@ -443,8 +426,7 @@ fun SettingsContent(
                         "Dark Mode is disabled"
                     }
                     Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.fillMaxWidth()
+                }, modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -457,8 +439,7 @@ fun SettingsContent(
                 modifier = Modifier.fillMaxWidth()
             )
             Switch(
-                checked = securitySwitchState,
-                onCheckedChange = {
+                checked = securitySwitchState, onCheckedChange = {
                     securitySwitchState = !securitySwitchState
                     setSecuritySwitch(securitySwitchState)
                     val toastMessage = if (securitySwitchState) {
@@ -467,8 +448,7 @@ fun SettingsContent(
                         "Security feature is disabled"
                     }
                     Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             )
@@ -491,8 +471,7 @@ fun SettingsContentPreview() {
     val enteredSecurityCode = "1234"
 
     PracticeTheme {
-        SettingsContent(
-            firstName = "Bob",
+        SettingsContent(firstName = "Bob",
             lastName = "Johnson",
             darkMode = darkMode,
             notificationEnabled = notificationEnabled,
@@ -510,8 +489,7 @@ fun SettingsContentPreview() {
             onShowConfirmationDialog = {},
             onDismissConfirmationDialog = {},
             setDarkMode = {},
-            setSecuritySwitch = {}
-        )
+            setSecuritySwitch = {})
     }
 
 }
