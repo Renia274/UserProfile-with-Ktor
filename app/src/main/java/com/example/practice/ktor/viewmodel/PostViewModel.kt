@@ -90,14 +90,15 @@ class PostsViewModel @Inject constructor(private val repository: PostsRepository
             try {
                 val initialTitle = "Initial Title"
                 val initialBody = "Initial Body"
-                val timestamp = System.currentTimeMillis()
+
+                // Use a counter to generate a unique ID for the new post
+                val newPostId = state.value.posts.size + 1
+
                 val newPostRequest = createSamplePostRequest(initialBody, initialTitle, userId = 1)
                 val newPost = repository.createPost(newPostRequest)
 
                 if (newPost != null) {
-
-                    //for every new post use timestamp as unique id
-                    newPost.id = timestamp.toInt()
+                    newPost.id = newPostId
 
                     println("New post key: ${newPost.id}")
                     state.value = state.value.copy(
