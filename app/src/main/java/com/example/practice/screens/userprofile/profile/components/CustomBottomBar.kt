@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.practice.data.BottomNavItem
+import com.example.practice.navigation.bottom.navItems.BottomNavItem
 
 @Composable
 fun CustomBottomBar(
@@ -44,7 +44,6 @@ fun CustomBottomBar(
                         modifier = Modifier
                             .size(iconSize)
                             .fillMaxHeight()
-                            .background(item.itemColor) // Set background color for the bottom navigation item
                     ) {
                         Image(
                             painter = painterResource(id = item.iconResId),

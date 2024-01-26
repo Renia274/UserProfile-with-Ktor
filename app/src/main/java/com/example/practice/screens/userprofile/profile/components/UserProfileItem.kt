@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.runtime.Composable
 import com.example.practice.data.UserData

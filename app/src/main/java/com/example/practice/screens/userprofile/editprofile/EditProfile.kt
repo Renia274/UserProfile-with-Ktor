@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.practice.data.UserData
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
-import com.example.practice.screens.items.UserProfileItem
+import com.example.practice.screens.userprofile.profile.components.UserProfileItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

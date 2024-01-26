@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.settings.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

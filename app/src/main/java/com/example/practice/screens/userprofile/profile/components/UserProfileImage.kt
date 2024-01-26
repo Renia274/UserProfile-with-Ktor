@@ -1,4 +1,4 @@
-package com.example.practice.screens.userprofile.components
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween

@@ -76,7 +76,9 @@ fun SplashScreenContent(alpha: Float) {
         Image(
             painter = painterResource(id = R.drawable.splash_image),
             contentDescription = null,
-            modifier = Modifier.alpha(alpha)
+            modifier = Modifier
+                .alpha(alpha)
+                .background(MaterialTheme.colorScheme.background)
         )
 
         Text(
@@ -87,6 +89,7 @@ fun SplashScreenContent(alpha: Float) {
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

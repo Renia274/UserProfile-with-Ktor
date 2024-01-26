@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
 import com.example.practice.data.UserData
-import com.example.practice.screens.userprofile.components.EditInterestsSection
-import com.example.practice.screens.userprofile.components.EditProfessionSection
-import com.example.practice.screens.userprofile.components.UserProfileButtons
-import com.example.practice.screens.userprofile.components.UserProfileImage
+import com.example.practice.screens.userprofile.profile.components.EditInterestsSection
+import com.example.practice.screens.userprofile.profile.components.EditProfessionSection
+import com.example.practice.screens.userprofile.profile.components.UserProfileButtons
+import com.example.practice.screens.userprofile.profile.components.UserProfileImage
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
-import com.example.practice.screens.items.CustomVerticalGrid
+import com.example.practice.screens.userprofile.profile.components.CustomVerticalGrid
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
@@ -90,7 +91,11 @@ fun UserProfileEve(
             }
 
             else -> {
-                UserProfileEveContent(userProfile = userProfile, isEditScreen = isEditScreen)
+                UserProfileEveContent(
+                    userProfile = userProfile,
+                    isEditScreen = isEditScreen,
+                    darkModeState = viewModel.stateFlow.collectAsState().value.darkMode
+                )
             }
         }
 
@@ -109,7 +114,7 @@ fun UserProfileEve(
 }
 
 @Composable
-fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean) {
+fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean, darkModeState: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -156,7 +161,8 @@ fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean) {
                     "Item 4",
                     "Item 5",
                     "Item 6"
-                )
+                ),
+                darkModeState = darkModeState
             )
         }
     }
@@ -175,7 +181,7 @@ fun UserProfileContentPreview() {
     )
 
     PracticeTheme {
-        UserProfileEveContent(userProfile = userProfile, isEditScreen = false)
+        UserProfileEveContent(userProfile = userProfile, isEditScreen = false, darkModeState = true)
     }
 
 }

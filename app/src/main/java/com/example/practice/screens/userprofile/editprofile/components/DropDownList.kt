@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.editprofile.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.example.practice.data.CustomWindowInfo
-import com.example.practice.data.rememberWindowInfo
+import com.example.practice.CustomWindowInfo
+import com.example.practice.rememberWindowInfo
 
 @Composable
 fun DropDownList(

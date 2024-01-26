@@ -15,7 +15,7 @@ data class SharedProfilesViewState(
     val signupEmail: String,
     val recoveryEmail: String,
     val darkMode: Boolean,
-    val notificationEnabled: Boolean,
+    val securityEnabled: Boolean,
     val savedInterests: List<String>,
 
     )
@@ -33,7 +33,7 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
             signupEmail = "",
             recoveryEmail = "",
             darkMode = false,
-            notificationEnabled = false,
+            securityEnabled = false,
             savedInterests = emptyList(),
 
             )
@@ -68,8 +68,8 @@ class SharedProfilesViewModel @Inject constructor(private val userRepository: Us
         state.value = state.value.copy(darkMode = isDarkMode)
     }
 
-    fun setNotificationEnabled(isEnabled: Boolean) {
-        state.value = state.value.copy(notificationEnabled = isEnabled)
+    fun setsecurityEnabled(isEnabled: Boolean) {
+        state.value = state.value.copy(securityEnabled = isEnabled)
     }
 
     fun saveInterests(imageResId: Int, interests: List<String>) {

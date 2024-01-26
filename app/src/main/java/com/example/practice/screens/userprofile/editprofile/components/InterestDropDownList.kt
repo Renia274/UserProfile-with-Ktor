@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.editprofile.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.practice.data.CustomWindowInfo
-import com.example.practice.data.rememberWindowInfo
+import com.example.practice.CustomWindowInfo
+import com.example.practice.rememberWindowInfo
 
 @Composable
 fun InterestsDropDownList(
@@ -44,7 +44,7 @@ fun InterestsDropDownList(
                 windowInfo.screenHeight / 2
             } else {
                 // Otherwise, show the full list
-                240.dp
+                220.dp
             }
         } else {
             0.dp

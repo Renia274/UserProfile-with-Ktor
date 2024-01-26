@@ -1,4 +1,4 @@
-package com.example.practice.screens.userprofile.components
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,14 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.practice.screens.items.DropDownList
+import com.example.practice.screens.userprofile.editprofile.components.InterestsDropDownList
 
 @Composable
-fun EditProfessionSection(
-    selectedProfession: String,
-    onProfessionValueChange: (String) -> Unit,
-    isDropDownListVisible: Boolean,
-    onDropDownClick: () -> Unit
+fun EditInterestsSection(
+    selectedInterests: List<String>,
+    onInterestsValueChange: (List<String>) -> Unit,
+    isInterestsDropDownListVisible: Boolean,
+    onInterestsDropDownClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -33,17 +33,17 @@ fun EditProfessionSection(
     ) {
         Spacer(modifier = Modifier.width(16.dp))
         OutlinedTextField(
-            value = selectedProfession,
-            onValueChange = { newProfession ->
-                onProfessionValueChange(newProfession)
+            value = selectedInterests.joinToString(", "),
+            onValueChange = { newInterests ->
+                onInterestsValueChange(newInterests.split(", ").map { it.trim() })
             },
-            label = { Text("Enter Profession") },
+            label = { Text("Enter Interests") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
             modifier = Modifier
                 .weight(1f),
             trailingIcon = {
                 IconButton(onClick = {
-                    onDropDownClick()
+                    onInterestsDropDownClick()
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -54,17 +54,18 @@ fun EditProfessionSection(
             }
         )
 
-        // Show the DropDownList when isDropDownListVisible is true
-        if (isDropDownListVisible) {
-            DropDownList(
-                onOptionSelected = { selectedOption ->
-                    // Handle the selected option
-                    onProfessionValueChange(selectedOption)
+        // Show the InterestsDropDownList when isInterestsDropDownListVisible is true
+        if (isInterestsDropDownListVisible) {
+            InterestsDropDownList(
+                onInterestsSelected = { selectedOptions ->
+                    // Handle the selected options
+                    onInterestsValueChange(selectedOptions)
                 },
-                expanded = isDropDownListVisible,
+                selectedInterests = selectedInterests,
+                expanded = isInterestsDropDownListVisible,
                 onDismissRequest = {
-                    // Close the DropDownList when dismissed
-                    onDropDownClick()
+                    // Close the InterestsDropDownList when dismissed
+                    onInterestsDropDownClick()
                 }
             )
         }

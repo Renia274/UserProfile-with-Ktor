@@ -19,10 +19,10 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
+import com.example.practice.screens.userprofile.profile.components.CustomCountDownTimer
 import com.example.practice.screens.userprofile.editprofile.EditProfile
-import com.example.practice.screens.items.CustomCountDownTimer
-import com.example.practice.screens.items.UserProfileItem
-import com.example.practice.screens.items.SignOutDialog
+import com.example.practice.screens.userprofile.profile.components.UserProfileItem
+import com.example.practice.screens.userprofile.profile.components.SignOutDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun UserProfilesLoading(
     userProfiles: StateFlow<List<UserData>>,
-    viewModel: SharedProfilesViewModel ,
-    timerViewModel: TimerViewModel ,
-    credentialsViewModel: CredentialsViewModel ,
+    viewModel: SharedProfilesViewModel,
+    timerViewModel: TimerViewModel,
+    credentialsViewModel: CredentialsViewModel,
     onBack: () -> Unit,
     onNavigate: (String) -> Unit,
     username: String,
@@ -62,19 +62,10 @@ fun UserProfilesLoading(
     }
 
 
-    val mainBackgroundColor by remember(username) {
-        derivedStateOf {
-            if (viewModel.stateFlow.value.darkMode) {
-                Color.White
-            } else {
-                when {
-                    username.lowercase().startsWith("bob") -> Color.Green
-                    username.lowercase().startsWith("alice") -> Color.LightGray
-                    username.lowercase().startsWith("eve") -> Color.Magenta
-                    else -> Color.Gray
-                }
-            }
-        }
+    val mainBackgroundColor = if (!viewModel.stateFlow.collectAsState().value.darkMode) {
+        Color.White
+    } else {
+        Color.Gray
     }
 
 
@@ -85,45 +76,34 @@ fun UserProfilesLoading(
     ) {
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
 
-            TopAppBar(
-                title = {
-                    Text(
-                        text = topAppBarTitle,
-                        color = when {
-                            username.lowercase().startsWith("bob") -> Color.Green
-                            username.lowercase().startsWith("alice") -> Color.LightGray
-                            username.lowercase().startsWith("eve") -> Color.Magenta
-                            else -> Color.Gray
-                        }
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                },
-                actions = {
-                    // triggers the sign-out dialog
-                    IconButton(onClick = {
-                        showSignOutDialog = true
-                    }) {
-                        Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
-                    }
+            TopAppBar(title = {
+                Text(
+                    text = topAppBarTitle,
+                )
+            }, navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+            }, actions = {
+                // triggers the sign-out dialog
+                IconButton(onClick = {
+                    showSignOutDialog = true
+                }) {
+                    Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
+                }
 
-                    // navigates to the InfoScreen
-                    IconButton(onClick = {
-                        onNavigate("info")
-                    }) {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                // navigates to the InfoScreen
+                IconButton(onClick = {
+                    onNavigate("info")
+                }) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                }
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
             )
 
 
@@ -147,8 +127,7 @@ fun UserProfilesLoading(
 
                 // Choose between UserProfile and EditProfile based on edit mode
                 if (selectedIndexFlow.value in userProfiles.value.indices && !isShowingEdit) {
-                    UserProfileItem(
-                        userProfile = userProfiles.value[selectedIndexFlow.value],
+                    UserProfileItem(userProfile = userProfiles.value[selectedIndexFlow.value],
                         onEditClick = {
                             isShowingEdit = true
                         },
@@ -175,17 +154,13 @@ fun UserProfilesLoading(
 
 
             if (showSignOutDialog) {
-                SignOutDialog(
-                    viewModel = credentialsViewModel,
-                    onSignOut = {
-                        credentialsViewModel.performSignOut()
-                        showSignOutDialog = false // Dismiss the dialog after sign-out
-                        onNavigate("usernamePasswordLogin")
-                    },
-                    onDismiss = {
-                        showSignOutDialog = false // Dismiss the dialog if canceled
-                    }
-                )
+                SignOutDialog(viewModel = credentialsViewModel, onSignOut = {
+                    credentialsViewModel.performSignOut()
+                    showSignOutDialog = false // Dismiss the dialog after sign-out
+                    onNavigate("usernamePasswordLogin")
+                }, onDismiss = {
+                    showSignOutDialog = false // Dismiss the dialog if canceled
+                })
             }
 
             Spacer(modifier = Modifier.weight(1f))

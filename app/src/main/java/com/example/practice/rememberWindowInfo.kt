@@ -1,4 +1,4 @@
-package com.example.practice.data
+package com.example.practice
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration

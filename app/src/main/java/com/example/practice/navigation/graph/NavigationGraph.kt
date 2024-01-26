@@ -21,10 +21,9 @@ import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
-import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.info.InfoScreen
-import com.example.practice.Loader
+import com.example.practice.screen.components.Loader
 import com.example.practice.screens.otp.OtpScreen
 import com.example.practice.screens.permission.PermissionScreen
 import com.example.practice.screens.pin.PinLoginScreen
@@ -480,10 +479,9 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.PermissionScreen.route) {
 
-            val permissionStateViewModel = viewModel<PermissionStateViewModel>()
+
 
             PermissionScreen(
-                permissionStateViewModel = permissionStateViewModel,
                 onBackButtonClick = { navigationHandler.navigateBack() }
             )
         }

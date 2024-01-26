@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -17,24 +16,20 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.practice.profiles.viewmodel.permissions.PermissionStateViewModel
-import com.example.practice.screens.items.CameraPermissionDialog
-import com.example.practice.screens.items.MicrophonePermissionDialog
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.practice.profiles.viewmodel.permissions.PermissionViewModel
+import com.example.practice.screens.permission.components.CameraButton
+import com.example.practice.screens.permission.components.MicButton
 
 @Composable
-fun PermissionScreen(
-    permissionStateViewModel: PermissionStateViewModel, onBackButtonClick: () -> Unit
-) {
-    val permissionState by permissionStateViewModel.permissionState.collectAsState()
-
+fun PermissionScreen(onBackButtonClick: () -> Unit, viewModel: PermissionViewModel = viewModel()) {
     Column(
-        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(title = { Text("Permissions") }, navigationIcon = {
             IconButton(onClick = { onBackButtonClick() }) {
@@ -42,69 +37,23 @@ fun PermissionScreen(
             }
         })
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Show CameraPermissionDialog if camera permissions are not granted
-        if (permissionState.isCameraPermissionDialogShown) {
-            CameraPermissionDialog(isPermissionDialogShown = permissionState.isCameraPermissionDialogShown,
-                onDismiss = {
-                    permissionStateViewModel.setCameraPermissionDialogShown(false)
-                },
-                onAllow = {
-                    // Handle camera permission granted
-                    permissionStateViewModel.setCameraPermissionDialogShown(false)
-                },
-                onDeny = {
-                    // Handle camera permission denied
-                    permissionStateViewModel.setCameraPermissionDialogShown(false)
-                },
-                onLater = {
-                    // Handle camera permission later
-                    permissionStateViewModel.setCameraPermissionDialogShown(false)
-                })
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Show MicrophonePermissionDialog if microphone permissions are not granted
-        if (permissionState.isMicrophonePermissionDialogShown) {
-            MicrophonePermissionDialog(isPermissionDialogShown = permissionState.isMicrophonePermissionDialogShown,
-                onDismiss = {
-                    permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                },
-                onAllow = {
-                    // Handle microphone permission granted
-                    permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                },
-                onDeny = {
-                    // Handle microphone permission denied
-                    permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                },
-                onLater = {
-                    // Handle microphone permission later
-                    permissionStateViewModel.setMicrophonePermissionDialogShown(false)
-                })
-        }
-
-        PermissionContent(onCameraPermissionRequest = {
-            // Handle camera permission request
-            permissionStateViewModel.setCameraPermissionDialogShown(true)
-        }, onMicrophonePermissionRequest = {
-            // Handle microphone permission request
-            permissionStateViewModel.setMicrophonePermissionDialogShown(true)
-        })
+        PermissionContent(
+            onCameraPermissionResult = { isGranted -> viewModel.cameraPermissionResult(isGranted) },
+            onMicPermissionResult = { isGranted -> viewModel.micPermissionResult(isGranted) }
+        )
     }
 }
 
-
 @Composable
 fun PermissionContent(
-    onCameraPermissionRequest: () -> Unit, onMicrophonePermissionRequest: () -> Unit
+    onCameraPermissionResult: (Boolean) -> Unit,
+    onMicPermissionResult: (Boolean) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
             "PERMISSIONS FOR THE APP",
@@ -121,35 +70,28 @@ fun PermissionContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Click the mic button for microphone  permission. ",
+            "Click the mic button for microphone permission. ",
             style = MaterialTheme.typography.body1,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = onCameraPermissionRequest) {
-                Text("Request Camera Permission")
-            }
+            CameraButton(onPermissionResult = onCameraPermissionResult)
             Spacer(modifier = Modifier.width(64.dp))
-
-            Button(onClick = onMicrophonePermissionRequest) {
-                Text("Request Microphone Permission")
-            }
+            MicButton(onPermissionResult = onMicPermissionResult)
         }
     }
 }
 
+
+
 @Preview(showBackground = true)
 @Composable
 fun PermissionContentPreview() {
-    PermissionContent(
-        onCameraPermissionRequest = {},
-        onMicrophonePermissionRequest = {}
-    )
+    PermissionContent(onCameraPermissionResult = {}, onMicPermissionResult = {})
 }

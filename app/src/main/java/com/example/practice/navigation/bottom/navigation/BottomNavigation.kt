@@ -5,9 +5,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import com.example.practice.R
-import com.example.practice.data.BottomNavItem
 import com.example.practice.navigation.bottom.handler.BottomNavigationHandler
-import com.example.practice.screens.items.CustomBottomBar
+import com.example.practice.navigation.bottom.navItems.BottomNavItem
+import com.example.practice.screens.userprofile.profile.components.CustomBottomBar
 import kotlinx.coroutines.flow.Flow
 
 
@@ -20,9 +20,9 @@ fun BottomNavigationItems(
 
     CustomBottomBar(
         bottomNavigationItems = listOf(
-            BottomNavItem("Main", R.drawable.ic_back, "back", Color.Gray),
-            BottomNavItem("Edit", R.drawable.ic_edit, "edit", Color.Cyan),
-            BottomNavItem("Settings", R.drawable.ic_settings, "settings", Color.LightGray)
+            BottomNavItem("Main", R.drawable.ic_back, "back"),
+            BottomNavItem("Edit", R.drawable.ic_edit, "edit"),
+            BottomNavItem("Settings", R.drawable.ic_settings, "settings")
         ),
         selectedIndex = selectedIndexChanged,
         onItemSelected = { index ->

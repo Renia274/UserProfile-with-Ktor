@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +28,8 @@ import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun CustomVerticalGrid(
-    items: List<String>
+    items: List<String>,
+    darkModeState: Boolean // Add darkModeState parameter
 ) {
     // State to track the selected item
     var selectedItem by remember { mutableStateOf<String?>(null) }
@@ -36,7 +37,7 @@ fun CustomVerticalGrid(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(if (darkModeState) Color.Gray else Color.White) // Use darkModeState for background
             .wrapContentHeight()
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -47,7 +48,6 @@ fun CustomVerticalGrid(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-
                 Spacer(modifier = Modifier.width(16.dp))
 
                 rowItems.forEach { item ->
@@ -69,6 +69,7 @@ fun CustomVerticalGrid(
         }
     }
 }
+
 
 @Composable
 fun CustomGridItem(
@@ -149,6 +150,6 @@ fun CustomVerticalGridPreview() {
     val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6")
 
     PracticeTheme {
-        CustomVerticalGrid(items = items)
+        CustomVerticalGrid(items = items,darkModeState = true)
     }
 }

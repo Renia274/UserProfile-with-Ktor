@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +44,7 @@ fun CustomCountDownTimer(timerViewModel: TimerViewModel = hiltViewModel()) {
             fontSize = 16.sp
         )
 
-        Spacer(modifier = Modifier.width(90.dp))
+        Spacer(modifier = Modifier.width(64.dp))
 
 
         TextButton(

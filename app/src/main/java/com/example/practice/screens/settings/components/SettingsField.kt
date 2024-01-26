@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.settings.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,7 +54,6 @@ fun SettingsField(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
             ){
 
                 Spacer(modifier=Modifier.width(8.dp))

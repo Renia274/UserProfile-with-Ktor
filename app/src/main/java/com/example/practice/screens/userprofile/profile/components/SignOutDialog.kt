@@ -1,4 +1,4 @@
-package com.example.practice.screens.items
+package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
