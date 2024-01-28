@@ -16,9 +16,9 @@ independently of the main application.
 
 The following users have been added to the profile app for simulation/testing purposes:
 
-1. Bob Johnson
-2. Alice Smith
-3. Eve Brown
+1. bob (Bob Johnson)
+2. alice (Alice Smith)
+3. eve (Eve Brown)
    
 ## Getting Started
 
