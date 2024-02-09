@@ -13,13 +13,20 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.practice.CustomWindowInfo
+import com.example.practice.datapi.DataLoadingService
 import com.example.practice.rememberWindowInfo
 
 @Composable
@@ -29,21 +36,26 @@ fun InterestsDropDownList(
     expanded: Boolean,
     onDismissRequest: () -> Unit
 ) {
-    // List of interests/hobbies
-    val interestsList = listOf(
-        "Reading", "Traveling", "Cooking", "Gaming", "Photography", "Sports", "Music",
-        "Art", "Movies", "Technology", "Fitness", "Writing", "Dancing", "Hiking", "Cycling", "Crafting"
-    )
+
+
+    var interestsList by remember { mutableStateOf(emptyList<String>()) }
+
+    val resources = LocalContext.current.resources
+
+
+    LaunchedEffect(true) {
+        val dataLoadingService = DataLoadingService(resources)
+        val dataLoadingApi = dataLoadingService.getDataLoadingApi()
+        interestsList = dataLoadingApi.loadInterests()
+    }
 
     val windowInfo = rememberWindowInfo()
 
     val dropdownHeight by animateDpAsState(
         targetValue = if (expanded) {
             if (windowInfo.screenWidthInfo == CustomWindowInfo.CustomWindowType.Expanded) {
-                // If the window is expanded, show only half the list
                 windowInfo.screenHeight / 2
             } else {
-                // Otherwise, show the full list
                 220.dp
             }
         } else {
@@ -106,5 +118,3 @@ fun InterestsDropDownList(
         }
     }
 }
-
-

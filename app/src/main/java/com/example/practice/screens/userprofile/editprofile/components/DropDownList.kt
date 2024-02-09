@@ -11,12 +11,18 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.practice.CustomWindowInfo
+import com.example.practice.datapi.DataLoadingService
 import com.example.practice.rememberWindowInfo
 
 @Composable
@@ -28,39 +34,24 @@ fun DropDownList(
     val configuration = LocalConfiguration.current
     val windowInfo = rememberWindowInfo()
 
-    // List of professions
-    val selectedProfessions = listOf(
-        "Software Engineer",
-        "Data Scientist",
-        "Product Manager",
-        "UX Designer",
-        "Network Engineer",
-        "Security Analyst",
-        "Database Administrator",
-        "AI Researcher",
-        "Game Developer",
-        "Web Developer",
-        "DevOps Engineer",
-        "IT Consultant",
-        "UI/UX Designer",
-        "System Administrator",
-        "Mobile App Developer",
-        "Quality Assurance Engineer",
-        "Network Architect",
-        "Business Analyst",
-        "Technical Writer",
-        "Cloud Solutions Architect"
-    )
+    var selectedProfessions by remember { mutableStateOf(emptyList<String>()) }
+
+    val resources = LocalContext.current.resources
+
+
+    LaunchedEffect(true) {
+        val dataLoadingService = DataLoadingService(resources)
+        val dataLoadingApi = dataLoadingService.getDataLoadingApi()
+        selectedProfessions = dataLoadingApi.loadProfessions()
+    }
 
     val dropdownHeight by animateDpAsState(
         targetValue = if (expanded) {
             if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
                 windowInfo.screenWidthInfo == CustomWindowInfo.CustomWindowType.Expanded
             ) {
-                // If landscape and the window is expanded, show only half the list
                 windowInfo.screenHeight / 2
             } else {
-                // Otherwise, show the full list
                 240.dp
             }
         } else {
