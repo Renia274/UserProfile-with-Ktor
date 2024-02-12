@@ -1,6 +1,7 @@
 package com.example.practice.screens.settings
 
 
+import android.os.Bundle
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,10 +45,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.settings.components.SaveConfirmationDialog
 import com.example.practice.screens.settings.components.SettingsField
+import com.example.practice.services.FirebaseAnalyticsService
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.launch
 
@@ -148,30 +151,70 @@ fun SettingsScreen(
         password = password,
         enteredSecurityCode = enteredSecurityCode,
         onNavigate = onNavigate,
-        onSaveCredentials = onSaveCredentials,
-        onSignupEmailChange = { sharedViewModel.setSignupEmail(it) },
+        onSaveCredentials = { newUsername, newPassword ->
+            // Log the saved username and password
+            AppLogger.logEvent("credentials_saved", Bundle().apply {
+                putString("username", newUsername)
+                putString("password", newPassword)
+            })
+          
+            onSaveCredentials.invoke(newUsername, newPassword)
+        },
+        onSignupEmailChange = {
+
+            AppLogger.logEvent("signup_email_changed")
+
+            if (!it.contains('@')) {
+                AppLogger.logEvent("invalid_email_format", Bundle().apply {
+                    putString("email", it)
+                })
+            }
+
+            sharedViewModel.setSignupEmail(it) },
         onUsernameChange = { newValue ->
             coroutineScope.launch {
                 username = newValue
                 credentialsViewModel.setEnteredCredentials(username = newValue, password = password)
                 credentialsViewModel.saveUserCredentials(newValue, password)
+
+                // Log the change of username
+                AppLogger.logEvent("username_changed", Bundle().apply {
+                    putString("new_username", newValue)
+                })
             }
 
         },
         onPasswordChange = { newValue ->
-
             coroutineScope.launch {
                 password = newValue
                 credentialsViewModel.setEnteredCredentials(username = username, password = newValue)
                 credentialsViewModel.saveUserCredentials(username = username, password = newValue)
-            }
 
-        },
-        onSecurityCodeChange = { enteredSecurityCode = it },
+                // Log the change of password
+                AppLogger.logEvent("password_changed", Bundle().apply {
+                    putString("new_password", newValue)
+                })
+
+                // Check if the password is in an invalid format(less digits or more uppercase letters)
+                val containsInvalidFormat = newValue.length < 8 || newValue.count { it.isUpperCase() } > newValue.length / 2
+                if (containsInvalidFormat) {
+                    AppLogger.logEvent("password_invalid_format")
+                }
+            }
+        }
+        ,
+        onSecurityCodeChange = {
+
+            AppLogger.logEvent("security_code_changed")
+            enteredSecurityCode = it },
         onSecurityCodeSave = {
             if (enteredSecurityCode.isNotEmpty()) {
                 credentialsViewModel.saveSecurityCode(enteredSecurityCode)
                 Toast.makeText(context, "Security Code saved", Toast.LENGTH_SHORT).show()
+
+                // Log the saving of the security code
+                AppLogger.logEvent("security_code_saved")
+                
             } else {
                 Toast.makeText(context, "Security code cannot be empty", Toast.LENGTH_SHORT).show()
 

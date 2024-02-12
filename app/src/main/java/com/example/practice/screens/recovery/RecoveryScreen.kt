@@ -1,5 +1,6 @@
 package com.example.practice.screens.recovery
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
@@ -82,15 +84,23 @@ fun RecoveryScreen(
                     isRecoveryEmailSent = true
                     viewModel.setSignupEmail(email)
                     navigateToLogin.invoke()
+                    // Log successful recovery email sent event
+                    AppLogger.logEvent("recovery_email_sent", Bundle().apply {
+                        putString("email", email)
+                    })
                 } else {
                     showError = true
+                    // Log error for incorrect email
+                    AppLogger.logError("recovery_email_failed: Entered email doesn't match the signup email.")
                 }
             },
             showError = showError,
             isRecoveryEmailSent = isRecoveryEmailSent,
             isDelayComplete = isDelayComplete,
             navigateToLogin = { viewModel.setRecoveryEmail(email) },
-            onNavigateBack = onNavigateBack
+            onNavigateBack = {
+                onNavigateBack.invoke()
+            }
         )
     }
 }

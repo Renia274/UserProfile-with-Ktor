@@ -1,5 +1,6 @@
 package com.example.practice.screens.signup
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,8 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.services.FirebaseAnalyticsService
 import com.example.practice.validators.isValidEmail
 import com.example.practice.validators.isValidPassword
 import kotlinx.coroutines.launch
@@ -60,11 +63,8 @@ fun SignupScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-
-
         Spacer(modifier = Modifier.height(8.dp))
 
         SignupContent(
@@ -77,15 +77,30 @@ fun SignupScreen(
             isPasswordVisible = isPasswordVisible,
             onTogglePasswordVisibility = { isPasswordVisible = !isPasswordVisible },
             onSignUpClick = {
-                // navigate to login screen upon successful signup
-                if (isValidEmail(email) && isValidPassword(password)) {
+                val params = Bundle().apply {
+                    putString("password", password)
+                    putString("email", email)
+                }
+
+                // Validate email and password
+                val isEmailValid = isValidEmail(email)
+                val isPasswordValid = isValidPassword(password)
+
+                if (isEmailValid && isPasswordValid) {
                     scope.launch {
+                        // Log successful signup event
+                        AppLogger.logEvent("successful_signup", params)
                         credentialsViewModel.setEnteredCredentials(username, password)
                         credentialsViewModel.saveUserCredentials(username, password)
                         sharedViewModel.setSignupEmail(email)
                         onNavigate.invoke()
                     }
+                } else {
+                    // Log unsuccessful signup event
+                    AppLogger.logEvent("Invalid email or password format", params)
 
+                    // Log error for invalid email or password
+                    AppLogger.logError("signup failed")
                 }
             }
         )
@@ -93,9 +108,7 @@ fun SignupScreen(
         // Sign in if there is already a registered account
         TextButton(
             onClick = onNavigateToLogin,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             Text("Already have an account? Sign In")
         }

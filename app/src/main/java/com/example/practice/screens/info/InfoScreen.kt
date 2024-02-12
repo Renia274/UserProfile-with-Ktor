@@ -34,12 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.logs.navigation.CrashlyticsNavigationLogger
+import com.example.practice.logs.navigation.NavigationAnalyticsLogger
 import com.example.practice.ui.theme.PracticeTheme
 
-private fun navigateToDeepLink(url: String, context: Context) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(intent)
-}
+
 
 
 @Composable
@@ -48,10 +47,12 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
 
     InfoScreenContent(
         onNavigateBack = onNavigateBack,
-        onOpenLink = { navigateToDeepLink("https://pl-coding.com", context) }
+        onOpenLink = {
+            navigateToDeepLink("https://pl-coding.com", context)
+            NavigationAnalyticsLogger.logAnalyticsDeepLinkEvent("https://pl-coding.com")
+            CrashlyticsNavigationLogger.logCrashlyticsDeepLinkEvent("https://pl-coding.com")
+        }
     )
-
-
 }
 
 
@@ -113,6 +114,10 @@ fun InfoScreenContent(onNavigateBack: () -> Unit, onOpenLink: () -> Unit) {
     }
 }
 
+private fun navigateToDeepLink(url: String, context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
 
 @Preview(showBackground = true)
 @Composable

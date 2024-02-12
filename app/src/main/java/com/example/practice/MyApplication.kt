@@ -1,15 +1,15 @@
 package com.example.practice
 
 import android.app.Application
-import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+import com.example.practice.logs.app.AppLogger
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+
 
 @HiltAndroidApp
-class MyApplication : Application(){
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
 
-
-
-
-
+        AppLogger.initialize()
+    }
 }

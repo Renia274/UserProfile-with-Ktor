@@ -18,6 +18,8 @@ import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData
 import com.example.practice.data.message.Message
 import com.example.practice.ktor.screens.posts.PostsScreen
+import com.example.practice.logs.navigation.CrashlyticsNavigationLogger
+import com.example.practice.logs.navigation.NavigationAnalyticsLogger
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
@@ -80,11 +82,17 @@ fun NavigationApp() {
     val navigationHandler = NavigationHandler(navController)
     val authNavigationHandler = AuthNavigationHandler(navController)
 
+    NavigationAnalyticsLogger.initialize(LocalContext.current)
+    CrashlyticsNavigationLogger.initialize()
+
     NavHost(
         navController = navController,
         startDestination = Navigation.Screen.Splash.route
     ) {
         composable(Navigation.Screen.Splash.route) {
+
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.SignUpSignIn.route)
+
             SplashScreen {
                 authNavigationHandler.navigateToSignUpSignIn()
             }
@@ -93,6 +101,8 @@ fun NavigationApp() {
 
         composable(Navigation.Auth.SignUpSignIn.route) {
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.SignUpSignIn.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.SignUpSignIn.route)
 
             SignUpSignInScreen(
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
@@ -109,6 +119,9 @@ fun NavigationApp() {
             val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.Signup.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.Signup.route)
 
             SignupScreen(
                 onNavigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
@@ -129,6 +142,9 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.OtpScreen.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.OtpScreen.route)
 
             OtpScreen(
                 onNavigate = {
@@ -151,6 +167,8 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.UsernamePasswordLogin.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.UsernamePasswordLogin.route)
 
             if (isLoading) {
                 Loader()
@@ -214,6 +232,8 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.Recovery.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.Recovery.route)
 
             RecoveryScreen(
                 navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
@@ -229,6 +249,8 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.PinLogin.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.PinLogin.route)
 
             PinLoginScreen(
                 onLoginSuccess = { userProfile ->
@@ -242,6 +264,10 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.Posts.route) {
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.Posts.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.Posts.route)
+
             PostsScreen(onNavigate = {
                 navigationHandler.navigateBack()
             })
@@ -261,6 +287,9 @@ fun NavigationApp() {
             val timerViewModel = viewModel<TimerViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.UserProfileBob.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.UserProfileBob.route)
 
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
@@ -317,6 +346,9 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.UserProfileAlice.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.UserProfileAlice.route)
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -372,6 +404,9 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.UserProfileEve.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.UserProfileEve.route)
+
             UserProfilesLoading(
                 userProfiles = sharedProfilesViewModel.userProfiles,
                 viewModel = sharedProfilesViewModel,
@@ -414,6 +449,10 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.InfoScreen.route) {
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.InfoScreen.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.InfoScreen.route)
+
             InfoScreen(onNavigateBack = { navigationHandler.navigateBack() })
 
         }
@@ -425,6 +464,8 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.EditProfile.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.EditProfile.route)
 
             EditProfile(
                 userProfiles = sharedProfilesViewModel.userProfiles.value,
@@ -438,10 +479,14 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.MessagingScreen.route) {
+
             val messages = remember { mutableStateListOf<Message>() }
             val onSendMessage: (String, String) -> Unit = { newMessage, recipient ->
                 messages.add(Message(newMessage, "Me"))
             }
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.MessagingScreen.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.MessagingScreen.route)
 
             MessagingScreen(
                 messages = messages,
@@ -461,6 +506,9 @@ fun NavigationApp() {
             val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
+
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.Settings.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.Settings.route)
 
 
             SettingsScreen(
@@ -493,6 +541,8 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Auth.SecurityCode.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Auth.SecurityCode.route)
 
             SecurityCodeScreen(
                 viewModel = credentialsViewModel,
@@ -510,7 +560,8 @@ fun NavigationApp() {
 
         composable(Navigation.Screen.PermissionScreen.route) {
 
-
+            NavigationAnalyticsLogger.logNavigationEvent(Navigation.Screen.PermissionScreen.route)
+            CrashlyticsNavigationLogger.logNavigationEvent(Navigation.Screen.PermissionScreen.route)
 
             PermissionScreen(
                 onBackButtonClick = { navigationHandler.navigateBack() }

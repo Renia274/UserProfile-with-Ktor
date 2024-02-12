@@ -1,5 +1,6 @@
 package com.example.practice.screens.login
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
+import com.example.practice.services.FirebaseAnalyticsService
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.launch
 
@@ -54,7 +57,6 @@ fun UsernamePasswordLoginScreen(
     onBack: () -> Unit,
     viewModel: CredentialsViewModel
 ) {
-
     var coroutineScope = rememberCoroutineScope()
     var isLoginSuccessful by remember { mutableStateOf(false) }
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -81,7 +83,6 @@ fun UsernamePasswordLoginScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
 
-
         UsernamePasswordLoginContent(
             username = username,
             onUsernameChange = { username = it },
@@ -90,24 +91,21 @@ fun UsernamePasswordLoginScreen(
             isPasswordVisible = isPasswordVisible,
             onTogglePasswordVisibility = { isPasswordVisible = !isPasswordVisible },
             onLoginClick = {
-
                 coroutineScope.launch {
                     onLoading.invoke(true)
                     isLoginSuccessful = viewModel.isValidCredentials(username, password)
                     onLoading.invoke(false)
 
-                    val storedCredentials = viewModel.loadCredentialsForLogin(username,password)
-
-
                     if (isLoginSuccessful) {
                         viewModel.setEnteredCredentials(username, password)
 
                         when {
-                            // Your existing logic based on the username
                             username.lowercase().startsWith("bob") ||
                                     username.lowercase().startsWith("alice") ||
                                     username.lowercase().startsWith("eve") -> {
                                 // Use stored credentials for successful login
+                                val storedCredentials =
+                                    viewModel.loadCredentialsForLogin(username, password)
                                 updatedUsername = storedCredentials?.username ?: ""
                                 updatedPassword = storedCredentials?.password ?: ""
 
@@ -117,15 +115,23 @@ fun UsernamePasswordLoginScreen(
                                     updatedUsername,
                                     updatedPassword
                                 )
+
+                                // Log successful login event
+                                val params = Bundle().apply {
+                                    putString("username", username)
+                                    putString("password", password)
+                                }
+                                AppLogger.logEvent("successful_login", params)
                             }
 
                             else -> {
-                                println("Invalid username")
+                                // Log for invalid username and password
+                                AppLogger.logError("Unsuccessful login attempt: Invalid username and password")
                             }
                         }
-
                     } else {
-                        println("Login Failed")
+                        // Log unsuccessful login event
+                        AppLogger.logError("Unsuccessful login attempt: Login failed")
                     }
                 }
             },
@@ -134,7 +140,6 @@ fun UsernamePasswordLoginScreen(
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

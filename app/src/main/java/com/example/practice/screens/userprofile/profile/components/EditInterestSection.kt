@@ -1,5 +1,6 @@
 package com.example.practice.screens.userprofile.profile.components
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.screens.userprofile.editprofile.components.InterestsDropDownList
 
 @Composable
@@ -26,6 +28,19 @@ fun EditInterestsSection(
     isInterestsDropDownListVisible: Boolean,
     onInterestsDropDownClick: () -> Unit
 ) {
+    // Function to log interests input events
+    fun logInterestsInput(interests: List<String>) {
+        val params = Bundle().apply {
+            putStringArrayList("interests_input", ArrayList(interests))
+        }
+        AppLogger.logEvent("interests_input", params)
+    }
+
+    // Function to log crashes when handling interests selection
+    fun logInterestsSelectionCrash(exception: Exception) {
+        AppLogger.logError("Interests selection crash", exception)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,7 +50,16 @@ fun EditInterestsSection(
         OutlinedTextField(
             value = selectedInterests.joinToString(", "),
             onValueChange = { newInterests ->
-                onInterestsValueChange(newInterests.split(", ").map { it.trim() })
+                try {
+                    onInterestsValueChange(newInterests.split(", ").map { it.trim() })
+                    // Log interests input
+                    logInterestsInput(newInterests.split(", ").map { it.trim() })
+                } catch (e: Exception) {
+                    // Log crash when handling interests selection
+                    logInterestsSelectionCrash(e)
+                    // Rethrow the exception to propagate the crash
+                    throw e
+                }
             },
             label = { Text("Enter Interests") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
@@ -58,8 +82,15 @@ fun EditInterestsSection(
         if (isInterestsDropDownListVisible) {
             InterestsDropDownList(
                 onInterestsSelected = { selectedOptions ->
-                    // Handle the selected options
-                    onInterestsValueChange(selectedOptions)
+                    try {
+                        // Handle the selected options
+                        onInterestsValueChange(selectedOptions)
+                    } catch (e: Exception) {
+                        // Log crash when handling interests selection
+                        logInterestsSelectionCrash(e)
+                        // Rethrow the exception to propagate the crash
+                        throw e
+                    }
                 },
                 selectedInterests = selectedInterests,
                 expanded = isInterestsDropDownListVisible,

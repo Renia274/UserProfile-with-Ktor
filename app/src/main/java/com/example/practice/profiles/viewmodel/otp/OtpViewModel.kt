@@ -3,7 +3,6 @@ package com.example.practice.profiles.viewmodel.otp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.practice.services.FirebaseAuthService
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +27,7 @@ class FirebaseOtpViewModel @Inject constructor(
 
     val viewState: StateFlow<FirebaseOtpViewState> get() = viewStateFlow.asStateFlow()
 
-    private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+
 
     fun createOtp(email: String, signupEmail: String): String {
         emailFlow.value = email
@@ -100,9 +99,5 @@ class FirebaseOtpViewModel @Inject constructor(
         } else {
             null
         }
-    }
-    fun logToCrashlytics(message: String) {
-        firebaseCrashlytics.log(message)
-        firebaseCrashlytics.recordException(Exception(message))
     }
 }

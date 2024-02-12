@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.ui.theme.PracticeTheme
 
@@ -59,8 +60,6 @@ fun SecurityCodeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-
-
         SecurityCodeScreenContent(
             customSecurityCode = customSecurityCode,
             onNavigate=onNavigate,
@@ -70,6 +69,9 @@ fun SecurityCodeScreen(
             isSecurityCodeVisible = isSecurityCodeVisible,
             onSecurityCodeVisibilityChange = { isSecurityCodeVisible = it },
             onContinueClick = {
+
+                AppLogger.logEvent("security_code_continue_clicked")
+
                 if (securityCode.isNotEmpty()) {
                     val savedSecurityCode = viewModel.credentialsState.value.securityCode
                     if (securityCode == savedSecurityCode) {
@@ -77,10 +79,13 @@ fun SecurityCodeScreen(
                         onNavigate.invoke("usernamePasswordLogin")
                     } else {
                         showError = true
-                        println("Entered security code does not match the saved one.")
+                        // Log the mismatched security code error
+                        AppLogger.logEvent("security_code_mismatch_error")
                     }
                 } else {
                     showError = true
+                    // Log the empty security code error
+                    AppLogger.logEvent("security_code_empty_error")
                 }
             }
         )
@@ -103,9 +108,6 @@ fun SecurityCodeScreenContent(
         modifier = Modifier
             .fillMaxSize(),
     ) {
-
-
-
         TopAppBar(
             title = { Text("") },
             navigationIcon = {
@@ -113,20 +115,7 @@ fun SecurityCodeScreenContent(
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = "Enter Your Security code",
-            style = TextStyle(fontSize = 18.sp),
-            modifier = Modifier
-                .fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -139,8 +128,6 @@ fun SecurityCodeScreenContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.width(32.dp))
-
-
             TextField(
                 value = customSecurityCode,
                 onValueChange = {
@@ -162,8 +149,7 @@ fun SecurityCodeScreenContent(
             Spacer(modifier = Modifier.width(32.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+        // Error message if security code is invalid
         if (showError) {
             Text(
                 text = "Invalid security code. Please try again.",
@@ -174,6 +160,7 @@ fun SecurityCodeScreenContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -181,7 +168,12 @@ fun SecurityCodeScreenContent(
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = onContinueClick,
+                onClick = {
+                    onContinueClick()
+
+
+                    AppLogger.logEvent("security_code_continue_button_clicked")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
@@ -192,6 +184,7 @@ fun SecurityCodeScreenContent(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

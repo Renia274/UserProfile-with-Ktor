@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
 import com.example.practice.ui.theme.PracticeTheme
@@ -57,7 +58,6 @@ fun OtpScreen(
     var emailErrorMessage = viewState.emailErrorMessage
     val codeMessage = otpViewModel.viewStateFlow.value.codeSentMessage
     var showMessage by remember { mutableStateOf(false) }
-
 
     DisposableEffect(Unit) {
         onDispose {
@@ -90,11 +90,15 @@ fun OtpScreen(
                     val generatedOtp = otpViewModel.createOtp(email, signupEmail)
                     otp = generatedOtp
                     showMessage = true
+                    // Log OTP generation event
+                    AppLogger.logEvent("otp_generation")
                 } else {
                     if (signupEmail != null) {
                         otpViewModel.setErrorEmail(email, signupEmail)
                     }
                     showMessage = false
+                    // Log unsuccessful OTP generation event
+                    AppLogger.logError("Unsuccessful OTP generation attempt: Email does not match signup email")
                 }
             },
             onVerifyClick = {
@@ -102,13 +106,16 @@ fun OtpScreen(
                     otpViewModel.verifyOtp(otp)
                     onNavigate()
                     keyboardController?.hide()
+                    // Log successful OTP verification event
+                    AppLogger.logEvent("otp_verification")
                 } else {
                     showMessage = true
                     if (signupEmail != null) {
                         otpViewModel.setErrorEmail(email, signupEmail)
                     }
                     emailErrorMessage = "Please enter the email used during signup"
-                    otpViewModel.logToCrashlytics("Entered email doesn't match the signup email during OTP verification")
+                    // Log unsuccessful OTP verification event
+                    AppLogger.logError("Unsuccessful OTP verification attempt: Email does not match signup email")
                 }
             },
             emailErrorMessage = emailErrorMessage,
@@ -137,7 +144,6 @@ fun OtpScreenContent(
     ) {
         Spacer(modifier = Modifier.height(4.dp))
 
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -163,7 +169,6 @@ fun OtpScreenContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Second Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -223,7 +228,6 @@ fun OtpScreenContent(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

@@ -1,9 +1,13 @@
 package com.example.practice.module
 
+import android.app.Application
 import com.example.practice.ktor.services.PostsService
 import com.example.practice.ktor.services.PostsServiceImpl
+import com.example.practice.services.CrashlyticsService
+import com.example.practice.services.FirebaseAnalyticsService
 import com.example.practice.services.FirebaseAuthService
 import com.example.practice.services.FirebaseAuthServiceImpl
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -46,6 +50,25 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAnalytics(application: Application): FirebaseAnalytics {
+        return FirebaseAnalytics.getInstance(application)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAnalyticsService(): FirebaseAnalyticsService {
+        return FirebaseAnalyticsService
+    }
+
+    @Provides
+    @Singleton
+    fun provideCrashlyticsService(): CrashlyticsService {
+        return CrashlyticsService
     }
 
 }

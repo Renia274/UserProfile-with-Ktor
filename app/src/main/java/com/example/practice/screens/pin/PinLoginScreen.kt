@@ -1,5 +1,6 @@
 package com.example.practice.screens.pin
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
 import com.example.practice.data.UserData
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.navigation.graph.Navigation
 import com.example.practice.ui.theme.PracticeTheme
 
@@ -67,7 +69,6 @@ fun PinLoginScreen(
         onPostNavigate = onPostNavigate
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,6 +127,10 @@ fun PinLoginContent(
                 onValueChange = {
                     if (it.length <= maxPinLength) {
                         onPinChange(it)
+                        // Log PIN input
+                        AppLogger.logEvent("pin_input", Bundle().apply {
+                            putString("pin_length", it.length.toString())
+                        })
                     }
                 },
                 label = { Text("Enter PIN") },
@@ -163,15 +168,20 @@ fun PinLoginContent(
         ) {
             Button(
                 onClick = {
-                    val userProfile = when (pin.lowercase()) {
-                        "123456" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
-                        "987654" -> UserData("Alice", "Smith", R.drawable.alice_smith)
-                        "555555" -> UserData("Eve", "Brown", R.drawable.eve_brown)
-                        else -> null
-                    }
+                    if (pin.length == maxPinLength) {
+                        val userProfile = when (pin.lowercase()) {
+                            "123456" -> UserData("Bob", "Johnson", R.drawable.bob_johnson)
+                            "987654" -> UserData("Alice", "Smith", R.drawable.alice_smith)
+                            "555555" -> UserData("Eve", "Brown", R.drawable.eve_brown)
+                            else -> null
+                        }
 
-                    // Trigger login success or reset PIN if not recognized
-                    onLogin(userProfile)
+                        // Trigger login success or reset PIN if not recognized
+                        onLogin(userProfile)
+                    } else {
+                        // Log incorrect PIN length
+                        AppLogger.logError("Incorrect PIN length: ${pin.length}")
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -182,11 +192,20 @@ fun PinLoginContent(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+
+        Button(
+            onClick = {
+                onPostNavigate.invoke()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text("Navigate to Another Screen")
+        }
     }
 }
-
-
-
 
 @Preview(showBackground = true)
 @Composable
@@ -204,4 +223,3 @@ fun PinLoginContentPreview() {
         }
     }
 }
-

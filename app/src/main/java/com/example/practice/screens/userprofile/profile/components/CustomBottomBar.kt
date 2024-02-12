@@ -1,5 +1,6 @@
 package com.example.practice.screens.userprofile.profile.components
 
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.navigation.bottom.navItems.BottomNavItem
 
 @Composable
@@ -37,6 +39,11 @@ fun CustomBottomBar(
                 selected = index == selectedIndex,
                 onClick = {
                     onItemSelected(index)
+                    // Log bottom bar item selected event
+                    AppLogger.logEvent("bottom_bar_item_selected", Bundle().apply {
+                        putString("item_label", item.label)
+                        putInt("selected_index", index)
+                    })
                 },
                 icon = {
                     Box(
@@ -62,4 +69,3 @@ fun CustomBottomBar(
         }
     }
 }
-

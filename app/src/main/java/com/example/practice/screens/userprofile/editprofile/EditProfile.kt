@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.practice.data.UserData
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.userprofile.profile.components.UserProfileItem
 
@@ -44,10 +45,14 @@ fun EditProfile(
                 onSaveProfession = { updatedProfession ->
                     userProfile.profession = updatedProfession
                     viewModel.saveProfession(userProfile.imageResId, updatedProfession)
+                    // Log profession update event
+                    AppLogger.logEvent("profession_updated")
                 },
                 onInterestsSelected = { selectedInterests ->
                     userProfile.interests = selectedInterests
                     viewModel.saveInterests(userProfile.imageResId, selectedInterests)
+                    // Log interests selected event
+                    AppLogger.logEvent("interests_selected")
                 },
                 viewModel = viewModel
             )
@@ -56,4 +61,3 @@ fun EditProfile(
         }
     }
 }
-

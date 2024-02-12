@@ -25,7 +25,7 @@ fun StatusIndicator(
 
     Box(
         modifier = Modifier
-            .size(20.dp) // Increase size for better visibility
+            .size(16.dp)
             .background(color = color, shape = CircleShape)
             .clickable(onClick = onClick)
     )

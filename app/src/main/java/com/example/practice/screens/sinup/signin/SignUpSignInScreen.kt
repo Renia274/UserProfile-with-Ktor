@@ -1,5 +1,6 @@
 package com.example.practice.screens.sinup.signin
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,25 +19,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun SignUpSignInScreen(
     onSignUpClick: () -> Unit,
     onSignInClick: () -> Unit,
-
 ) {
-
+    //log button click events
+    fun logButtonClick(buttonName: String) {
+        val params = Bundle().apply {
+            putString("button_name", buttonName)
+        }
+        AppLogger.logEvent("button_clicked", params)
+    }
 
     SignUpSignInContent(
         onSignUpClick = {
-
             onSignUpClick.invoke()
+            // Log sign-up button click
+            logButtonClick("Sign Up")
         },
-        onSignInClick = onSignInClick,
-
+        onSignInClick = {
+            onSignInClick.invoke()
+            // Log sign-in button click
+            logButtonClick("Sign In")
+        },
     )
 }
+
 
 
 @Composable
