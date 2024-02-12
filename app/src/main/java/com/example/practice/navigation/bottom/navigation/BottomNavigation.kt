@@ -22,6 +22,7 @@ fun BottomNavigationItems(
         bottomNavigationItems = listOf(
             BottomNavItem("Main", R.drawable.ic_back, "back"),
             BottomNavItem("Edit", R.drawable.ic_edit, "edit"),
+            BottomNavItem("Chat", R.drawable.ic_chat, "messaging"),
             BottomNavItem("Settings", R.drawable.ic_settings, "settings")
         ),
         selectedIndex = selectedIndexChanged,
@@ -29,7 +30,9 @@ fun BottomNavigationItems(
             when (index) {
                 0 -> onNavigate(BottomNavigationHandler.Back)
                 1 -> onNavigate(BottomNavigationHandler.EditProfile)
-                2 -> onNavigate(BottomNavigationHandler.Settings)
+                2-> onNavigate(BottomNavigationHandler.Messaging)
+                3 -> onNavigate(BottomNavigationHandler.Settings)
+
             }
         },
         backgroundColor = Color.Yellow

@@ -2,6 +2,7 @@ package com.example.practice.navigation.graph
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -15,6 +16,7 @@ import com.example.practice.screens.userprofile.editprofile.EditProfile
 import com.example.practice.R
 import com.example.practice.UserProfilesLoading
 import com.example.practice.data.UserData
+import com.example.practice.data.message.Message
 import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
@@ -34,6 +36,7 @@ import com.example.practice.screens.sinup.signin.SignUpSignInScreen
 import com.example.practice.screens.signup.SignupScreen
 import com.example.practice.screens.splash.screen.SplashScreen
 import com.example.practice.screens.login.UsernamePasswordLoginScreen
+import com.example.practice.screens.messaging.MessagingScreen
 
 data class Navigation(
     val route: String,
@@ -51,6 +54,7 @@ data class Navigation(
             val Recovery = Screen("recovery")
             val Settings = Screen("settings")
             val InfoScreen = Screen("info")
+            val MessagingScreen = Screen("messaging")
             val PermissionScreen = Screen("permissions")
         }
     }
@@ -243,7 +247,6 @@ fun NavigationApp() {
             })
         }
 
-
         composable(Navigation.Screen.UserProfileBob.route) { navBackStackEntry ->
             val username = navBackStackEntry.arguments?.getString("username") ?: "Bob"
 
@@ -275,6 +278,10 @@ fun NavigationApp() {
 
                         "back" -> {
                             navigationHandler.navigateBack()
+                        }
+
+                        "messaging" -> {
+                            navigationHandler.navigateToMessagingScreen()
                         }
 
                         "settings" -> {
@@ -328,6 +335,10 @@ fun NavigationApp() {
                             navigationHandler.navigateBack()
                         }
 
+                        "messaging" -> {
+                            navigationHandler.navigateToMessagingScreen()
+                        }
+
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
@@ -379,6 +390,10 @@ fun NavigationApp() {
                             navigationHandler.navigateBack()
                         }
 
+                        "messaging" -> {
+                            navigationHandler.navigateToMessagingScreen()
+                        }
+
                         "settings" -> {
                             navigationHandler.navigateToSettings()
                         }
@@ -396,6 +411,7 @@ fun NavigationApp() {
                 topAppBarTitle = "$username's Profile"
             )
         }
+
 
         composable(Navigation.Screen.InfoScreen.route) {
             InfoScreen(onNavigateBack = { navigationHandler.navigateBack() })
@@ -417,6 +433,21 @@ fun NavigationApp() {
                 },
                 isEditScreen = true,
                 viewModel = sharedProfilesViewModel
+            )
+        }
+
+
+        composable(Navigation.Screen.MessagingScreen.route) {
+            val messages = remember { mutableStateListOf<Message>() }
+            val onSendMessage: (String, String) -> Unit = { newMessage, recipient ->
+                messages.add(Message(newMessage, "Me"))
+            }
+
+            MessagingScreen(
+                messages = messages,
+                onSendMessage = onSendMessage,
+                sender="Me",
+                onBackClicked = { navigationHandler.navigateBack()}
             )
         }
 

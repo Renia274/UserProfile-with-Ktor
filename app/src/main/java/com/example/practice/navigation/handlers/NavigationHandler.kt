@@ -54,6 +54,11 @@ class NavigationHandler(
         navController.navigate(screen.route)
     }
 
+    fun navigateToMessagingScreen() {
+        navController.navigate(Navigation.Screen.MessagingScreen.route)
+    }
+
+
     fun navigateToSettings() {
         navController.navigate(Navigation.Screen.Settings.route)
     }
