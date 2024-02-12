@@ -51,7 +51,9 @@ fun MessagingScreen(
     val recipientOptions = listOf("Bob", "Alice", "Eve")
 
     Surface(modifier = Modifier.fillMaxSize()) {
+
         Column(modifier = Modifier.fillMaxSize()) {
+
             TopAppBar(
                 title = { Text("Chat") },
                 navigationIcon = {
@@ -60,6 +62,7 @@ fun MessagingScreen(
                     }
                 },
                 actions = {
+
                     Box(
                         modifier = Modifier.padding(end = 16.dp)
                     ) {
@@ -134,13 +137,6 @@ fun MessagingScreen(
 }
 
 
-
-
-
-
-
-
-
 @Preview
 @Composable
 fun PreviewMessagingScreen() {
@@ -151,6 +147,10 @@ fun PreviewMessagingScreen() {
         Message("I'm good, thanks!", "Alice")
     )
     PracticeTheme {
-        MessagingScreen(messages = messages, onSendMessage = { _, _ -> }, sender = "Me", onBackClicked = {})
+        MessagingScreen(
+            messages = messages,
+            onSendMessage = { _, _ -> },
+            sender = "Me",
+            onBackClicked = {})
     }
 }
