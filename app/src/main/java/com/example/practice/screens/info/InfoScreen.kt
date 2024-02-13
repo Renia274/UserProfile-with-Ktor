@@ -34,8 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.practice.logs.navigation.CrashlyticsNavigationLogger
-import com.example.practice.logs.navigation.NavigationAnalyticsLogger
+import com.example.practice.logs.app.AppLogger
 import com.example.practice.ui.theme.PracticeTheme
 
 
@@ -49,8 +48,7 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
         onNavigateBack = onNavigateBack,
         onOpenLink = {
             navigateToDeepLink("https://pl-coding.com", context)
-            NavigationAnalyticsLogger.logAnalyticsDeepLinkEvent("https://pl-coding.com")
-            CrashlyticsNavigationLogger.logCrashlyticsDeepLinkEvent("https://pl-coding.com")
+            AppLogger.logDeepLinkEvent("https://pl-coding.com")
         }
     )
 }

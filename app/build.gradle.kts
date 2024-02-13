@@ -55,9 +55,13 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/AL2.0"
+            excludes += "/META-INF/LGPL2.1"
+            excludes+= "/META-INF/INDEX.LIST"
+
         }
     }
+
 }
 
 dependencies {
@@ -113,6 +117,12 @@ dependencies {
     implementation ("io.ktor:ktor-client-android:1.6.4")
     implementation ("io.ktor:ktor-client-json:1.6.4")
     implementation( "io.ktor:ktor-client-serialization:1.6.4")
+
+    //html builder
+    implementation("io.ktor:ktor-html-builder:1.6.5")
+
+
+
 
 
     //HILT DI

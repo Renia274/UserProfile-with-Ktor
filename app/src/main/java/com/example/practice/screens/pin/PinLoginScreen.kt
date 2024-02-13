@@ -194,16 +194,7 @@ fun PinLoginContent(
         Spacer(modifier = Modifier.weight(1f))
 
 
-        Button(
-            onClick = {
-                onPostNavigate.invoke()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Navigate to Another Screen")
-        }
+
     }
 }
 

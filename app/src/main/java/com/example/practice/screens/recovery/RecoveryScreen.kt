@@ -1,7 +1,10 @@
 package com.example.practice.screens.recovery
 
-import android.os.Bundle
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,13 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,208 +26,169 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.PlatformTextStyle
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.practice.logs.app.AppLogger
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.ui.theme.PracticeTheme
-import kotlinx.coroutines.delay
+
 
 @Composable
 fun RecoveryScreen(
     navigateToLogin: () -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: SharedProfilesViewModel = hiltViewModel()
+    viewModel: SharedProfilesViewModel
 ) {
+    val context = LocalContext.current
 
     val sharedState by viewModel.stateFlow.collectAsState()
     val signupEmail by remember { mutableStateOf(sharedState.signupEmail) }
 
-    var email by remember { mutableStateOf("") }
-    var isRecoveryEmailSent by remember { mutableStateOf(false) }
-    var isDelayComplete by remember { mutableStateOf(false) }
-    var showError by remember { mutableStateOf(false) }
+    RecoveryScreenContent(
+        navigateToLogin = navigateToLogin,
+        onNavigateBack = onNavigateBack,
+//        onOpenRecoveryLink = {
+//            val serverUrl = "https://mpla-34756.web.app/password-recovery.html"
+//            safeOpenWebPage(serverUrl, context)
+//        },
+        signupEmail = signupEmail
+    )
+}
 
-    // handle delays for UI updates
-    LaunchedEffect(isRecoveryEmailSent) {
-        delay(8000)
-        isRecoveryEmailSent = false
-        isDelayComplete = true
-        delay(8000)
-    }
+private fun safeOpenWebPage(url: String, context: Context) {
+    // Create the intent to view the web page
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-    ) {
-
-        RecoveryScreenContent(
-            email = email,
-            onEmailChange = { email = it },
-            onButtonClick = {
-                if (email == signupEmail) {
-                    isRecoveryEmailSent = true
-                    viewModel.setSignupEmail(email)
-                    navigateToLogin.invoke()
-                    // Log successful recovery email sent event
-                    AppLogger.logEvent("recovery_email_sent", Bundle().apply {
-                        putString("email", email)
-                    })
-                } else {
-                    showError = true
-                    // Log error for incorrect email
-                    AppLogger.logError("recovery_email_failed: Entered email doesn't match the signup email.")
-                }
-            },
-            showError = showError,
-            isRecoveryEmailSent = isRecoveryEmailSent,
-            isDelayComplete = isDelayComplete,
-            navigateToLogin = { viewModel.setRecoveryEmail(email) },
-            onNavigateBack = {
-                onNavigateBack.invoke()
-            }
-        )
+    // Check if there is an activity that can handle the intent
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryScreenContent(
-    email: String,
-    onEmailChange: (String) -> Unit,
-    onButtonClick: () -> Unit,
-    showError: Boolean,
-    isRecoveryEmailSent: Boolean,
-    isDelayComplete: Boolean,
     navigateToLogin: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+//    onOpenRecoveryLink: () -> Unit,
+    signupEmail: String
 ) {
-
-    val overrideFontPadding = PlatformTextStyle(includeFontPadding = false)
-    val h4 = TextStyle(
-        fontSize = 16.sp, platformStyle = overrideFontPadding
-    )
+    val email = remember { mutableStateOf("") }
+    val isRecoveryEmailSent = remember { mutableStateOf(false) }
+    val showError = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.White),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         TopAppBar(
-            title = { Text(text = "Password Recovery", style = h4, textAlign = TextAlign.Center) },
+            title = { Text(text = "Password Recovery", fontFamily = FontFamily.SansSerif) },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow),
-            modifier = Modifier
-                .fillMaxWidth()
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-        ) {
-            OutlinedTextField(
-                value = email,
-                onValueChange = onEmailChange,
-                label = { Text("Enter your email") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            )
-        }
+        Text(
+            "Welcome to the Password Recovery Screen!",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = email.value,
+            onValueChange = { email.value = it },
+            label = { Text("Enter your email") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = onButtonClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                onClick = {
+                    if (email.value == signupEmail) {
+//                        onOpenRecoveryLink()
+                        isRecoveryEmailSent.value = true
+                    } else {
+                        showError.value = true
+                    }
+                }
             ) {
-                Text("Recover Password")
+                Text("Reset")
             }
         }
 
         // Display error message if showError is true
-        if (showError) {
+        if (showError.value) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "Entered email doesn't match the signup email.",
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = 32.dp)
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
 
-        // Display message and loading indicator if recovery email is sent
-        if (isRecoveryEmailSent) {
+        // Display message if recovery email is sent
+        if (isRecoveryEmailSent.value) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "Recovery email sent to $email. Please check your email.",
-                modifier = Modifier.padding(horizontal = 32.dp)
+                "Recovery email sent to ${email.value}. Please check your email.",
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            CircularProgressIndicator(
-                modifier = Modifier.size(50.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            // Navigate to login screen after delay
-            if (isDelayComplete) {
-                navigateToLogin.invoke()
-            }
+            navigateToLogin()
         }
     }
 }
+
 
 
 
 @Preview(showBackground = true)
 @Composable
 fun RecoveryScreenContentPreview() {
+    val navigateToLogin: () -> Unit = {}
+    val onNavigateBack: () -> Unit = {}
+    val signupEmail = "example@example.com"
+
     PracticeTheme {
         Surface {
             RecoveryScreenContent(
-                email = "example@example.com",
-                onEmailChange = {},
-                showError = false,
-                isRecoveryEmailSent = false,
-                isDelayComplete = false,
-                onButtonClick = {},
-                navigateToLogin = {},
-                onNavigateBack = {}
+                navigateToLogin = navigateToLogin,
+                onNavigateBack = onNavigateBack,
+                signupEmail = signupEmail
             )
         }
     }
 }
-
 

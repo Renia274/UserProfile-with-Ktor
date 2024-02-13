@@ -32,4 +32,19 @@ object AppLogger {
         CrashlyticsService.logCrashlyticsEvent(errorMessage)
         throwable?.let { CrashlyticsService.logCrashlyticsThrowable(it) }
     }
+
+
+    fun logRecoveryLinkOpened(recoveryLink: String) {
+        logEvent("RecoveryLinkOpened", Bundle().apply {
+            putString("RecoveryLink", recoveryLink)
+        })
+    }
+
+
+    fun logDeepLinkEvent(deepLink: String) {
+        logEvent("DeepLinkOpened", Bundle().apply {
+            putString("DeepLink", deepLink)
+        })
+    }
+
 }

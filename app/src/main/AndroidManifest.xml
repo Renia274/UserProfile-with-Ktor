@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:name=".MyApplication"
@@ -50,6 +52,27 @@
                     android:host="pl-coding.com"
                     android:scheme="http"
                     android:path="/info" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+
+
+            <!-- HTTPS Intent Filter -->
+            <intent-filter android:autoVerify="true">
+                <data
+                    android:host="mpla-34756.web.app"
+                    android:scheme="https" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+
+            <!-- HTTP Intent Filter -->
+            <intent-filter>
+                <data
+                    android:host="mpla-34756.web.app"
+                    android:scheme="http" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <action android:name="android.intent.action.VIEW" />
