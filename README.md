@@ -8,11 +8,17 @@ independently of the main application.
 
 ## Features
 **User Profile Management:** Allows users to create, update, and view their profiles.
+
 **Ktor Implementation:** Includes a separate Ktor module with CRUD operations.
+
 **Firebase Integration:** Utilizes Firebase services for OTP (One-Time Password) for users created through the user profile app.
+
 **Analytics Integration**: Tracks user interactions to gather insights into user behavior.
+
 **Custom Logger for Navigation**: Logs user navigation between screens for analysis and debugging purposes.
+
 **Crashlytics Integration**: Monitors and reports app crashes during user interaction and screen navigation.
+
 **AppLogger**: Utilizes Firebase Analytics and Crashlytics services for logging application events and errors.
 
 
