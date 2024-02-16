@@ -215,7 +215,7 @@ fun NavigationApp() {
             }
         }
 
-        composable(Navigation.Screen.Recovery.route) {
+       composable(Navigation.Screen.Recovery.route) {
 
             val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
@@ -224,12 +224,11 @@ fun NavigationApp() {
 
 
             RecoveryScreen(
-                navigateToLogin = { authNavigationHandler.navigateToSignUpSignIn() },
+                navigateToLogin = { authNavigationHandler.navigateToUsernamePasswordLogin() },
                 viewModel = sharedProfilesViewModel,
                 onNavigateBack = { navigationHandler.navigateBack() }
             )
         }
-
 
         composable(Navigation.Auth.PinLogin.route) {
 
