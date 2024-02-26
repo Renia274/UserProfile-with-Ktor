@@ -50,7 +50,6 @@ import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.screens.settings.components.SaveConfirmationDialog
 import com.example.practice.screens.settings.components.SettingsField
-import com.example.practice.services.FirebaseAnalyticsService
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.launch
 

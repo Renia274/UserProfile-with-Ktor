@@ -42,13 +42,10 @@ fun UserProfilesLoading(
     // State for showing the edit profile screen
     var isShowingEdit by remember { mutableStateOf(false) }
 
-
     var showSignOutDialog by remember { mutableStateOf(false) }
-
 
     val initialSelectedIndex = 0
     val selectedIndexFlow = remember { MutableStateFlow(initialSelectedIndex) }
-
 
     val timerState by timerViewModel.stateFlow.collectAsState()
     val timeLeft = timerState.timeLeft
@@ -61,13 +58,11 @@ fun UserProfilesLoading(
         }
     }
 
-
     val mainBackgroundColor = if (!viewModel.stateFlow.collectAsState().value.darkMode) {
         Color.White
     } else {
         Color.Gray
     }
-
 
     Box(
         modifier = Modifier
@@ -106,7 +101,6 @@ fun UserProfilesLoading(
                 .wrapContentHeight()
             )
 
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,10 +108,8 @@ fun UserProfilesLoading(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-
                 CustomCountDownTimer(timerViewModel = timerViewModel)
             }
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -126,32 +118,34 @@ fun UserProfilesLoading(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 // Choose between UserProfile and EditProfile based on edit mode
-                if (selectedIndexFlow.value in userProfiles.value.indices && !isShowingEdit) {
-                    UserProfileItem(userProfile = userProfiles.value[selectedIndexFlow.value],
+                val selectedIndex by selectedIndexFlow.collectAsState()
+                val userProfilesValue by userProfiles.collectAsState()
+                if (selectedIndex in userProfilesValue.indices && !isShowingEdit) {
+                    UserProfileItem(
+                        userProfile = userProfilesValue[selectedIndex],
                         onEditClick = {
                             isShowingEdit = true
                         },
                         isEditScreen = isShowingEdit,
                         onSaveProfession = { updatedProfession ->
-                            val userProfile = userProfiles.value[selectedIndexFlow.value]
+                            val userProfile = userProfilesValue[selectedIndex]
                             viewModel.saveProfession(userProfile.imageResId, updatedProfession)
                         },
                         onInterestsSelected = { selectedInterests ->
-                            val userProfile = userProfiles.value[selectedIndexFlow.value]
+                            val userProfile = userProfilesValue[selectedIndex]
                             viewModel.saveInterests(userProfile.imageResId, selectedInterests)
                         },
                         viewModel = viewModel
                     )
                 } else {
                     EditProfile(
-                        userProfiles.value,
+                        userProfilesValue,
                         onBackNavigate = onBack,
                         isEditScreen = isShowingEdit,
                         viewModel = viewModel
                     )
                 }
             }
-
 
             if (showSignOutDialog) {
                 SignOutDialog(viewModel = credentialsViewModel, onSignOut = {
@@ -164,7 +158,6 @@ fun UserProfilesLoading(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
 
             BottomNavigationItems(selectedIndexFlow) { navEvent ->
                 navigateTo(navEvent, onBack, onNavigate)

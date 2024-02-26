@@ -1,6 +1,7 @@
 package com.example.practice.navigation.graph
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -157,13 +158,12 @@ fun NavigationApp() {
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
-
+            val credentialsState by credentialsViewModel.credentialsState.collectAsState()
 
             if (isLoading) {
                 Loader()
             } else {
-                val securityCodeAvailable =
-                    credentialsViewModel.credentialsState.value.securityCode != null
+                val securityCodeAvailable = credentialsState.securityCode != null
 
                 if (securityCodeAvailable) {
                     authNavigationHandler.navigateToPinLogin()
@@ -440,15 +440,14 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.EditProfile.route) {
-
             val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
             )
 
-
+            val userProfiles by sharedProfilesViewModel.userProfiles.collectAsState()
 
             EditProfile(
-                userProfiles = sharedProfilesViewModel.userProfiles.value,
+                userProfiles = userProfiles,
                 onBackNavigate = {
                     navigationHandler.navigateBack()
                 },

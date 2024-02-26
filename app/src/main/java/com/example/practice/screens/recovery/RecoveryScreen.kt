@@ -58,10 +58,23 @@ fun RecoveryScreen(
     RecoveryScreenContent(
         navigateToLogin = navigateToLogin,
         onNavigateBack = onNavigateBack,
+//        onOpenRecoveryLink = {
+//            val serverUrl = "https://mpla-34756.web.app/password-recovery.html"
+//            safeOpenWebPage(serverUrl, context)
+//        },
         signupEmail = signupEmail
     )
 }
 
+private fun safeOpenWebPage(url: String, context: Context) {
+    // Create the intent to view the web page
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+
+    // Check if there is an activity that can handle the intent
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +82,7 @@ fun RecoveryScreen(
 fun RecoveryScreenContent(
     navigateToLogin: () -> Unit,
     onNavigateBack: () -> Unit,
+//    onOpenRecoveryLink: () -> Unit,
     signupEmail: String
 ) {
     val email = remember { mutableStateOf("") }
@@ -123,6 +137,7 @@ fun RecoveryScreenContent(
             Button(
                 onClick = {
                     if (email.value == signupEmail) {
+//                        onOpenRecoveryLink()
                         isRecoveryEmailSent.value = true
                     } else {
                         showError.value = true

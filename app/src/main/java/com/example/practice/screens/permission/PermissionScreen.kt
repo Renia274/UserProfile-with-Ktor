@@ -16,6 +16,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,11 +39,13 @@ fun PermissionScreen(onBackButtonClick: () -> Unit, viewModel: PermissionViewMod
         })
 
         PermissionContent(
-            onCameraPermissionResult = { isGranted -> viewModel.cameraPermissionResult(isGranted) },
-            onMicPermissionResult = { isGranted -> viewModel.micPermissionResult(isGranted) }
+            onCameraPermissionResult = { isGranted -> viewModel.setCameraPermissionResult(isGranted) },
+            onMicPermissionResult = { isGranted -> viewModel.setMicPermissionResult(isGranted) }
         )
     }
 }
+
+
 
 @Composable
 fun PermissionContent(

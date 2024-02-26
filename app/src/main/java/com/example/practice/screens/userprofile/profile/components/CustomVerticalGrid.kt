@@ -29,7 +29,7 @@ import com.example.practice.ui.theme.PracticeTheme
 @Composable
 fun CustomVerticalGrid(
     items: List<String>,
-    darkModeState: Boolean // Add darkModeState parameter
+    darkModeState: Boolean
 ) {
     // State to track the selected item
     var selectedItem by remember { mutableStateOf<String?>(null) }

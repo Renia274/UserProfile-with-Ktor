@@ -1,28 +1,37 @@
 package com.example.practice.profiles.viewmodel.permissions
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+
+data class PermissionState(
+    val cameraPermissionResult: Boolean,
+    val micPermissionResult: Boolean
+)
 
 @HiltViewModel
 class PermissionViewModel @Inject constructor() : ViewModel() {
-    private val cameraPermissionState = mutableStateOf(false)
-    private val micPermissionState = mutableStateOf(false)
 
-    val cameraPermissionResult: Boolean
-        get() = cameraPermissionState.value
+    private val permissionState = MutableStateFlow(PermissionState(false, false))
+    val permissionStateFlow = permissionState.asStateFlow()
 
-    val micPermissionResult: Boolean
-        get() = micPermissionState.value
-
-    fun cameraPermissionResult(isGranted: Boolean) {
-        cameraPermissionState.value = isGranted
+    fun updatePermissionState(
+        cameraPermissionResult: Boolean? = null,
+        micPermissionResult: Boolean? = null
+    ) {
+        permissionState.value = permissionState.value.copy(
+            cameraPermissionResult = cameraPermissionResult ?: permissionState.value.cameraPermissionResult,
+            micPermissionResult = micPermissionResult ?: permissionState.value.micPermissionResult
+        )
     }
 
-    fun micPermissionResult(isGranted: Boolean) {
-        micPermissionState.value = isGranted
+    fun setCameraPermissionResult(isGranted: Boolean) {
+        updatePermissionState(cameraPermissionResult = isGranted)
+    }
+
+    fun setMicPermissionResult(isGranted: Boolean) {
+        updatePermissionState(micPermissionResult = isGranted)
     }
 }
