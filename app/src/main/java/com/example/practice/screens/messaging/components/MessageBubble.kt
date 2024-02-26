@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MessageBubble(message: Message, sender: String, recipient: String) {
     val isSender = message.sender == sender
+    val backgroundColor = if (isSender) Color.LightGray else Color.Blue
+    val contentColor = if (isSender) Color.Black else Color.White
+    val displayedSender = if (isSender) sender else recipient
+
     val bubbleAlignment = if (isSender) Alignment.TopStart else Alignment.TopEnd
-    val backgroundColor = if (isSender) Color.Blue else Color.LightGray
-    val contentColor = if (isSender) Color.White else Color.Black
 
     Box(
         modifier = Modifier
@@ -34,7 +36,7 @@ fun MessageBubble(message: Message, sender: String, recipient: String) {
     ) {
         Column {
             Text(
-                text = if (isSender) "Me" else message.sender,
+                text = displayedSender,
                 color = contentColor
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -49,4 +51,3 @@ fun MessageBubble(message: Message, sender: String, recipient: String) {
     }
     Spacer(modifier = Modifier.height(8.dp))
 }
-

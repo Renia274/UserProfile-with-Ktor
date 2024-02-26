@@ -19,7 +19,8 @@ fun MessageList(messages: List<Message>, sender: String, recipient: String) {
             .verticalScroll(rememberScrollState())
     ) {
         messages.forEach { message ->
-            MessageBubble(message, sender, recipient)
+            MessageBubble(message, sender, if (message.sender == sender) recipient else message.sender)
         }
     }
 }
+

@@ -142,15 +142,14 @@ fun MessagingScreen(
 fun PreviewMessagingScreen() {
     val messages = listOf(
         Message("Hello, Alice!", "Bob"),
-        Message("Hi !", "Alice"),
-        Message("How are you?", "Bob"),
-        Message("I'm good, thanks!", "Alice")
+        Message("Hi !", "Alice")
     )
     PracticeTheme {
         MessagingScreen(
             messages = messages,
             onSendMessage = { _, _ -> },
             sender = "Me",
-            onBackClicked = {})
+            onBackClicked = {}
+        )
     }
 }
