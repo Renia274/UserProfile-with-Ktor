@@ -43,6 +43,7 @@ Before you begin, ensure you have the following installed:
 - Kapt
 - Firebase dependencies:core,messaging,crashlytics,auth,analytics
 - Google services
+- Jetpack Compose 
 
 ### Installation
 
