@@ -41,8 +41,8 @@ Before you begin, ensure you have the following installed:
 - KotlinX Serialization
 - Hilt Injection
 - Kapt
-- Firebase dependencies:core,messaging,
-  crashlytics,auth,analytics
+- Firebase(core,messaging,
+  crashlytics,auth,analytics)
 - Google services
 - Jetpack Compose 
 
