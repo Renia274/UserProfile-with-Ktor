@@ -97,7 +97,7 @@ fun MessagingScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-           
+                // Place the "Select Recipient" button on the left
                 if (isSelectRecipientVisible) {
                     Box(
                         modifier = Modifier

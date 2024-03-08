@@ -56,7 +56,7 @@ fun OtpScreen(
 
     val viewState by otpViewModel.viewStateFlow.collectAsState()
     var emailErrorMessage = viewState.emailErrorMessage
-    val codeMessage = otpViewModel.viewStateFlow.value.codeSentMessage
+    var codeMessage = viewState.codeSentMessage
     var showMessage by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
