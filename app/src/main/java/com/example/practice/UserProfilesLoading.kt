@@ -2,13 +2,32 @@ package com.example.practice
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,10 +38,10 @@ import com.example.practice.navigation.bottom.navigation.BottomNavigationItems
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
-import com.example.practice.screens.userprofile.profile.components.CustomCountDownTimer
 import com.example.practice.screens.userprofile.editprofile.EditProfile
-import com.example.practice.screens.userprofile.profile.components.UserProfileItem
+import com.example.practice.screens.userprofile.profile.components.CustomCountDownTimer
 import com.example.practice.screens.userprofile.profile.components.SignOutDialog
+import com.example.practice.screens.userprofile.profile.components.UserProfileItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -50,7 +69,11 @@ fun UserProfilesLoading(
     val timerState by timerViewModel.stateFlow.collectAsState()
     val timeLeft = timerState.timeLeft
 
-    //check if the timer has run out and trigger navigation
+    // Choose between UserProfile and EditProfile based on edit mode
+    val selectedIndex by selectedIndexFlow.collectAsState()
+    val userProfilesValue by userProfiles.collectAsState()
+
+    // Check if the timer has run out and trigger navigation
     LaunchedEffect(timeLeft) {
         if (timerViewModel.stateFlow.value.timeLeft <= 0) {
             onNavigate("usernamePasswordLogin")
@@ -64,41 +87,45 @@ fun UserProfilesLoading(
         Color.Gray
     }
 
+    val imageSize = if (isShowingEdit) 150.dp else 200.dp // Define imageSize here
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(mainBackgroundColor)
     ) {
-
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = topAppBarTitle,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    // Triggers the sign-out dialog
+                    IconButton(onClick = {
+                        showSignOutDialog = true
+                    }) {
+                        Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
+                    }
 
-            TopAppBar(title = {
-                Text(
-                    text = topAppBarTitle,
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
-            }, actions = {
-                // triggers the sign-out dialog
-                IconButton(onClick = {
-                    showSignOutDialog = true
-                }) {
-                    Icon(imageVector = Icons.Default.ExitToApp, contentDescription = null)
-                }
-
-                // navigates to the InfoScreen
-                IconButton(onClick = {
-                    onNavigate("info")
-                }) {
-                    Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                }
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+                    // Navigates to the InfoScreen
+                    IconButton(onClick = {
+                        onNavigate("info")
+                    }) {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             )
 
             Row(
@@ -117,14 +144,11 @@ fun UserProfilesLoading(
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Choose between UserProfile and EditProfile based on edit mode
-                val selectedIndex by selectedIndexFlow.collectAsState()
-                val userProfilesValue by userProfiles.collectAsState()
                 if (selectedIndex in userProfilesValue.indices && !isShowingEdit) {
                     UserProfileItem(
                         userProfile = userProfilesValue[selectedIndex],
                         onEditClick = {
-                            isShowingEdit = true
+                            isShowingEdit = false
                         },
                         isEditScreen = isShowingEdit,
                         onSaveProfession = { updatedProfession ->

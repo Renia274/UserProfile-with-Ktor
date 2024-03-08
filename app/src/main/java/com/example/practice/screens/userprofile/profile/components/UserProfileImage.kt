@@ -17,7 +17,12 @@ import androidx.compose.ui.unit.dp
 import com.example.practice.data.UserData
 
 @Composable
-fun UserProfileImage(userProfile: UserData, onEditClick: () -> Unit, isEditingProfession: Boolean) {
+fun UserProfileImage(
+    userProfile: UserData,
+    onEditClick: () -> Unit,
+    isEditingProfession: Boolean,
+    isEditingInterests: Boolean
+) {
     val imageSize by animateDpAsState(
         targetValue = if (isEditingProfession) 150.dp else 200.dp,
         animationSpec = tween(durationMillis = 500),
@@ -32,7 +37,7 @@ fun UserProfileImage(userProfile: UserData, onEditClick: () -> Unit, isEditingPr
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.onSecondary)
             .clickable {
-                if (!isEditingProfession) {
+                if (!isEditingProfession || !isEditingInterests) {
                     onEditClick()
                 }
             }

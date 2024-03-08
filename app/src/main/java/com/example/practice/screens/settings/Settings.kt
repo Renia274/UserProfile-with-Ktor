@@ -156,7 +156,7 @@ fun SettingsScreen(
                 putString("username", newUsername)
                 putString("password", newPassword)
             })
-          
+
             onSaveCredentials.invoke(newUsername, newPassword)
         },
         onSignupEmailChange = {
@@ -169,7 +169,8 @@ fun SettingsScreen(
                 })
             }
 
-            sharedViewModel.setSignupEmail(it) },
+            sharedViewModel.setSignupEmail(it)
+        },
         onUsernameChange = { newValue ->
             coroutineScope.launch {
                 username = newValue
@@ -195,17 +196,18 @@ fun SettingsScreen(
                 })
 
                 // Check if the password is in an invalid format(less digits or more uppercase letters)
-                val containsInvalidFormat = newValue.length < 8 || newValue.count { it.isUpperCase() } > newValue.length / 2
+                val containsInvalidFormat =
+                    newValue.length < 8 || newValue.count { it.isUpperCase() } > newValue.length / 2
                 if (containsInvalidFormat) {
                     AppLogger.logEvent("password_invalid_format")
                 }
             }
-        }
-        ,
+        },
         onSecurityCodeChange = {
 
             AppLogger.logEvent("security_code_changed")
-            enteredSecurityCode = it },
+            enteredSecurityCode = it
+        },
         onSecurityCodeSave = {
             if (enteredSecurityCode.isNotEmpty()) {
                 credentialsViewModel.saveSecurityCode(enteredSecurityCode)
@@ -213,7 +215,7 @@ fun SettingsScreen(
 
                 // Log the saving of the security code
                 AppLogger.logEvent("security_code_saved")
-                
+
             } else {
                 Toast.makeText(context, "Security code cannot be empty", Toast.LENGTH_SHORT).show()
 
@@ -240,10 +242,16 @@ fun SettingsScreen(
             val updatedPassword = password
             // Save the updated username and password
             onSaveCredentials.invoke(updatedUsername, updatedPassword)
-            // update Credentials
+            // Log the event of saving credentials
+            AppLogger.logEvent("credentials_saved_dialog", Bundle().apply {
+                putString("username", updatedUsername)
+                putString("password", updatedPassword)
+            })
+            // Update Credentials
             credentialsViewModel.updateCredentials(updatedUsername, updatedPassword)
-            // navigate to login screen
+            // Navigate to login screen
             onNavigate("usernamePasswordLogin")
+            // Dismiss the dialog
             showConfirmationDialog = false
         }, onDismiss = {
             // Dismiss the dialog if the user cancels the save operation
@@ -291,14 +299,10 @@ fun SettingsContent(
 
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
         ) {
             TopAppBar(title = { Text("Settings") }, navigationIcon = {
                 IconButton(onClick = {
@@ -314,9 +318,7 @@ fun SettingsContent(
                         imageVector = Icons.Default.Settings, contentDescription = "Permissions"
                     )
                 }
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+            }, modifier = Modifier.fillMaxWidth().wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -380,16 +382,13 @@ fun SettingsContent(
                 onClick = {
                     // Show the confirmation dialog before saving changes
                     onShowConfirmationDialog()
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                }, modifier = Modifier.fillMaxWidth().padding(16.dp)
             ) {
                 Text("Save Changes")
             }
 
             Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
 
             )
 
@@ -415,9 +414,8 @@ fun SettingsContent(
             Button(
                 onClick = {
                     onSecurityCodeSave()
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    onNavigate("securityCode")
+                }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
                 Text("Save Security Code")
             }
@@ -426,8 +424,7 @@ fun SettingsContent(
 
 
             Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -472,9 +469,7 @@ fun SettingsContent(
                         "Security feature is disabled"
                     }
                     Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-                }, modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                }, modifier = Modifier.padding(16.dp).fillMaxWidth()
             )
 
 

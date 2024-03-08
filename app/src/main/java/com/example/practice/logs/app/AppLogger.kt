@@ -34,12 +34,6 @@ object AppLogger {
     }
 
 
-    fun logRecoveryLinkOpened(recoveryLink: String) {
-        logEvent("RecoveryLinkOpened", Bundle().apply {
-            putString("RecoveryLink", recoveryLink)
-        })
-    }
-
 
     fun logDeepLinkEvent(deepLink: String) {
         logEvent("DeepLinkOpened", Bundle().apply {

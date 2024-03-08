@@ -160,6 +160,8 @@ fun NavigationApp() {
 
             val credentialsState by credentialsViewModel.credentialsState.collectAsState()
 
+
+
             if (isLoading) {
                 Loader()
             } else {
@@ -170,6 +172,9 @@ fun NavigationApp() {
                 } else {
                     UsernamePasswordLoginScreen(
                         onLoginSuccess = { enteredUsername, _, _, _ ->
+
+
+
                             isLoading = true
                             val userProfile = when {
                                 enteredUsername.lowercase().startsWith("bob") -> UserData(
@@ -250,8 +255,6 @@ fun NavigationApp() {
 
 
         composable(Navigation.Screen.Posts.route) {
-
-
 
             PostsScreen(onNavigate = {
                 navigationHandler.navigateBack()

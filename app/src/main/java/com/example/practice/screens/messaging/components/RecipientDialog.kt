@@ -1,33 +1,45 @@
 package com.example.practice.screens.messaging.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 
 @Composable
 fun RecipientDialog(
-    recipientOptions: List<String>,
-    onRecipientSelected: (String) -> Unit,
+    recipientOptions: List<Pair<String, Int>>, // Pair<String, Int> holds recipient name and corresponding drawable resource id
+    onRecipientSelected: (String, Int) -> Unit, // Updated to include image resource id
     onDismissRequest: () -> Unit
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Recipient:")
-            Spacer(modifier = Modifier.height(8.dp))
-            recipientOptions.forEach { option ->
-                Text(
-                    text = option,
-                    modifier = Modifier.clickable { onRecipientSelected(option) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(text = "Select Recipient") },
+        confirmButton = {},
+        dismissButton = {},
+        text = {
+            Column {
+                recipientOptions.forEach { (option, drawableResId) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { onRecipientSelected(option, drawableResId) } // Passing both name and drawableResId
+                    ) {
+                        Image(
+                            painter = painterResource(id = drawableResId),
+                            contentDescription = "Recipient Image: $option",
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = option)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
-    }
+    )
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
@@ -53,11 +54,6 @@ fun UserProfileEve(
 
     var isDelayApplied by remember { mutableStateOf(false) }
 
-    val imageSize by animateDpAsState(
-        targetValue = if (isEditingProfession) 150.dp else 200.dp,
-        animationSpec = tween(durationMillis = 500),
-        label = "imageSizeAnimation"
-    )
 
     LaunchedEffect(key1 = Unit) {
         if (!isDelayApplied) {
@@ -71,7 +67,7 @@ fun UserProfileEve(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserProfileImage(userProfile, onEditClick, isEditingProfession)
+        UserProfileImage(userProfile, onEditClick, isEditingProfession,isEditingInterests)
 
         when {
             isEditScreen && isEditingProfession -> {

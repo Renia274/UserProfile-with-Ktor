@@ -1,6 +1,7 @@
 package com.example.practice.screens.userprofile.profile.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import com.example.practice.data.UserData
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.screens.userprofile.profile.UserProfileAlice
@@ -14,7 +15,8 @@ fun UserProfileItem(
     isEditScreen: Boolean,
     onSaveProfession: (String) -> Unit,
     onInterestsSelected: (List<String>) -> Unit,
-    viewModel: SharedProfilesViewModel
+    viewModel: SharedProfilesViewModel,
+
 ) {
 
     val username = userProfile.firstName.lowercase()
