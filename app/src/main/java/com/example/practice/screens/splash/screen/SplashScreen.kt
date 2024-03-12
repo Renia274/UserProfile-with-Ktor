@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +34,7 @@ const val AnimationDurationMillis = 1000
 
 @Composable
 fun SplashScreen(onLoadingComplete: () -> Unit) {
-    var isLoading by mutableStateOf(true)
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(isLoading) {
         delay(SplashWaitTimeMillis)
@@ -40,9 +42,9 @@ fun SplashScreen(onLoadingComplete: () -> Unit) {
         onLoadingComplete.invoke()
     }
 
-    val transitionState = mutableStateOf(0)
+    val transitionState = remember { mutableIntStateOf(0) }
     val alpha by animateFloatAsState(
-        targetValue = if (transitionState.value == 0) 1f else 0f,
+        targetValue = if (transitionState.intValue == 0) 1f else 0f,
         animationSpec = tween(durationMillis = AnimationDurationMillis),
         label = "My animated splash screen"
     )
@@ -54,7 +56,7 @@ fun SplashScreen(onLoadingComplete: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            // Image with fading transition
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = Color.Transparent
@@ -65,12 +67,13 @@ fun SplashScreen(onLoadingComplete: () -> Unit) {
     }
 }
 
+
 @Composable
 fun SplashScreenContent(alpha: Float) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -78,7 +81,6 @@ fun SplashScreenContent(alpha: Float) {
             contentDescription = null,
             modifier = Modifier
                 .alpha(alpha)
-                .background(MaterialTheme.colorScheme.background)
         )
 
         Text(
@@ -89,6 +91,7 @@ fun SplashScreenContent(alpha: Float) {
         )
     }
 }
+
 
 
 @Preview(showBackground = true)
