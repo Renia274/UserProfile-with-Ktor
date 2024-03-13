@@ -87,7 +87,7 @@ fun UserProfilesLoading(
         Color.Gray
     }
 
-    val imageSize = if (isShowingEdit) 150.dp else 200.dp // Define imageSize here
+    val imageSize = if (isShowingEdit) 150.dp else 200.dp 
 
     Box(
         modifier = Modifier
