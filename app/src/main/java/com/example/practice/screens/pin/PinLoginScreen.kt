@@ -49,12 +49,11 @@ fun PinLoginScreen(
     pinViewModel: PinViewModel = hiltViewModel(),
     onLoginSuccess: (UserData) -> Unit,
     onNavigate: (Navigation.Screen) -> Unit,
-    onPostNavigate: () -> Unit,
+    onPostNavigate: () -> Unit
 ) {
     var pin by remember { mutableStateOf("") }
     var isPinVisible by remember { mutableStateOf(false) }
 
-    // Fetch or initialize PINs from external source
     val bobPin = pinViewModel.getPinForProfile("Bob") ?: ""
     val alicePin = pinViewModel.getPinForProfile("Alice") ?: ""
     val evePin = pinViewModel.getPinForProfile("Eve") ?: ""
@@ -78,6 +77,7 @@ fun PinLoginScreen(
         onPostNavigate = onPostNavigate
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
