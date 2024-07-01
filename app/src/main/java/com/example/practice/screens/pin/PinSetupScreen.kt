@@ -3,14 +3,17 @@ package com.example.practice.screens.pin
 
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -25,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -110,8 +114,12 @@ fun PinSetupContent(
                 ) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }
-            }
+            },
+            backgroundColor = Color.White,
+            contentColor = Color.Black,
+            elevation = 0.dp
         )
+
 
         Spacer(modifier = Modifier.height(64.dp))
 
@@ -121,7 +129,7 @@ fun PinSetupContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -151,7 +159,7 @@ fun PinSetupContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp) // Add padding here
+                .padding(horizontal = 32.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -187,14 +195,25 @@ fun PinSetupContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = onSavePin,
-            enabled = pin == confirmPin && pin.length == 6,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            Text("Save PIN")
+            Button(
+                onClick = onSavePin,
+                enabled = pin == confirmPin && pin.length == maxPinLength,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text("Save PIN")
+            }
         }
 
         errorMessage?.let {
