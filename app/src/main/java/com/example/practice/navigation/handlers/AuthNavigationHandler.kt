@@ -27,6 +27,11 @@ class AuthNavigationHandler(private val navController: NavHostController) {
         navController.navigate(Navigation.Auth.UsernamePasswordLogin.route)
     }
 
+
+    fun navigateToPinSetup() {
+        navController.navigate(Navigation.Auth.PinSetup.route)
+    }
+
     fun navigateToPinLogin() {
         navController.navigate(Navigation.Auth.PinLogin.route)
     }

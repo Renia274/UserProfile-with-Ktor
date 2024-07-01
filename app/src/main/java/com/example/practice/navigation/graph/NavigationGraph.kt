@@ -21,9 +21,11 @@ import com.example.practice.data.message.Message
 import com.example.practice.ktor.screens.posts.PostsScreen
 import com.example.practice.navigation.handlers.AuthNavigationHandler
 import com.example.practice.navigation.handlers.NavigationHandler
+
 import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
 import com.example.practice.profiles.viewmodel.credentials.CredentialsViewModel
 import com.example.practice.profiles.viewmodel.otp.FirebaseOtpViewModel
+import com.example.practice.profiles.viewmodel.pin.PinViewModel
 import com.example.practice.profiles.viewmodel.timer.TimerViewModel
 import com.example.practice.screens.info.InfoScreen
 import com.example.practice.screen.components.Loader
@@ -38,6 +40,7 @@ import com.example.practice.screens.signup.SignupScreen
 import com.example.practice.screens.splash.screen.SplashScreen
 import com.example.practice.screens.login.UsernamePasswordLoginScreen
 import com.example.practice.screens.messaging.MessagingScreen
+import com.example.practice.screens.pin.PinSetupScreen
 
 data class Navigation(
     val route: String,
@@ -68,6 +71,7 @@ data class Navigation(
             val PinLogin = Auth("pinLogin")
             val SecurityCode = Auth("securityCode")
             val OtpScreen = Auth("otpScreen")
+            val PinSetup= Auth("PinSetup")
         }
     }
 }
@@ -103,7 +107,7 @@ fun NavigationApp() {
                 onSignUpClick = { authNavigationHandler.navigateToSignup() },
                 onSignInClick = { authNavigationHandler.navigateToUsernamePasswordLogin() },
 
-            )
+                )
         }
 
 
@@ -175,7 +179,6 @@ fun NavigationApp() {
                         onLoginSuccess = { enteredUsername, _, _, _ ->
 
 
-
                             isLoading = true
                             val userProfile = when {
                                 enteredUsername.lowercase().startsWith("bob") -> UserData(
@@ -201,7 +204,7 @@ fun NavigationApp() {
 
                             userProfile?.let {
                                 sharedProfilesViewModel.updateUserProfiles(listOf(it))
-                                authNavigationHandler.navigateToPinLogin()
+                                authNavigationHandler.navigateToPinSetup()
                             } ?: run {
                                 println("Invalid username")
                             }
@@ -221,7 +224,7 @@ fun NavigationApp() {
             }
         }
 
-       composable(Navigation.Screen.Recovery.route) {
+        composable(Navigation.Screen.Recovery.route) {
 
             val sharedProfilesViewModel = viewModel<SharedProfilesViewModel>(
                 viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
@@ -235,6 +238,25 @@ fun NavigationApp() {
                 onNavigateBack = { navigationHandler.navigateBack() }
             )
         }
+
+
+        composable(Navigation.Auth.PinSetup.route) {
+            val viewModel = viewModel<PinViewModel>(
+                viewModelStoreOwner = LocalContext.current as ViewModelStoreOwner
+            )
+
+            PinSetupScreen(
+                onNavigate = {
+                    authNavigationHandler.navigateToPinLogin()
+                },
+                onBack = {
+                    navigationHandler.navigateBack()
+                },
+
+                pinViewModel = viewModel
+            )
+        }
+
 
         composable(Navigation.Auth.PinLogin.route) {
 
@@ -315,6 +337,7 @@ fun NavigationApp() {
                     }
                 },
                 username = username,
+
                 topAppBarTitle = "$username's Profile"
             )
         }
