@@ -1,7 +1,5 @@
 package com.example.practice.screens.userprofile.profile
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,17 +18,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
 import com.example.practice.data.UserData
+import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
+import com.example.practice.screens.userprofile.profile.components.CustomVerticalGrid
 import com.example.practice.screens.userprofile.profile.components.EditInterestsSection
 import com.example.practice.screens.userprofile.profile.components.EditProfessionSection
 import com.example.practice.screens.userprofile.profile.components.UserProfileButtons
 import com.example.practice.screens.userprofile.profile.components.UserProfileImage
-import com.example.practice.profiles.viewmodel.SharedProfilesViewModel
-import com.example.practice.screens.userprofile.profile.components.CustomVerticalGrid
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
 
@@ -108,7 +105,6 @@ fun UserProfileAlice(
         }
     }
 }
-
 @Composable
 fun UserProfileAliceContent(userProfile: UserData, isEditScreen: Boolean, darkModeState: Boolean) {
     Column(
@@ -151,18 +147,19 @@ fun UserProfileAliceContent(userProfile: UserData, isEditScreen: Boolean, darkMo
         if (!isEditScreen) {
             CustomVerticalGrid(
                 items = listOf(
-                    "Item 1",
-                    "Item 2",
-                    "Item 3",
-                    "Item 4",
-                    "Item 5",
-                    "Item 6"
+                    "Item 1" to R.drawable.alice_smith,
+                    "Item 2" to R.drawable.alice_smith,
+                    "Item 3" to R.drawable.alice_smith,
+                    "Item 4" to R.drawable.alice_smith,
+                    "Item 5" to R.drawable.alice_smith,
+                    "Item 6" to R.drawable.alice_smith
                 ),
                 darkModeState = darkModeState
             )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
