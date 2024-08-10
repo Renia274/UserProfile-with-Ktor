@@ -156,12 +156,12 @@ fun UserProfileBobContent(
         if (!isEditScreen) {
             CustomVerticalGrid(
                 items = listOf(
-                    "Item 1",
-                    "Item 2",
-                    "Item 3",
-                    "Item 4",
-                    "Item 5",
-                    "Item 6"
+                    "Item 1" to R.drawable.bob_johnson,
+                    "Item 2" to R.drawable.bob_johnson,
+                    "Item 3" to R.drawable.bob_johnson,
+                    "Item 4" to R.drawable.bob_johnson,
+                    "Item 5" to R.drawable.bob_johnson,
+                    "Item 6" to R.drawable.bob_johnson
                 ),
                 darkModeState = darkModeState
             )
