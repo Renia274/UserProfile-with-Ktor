@@ -1,43 +1,39 @@
 package com.example.practice.screens.userprofile.profile.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.practice.R
 import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun CustomVerticalGrid(
-    items: List<String>,
+    items: List<Pair<String, Int>>,  // List of pairs (text, image resource ID)
     darkModeState: Boolean
 ) {
-    // State to track the selected item
-    var selectedItem by remember { mutableStateOf<String?>(null) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (darkModeState) Color.Gray else Color.White) // Use darkModeState for background
+            .background(if (darkModeState) Color.Gray else Color.White)
             .wrapContentHeight()
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -50,14 +46,10 @@ fun CustomVerticalGrid(
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
 
-                rowItems.forEach { item ->
+                rowItems.forEach { (text, imageResourceId) ->
                     CustomGridItem(
-                        text = item,
-                        isSelected = selectedItem == item,
-                        onClick = {
-                            selectedItem = if (selectedItem == item) null else item
-                        },
-                        description = "Info: $item",
+                        text = text,
+                        imageResourceId = imageResourceId,  // Pass the image resource ID
                         color = getColorForIndex(rowIndex)
                     )
 
@@ -70,55 +62,46 @@ fun CustomVerticalGrid(
     }
 }
 
-
 @Composable
 fun CustomGridItem(
     text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    description: String,
+    imageResourceId: Int,  // Add this parameter for image resource ID
     color: Color
 ) {
     Box(
         modifier = Modifier
-            .width(100.dp)
-            .height(60.dp)
-            .background(
-                color = if (isSelected) MaterialTheme.colorScheme.secondary
-                else color
-            )
-            .clickable(onClick = onClick)
+            .width(100.dp)  // Adjust width as needed
+            .height(100.dp) // Adjust height to accommodate image
+            .background(color)
     ) {
         Column {
-            Spacer(modifier = Modifier.height(8.dp))
+            Image(
+                painter = painterResource(id = imageResourceId),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()  // Fill the entire space
+                    .background(color)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = text,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .background(color)
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Description for the selected item
-            if (isSelected && description.isNotEmpty()) {
-                DescriptionText(description)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-@Composable
-fun DescriptionText(description: String) {
-    Text(
-        text = description,
-        color = Color.Black,
-        fontSize = 14.sp
-    )
-}
+
+
+
+
 
 /**
  * Function to get a color based on the index.
@@ -147,9 +130,16 @@ fun getColorForIndex(index: Int): Color {
 @Preview
 @Composable
 fun CustomVerticalGridPreview() {
-    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6")
+    val items = listOf(
+        "Item 1" to R.drawable.bob_johnson,
+        "Item 2" to R.drawable.alice_smith,
+        "Item 3" to R.drawable.alice_smith,
+        "Item 4" to R.drawable.alice_smith,
+        "Item 5" to R.drawable.alice_smith,
+        "Item 6" to R.drawable.alice_smith
+    )
 
     PracticeTheme {
-        CustomVerticalGrid(items = items,darkModeState = true)
+        CustomVerticalGrid(items = items, darkModeState = true)
     }
 }
