@@ -164,7 +164,7 @@ fun UserProfileEveContent(userProfile: UserData, isEditScreen: Boolean, darkMode
 @Preview(showBackground = true)
 @Composable
 
-fun UserProfileContentPreview() {
+fun UserProfileEveContentPreview() {
     val userProfile = UserData(
         imageResId = R.drawable.bob_johnson,
         firstName = "Eve",
