@@ -27,7 +27,7 @@ import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun CustomVerticalGrid(
-    items: List<Pair<String, Int>>,  // List of pairs (text, image resource ID)
+    items: List<Pair<String, Int>>,  
     darkModeState: Boolean
 ) {
     Column(
@@ -49,7 +49,7 @@ fun CustomVerticalGrid(
                 rowItems.forEach { (text, imageResourceId) ->
                     CustomGridItem(
                         text = text,
-                        imageResourceId = imageResourceId,  // Pass the image resource ID
+                        imageResourceId = imageResourceId, 
                         color = getColorForIndex(rowIndex)
                     )
 
@@ -65,13 +65,13 @@ fun CustomVerticalGrid(
 @Composable
 fun CustomGridItem(
     text: String,
-    imageResourceId: Int,  // Add this parameter for image resource ID
+    imageResourceId: Int, 
     color: Color
 ) {
     Box(
         modifier = Modifier
-            .width(100.dp)  // Adjust width as needed
-            .height(100.dp) // Adjust height to accommodate image
+            .width(100.dp) 
+            .height(100.dp) 
             .background(color)
     ) {
         Column {
@@ -79,7 +79,7 @@ fun CustomGridItem(
                 painter = painterResource(id = imageResourceId),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxSize()  // Fill the entire space
+                    .fillMaxSize()  
                     .background(color)
             )
 
@@ -131,7 +131,7 @@ fun getColorForIndex(index: Int): Color {
 @Composable
 fun CustomVerticalGridPreview() {
     val items = listOf(
-        "Item 1" to R.drawable.bob_johnson,
+        "Item 1" to R.drawable.alice_smith,
         "Item 2" to R.drawable.alice_smith,
         "Item 3" to R.drawable.alice_smith,
         "Item 4" to R.drawable.alice_smith,
