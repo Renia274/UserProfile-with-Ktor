@@ -80,13 +80,8 @@ dependencies {
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.androidbrowserhelper:androidbrowserhelper:2.5.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+
     //navigation with drawer
     implementation("androidx.navigation:navigation-compose:2.4.0")
     implementation("androidx.navigation:navigation-compose:2.7.5")
@@ -127,6 +122,7 @@ dependencies {
 
     //HILT DI
     implementation("com.google.dagger:hilt-android:2.48.1")
+    testImplementation("org.testng:testng:6.9.6")
     kapt("com.google.dagger:hilt-compiler:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
@@ -149,6 +145,27 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.1")
 
 
+
+    //Test and Debug
+    // Mockito for local unit tests
+    testImplementation("org.mockito:mockito-core:5.4.0")
+    testImplementation("org.mockito:mockito-inline:5.4.0")
+    testImplementation("org.mockito:mockito-kotlin:4.0.0")
+
+    // Mockito for Android instrumentation tests
+    androidTestImplementation("org.mockito:mockito-core:5.4.0")
+    androidTestImplementation("org.mockito:mockito-inline:5.4.0")
+    androidTestImplementation("org.mockito:mockito-android:5.4.0")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
+    // Espresso for UI tests
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
+
+
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 
 
