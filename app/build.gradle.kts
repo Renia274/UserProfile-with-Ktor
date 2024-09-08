@@ -167,6 +167,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    //Testing for urls
+    androidTestImplementation("org.robolectric:robolectric:4.10.2")
 
 
 
