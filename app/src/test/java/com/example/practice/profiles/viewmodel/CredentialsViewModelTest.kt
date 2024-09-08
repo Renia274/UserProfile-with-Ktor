@@ -1,5 +1,6 @@
 package com.example.practice.profiles.viewmodel
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import org.mockito.Mockito.verify
 
 
@@ -13,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 
 class CredentialsViewModelTest {
@@ -37,7 +39,7 @@ class CredentialsViewModelTest {
     fun testSaveUserCredentials(): Unit = runBlocking {
         val username = "testUser"
         val password = "testPass"
-        val userCredentialsEntity = UserCredentialsEntity(username, password)
+        val userCredentialsEntity = UserCredentialsEntity(1,username, password)
 
         viewModel.saveUserCredentials(username, password)
 
