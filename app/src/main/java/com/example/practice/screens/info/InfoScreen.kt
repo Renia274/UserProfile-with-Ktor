@@ -72,7 +72,7 @@ fun InfoScreenContent(onNavigateBack: () -> Unit, onOpenLink: () -> Unit) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Yellow)
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.White)
         )
 
         Spacer(modifier = Modifier.height(16.dp))

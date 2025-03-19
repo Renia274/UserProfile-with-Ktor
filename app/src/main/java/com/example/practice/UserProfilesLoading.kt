@@ -166,9 +166,9 @@ fun UserProfilesLoading(
 
             CustomBottomBar(
                 bottomNavigationItems = listOf(
-                    BottomNavItem("Main", R.drawable.ic_back, "main"),
+                    BottomNavItem("Main", R.drawable.ic_back, "back"),
                     BottomNavItem("Edit", R.drawable.ic_edit, "edit"),
-                    BottomNavItem("Chat", R.drawable.ic_chat, "chat"),
+                    BottomNavItem("Chat", R.drawable.ic_chat, "messaging"),
                     BottomNavItem("Settings", R.drawable.ic_settings, "settings")
                 ),
                 selectedIndex = selectedIndex,
