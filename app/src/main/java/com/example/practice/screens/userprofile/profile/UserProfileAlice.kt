@@ -1,9 +1,12 @@
 package com.example.practice.screens.userprofile.profile
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +33,8 @@ import com.example.practice.screens.userprofile.profile.components.UserProfileBu
 import com.example.practice.screens.userprofile.profile.components.UserProfileImage
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
+import com.example.practice.navigation.bottom.navItems.BottomNavItem
+import com.example.practice.screens.userprofile.profile.components.CustomBottomBar
 
 @Composable
 fun UserProfileAlice(
@@ -49,8 +54,7 @@ fun UserProfileAlice(
     var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
     var isDelayApplied by remember { mutableStateOf(false) }
-
-
+    var selectedBottomNavIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(key1 = Unit) {
         if (!isDelayApplied) {
@@ -59,52 +63,62 @@ fun UserProfileAlice(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
     ) {
-        UserProfileImage(userProfile, onEditClick, isEditingProfession,isEditingInterests)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                // Bottom padding to ensure content doesn't overlap with bottom bar
+                .padding(bottom = 65.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            UserProfileImage(userProfile, onEditClick, isEditingProfession, isEditingInterests)
 
-        when {
-            isEditScreen && isEditingProfession -> {
-                EditProfessionSection(
-                    selectedProfession,
-                    { newProfession -> selectedProfession = newProfession },
-                    isDropDownListVisible,
-                    { isDropDownListVisible = !isDropDownListVisible })
+            when {
+                isEditScreen && isEditingProfession -> {
+                    EditProfessionSection(
+                        selectedProfession,
+                        { newProfession -> selectedProfession = newProfession },
+                        isDropDownListVisible,
+                        { isDropDownListVisible = !isDropDownListVisible })
+                }
+
+                isEditingInterests -> {
+                    EditInterestsSection(
+                        selectedInterests,
+                        { newInterests -> selectedInterests = newInterests },
+                        isInterestsDropDownListVisible,
+                        { isInterestsDropDownListVisible = !isInterestsDropDownListVisible })
+                }
+
+                else -> {
+                    UserProfileAliceContent(
+                        userProfile = userProfile,
+                        isEditScreen = isEditScreen,
+                        darkModeState = viewModel.stateFlow.collectAsState().value.darkMode
+                    )
+                }
             }
 
-            isEditingInterests -> {
-                EditInterestsSection(
-                    selectedInterests,
-                    { newInterests -> selectedInterests = newInterests },
-                    isInterestsDropDownListVisible,
-                    { isInterestsDropDownListVisible = !isInterestsDropDownListVisible })
-            }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            else -> {
-                UserProfileAliceContent(
-                    userProfile = userProfile,
-                    isEditScreen = isEditScreen,
-                    darkModeState = viewModel.stateFlow.collectAsState().value.darkMode
-                )
+            if (isEditScreen) {
+                UserProfileButtons(
+                    isEditingProfession,
+                    { onSaveProfession(selectedProfession) },
+                    { isEditingProfession = !isEditingProfession },
+                    isEditingInterests,
+                    { onInterestsSelected(selectedInterests) },
+                    { isEditingInterests = !isEditingInterests })
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        if (isEditScreen) {
-            UserProfileButtons(
-                isEditingProfession,
-                { onSaveProfession(selectedProfession) },
-                { isEditingProfession = !isEditingProfession },
-                isEditingInterests,
-                { onInterestsSelected(selectedInterests) },
-                { isEditingInterests = !isEditingInterests })
-        }
     }
 }
+
 @Composable
 fun UserProfileAliceContent(userProfile: UserData, isEditScreen: Boolean, darkModeState: Boolean) {
     Column(
@@ -145,21 +159,26 @@ fun UserProfileAliceContent(userProfile: UserData, isEditScreen: Boolean, darkMo
         }
 
         if (!isEditScreen) {
-            CustomVerticalGrid(
-                items = listOf(
-                    "Item 1" to R.drawable.alice_smith,
-                    "Item 2" to R.drawable.alice_smith,
-                    "Item 3" to R.drawable.alice_smith,
-                    "Item 4" to R.drawable.alice_smith,
-                    "Item 5" to R.drawable.alice_smith,
-                    "Item 6" to R.drawable.alice_smith
-                ),
-                darkModeState = darkModeState
-            )
+            // Grid should take available space but not need scrolling
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                CustomVerticalGrid(
+                    items = listOf(
+                        "Item 1" to R.drawable.alice_smith,
+                        "Item 2" to R.drawable.alice_smith,
+                        "Item 3" to R.drawable.alice_smith,
+                        "Item 4" to R.drawable.alice_smith,
+                        "Item 5" to R.drawable.alice_smith,
+                        "Item 6" to R.drawable.alice_smith
+                    ),
+                    darkModeState = darkModeState
+                )
+            }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

@@ -7,18 +7,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,61 +35,82 @@ import com.example.practice.ui.theme.PracticeTheme
 
 @Composable
 fun CustomVerticalGrid(
-    items: List<Pair<String, Int>>,  
+    items: List<Pair<String, Int>>,
     darkModeState: Boolean
 ) {
+    // Add scrolling capability to handle overflow
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(if (darkModeState) Color.Gray else Color.White)
             .wrapContentHeight()
+            // Add padding to ensure content doesn't touch bottom navigation
+            .padding(bottom = 65.dp)
+            // Make the grid scrollable to ensure all items are accessible
+            .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         items.chunked(2).forEachIndexed { rowIndex, rowItems ->
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Spacer(modifier = Modifier.width(16.dp))
-
                 rowItems.forEach { (text, imageResourceId) ->
                     CustomGridItem(
                         text = text,
-                        imageResourceId = imageResourceId, 
+                        imageResourceId = imageResourceId,
                         color = getColorForIndex(rowIndex)
                     )
+                }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                // If there's an odd number of items in the last row, add an empty space
+                if (rowItems.size % 2 != 0 && rowIndex == items.chunked(2).size - 1) {
+                    Spacer(modifier = Modifier.width(100.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
         }
+
+        // Add extra space at the bottom to ensure the last row is fully visible
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
 @Composable
 fun CustomGridItem(
     text: String,
-    imageResourceId: Int, 
+    imageResourceId: Int,
     color: Color
 ) {
-    Box(
+    Card(
         modifier = Modifier
-            .width(100.dp) 
-            .height(100.dp) 
-            .background(color)
+            .width(80.dp)
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column {
-            Image(
-                painter = painterResource(id = imageResourceId),
-                contentDescription = null,
+        Column(
+            modifier = Modifier
+                .background(color),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()  
-                    .background(color)
-            )
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            ) {
+                Image(
+                    painter = painterResource(id = imageResourceId),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -89,19 +118,15 @@ fun CustomGridItem(
                 text = text,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .background(color)
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
             )
         }
     }
 }
-
-
-
-
-
 
 /**
  * Function to get a color based on the index.
@@ -125,7 +150,6 @@ fun getColorForIndex(index: Int): Color {
     // Using the index to select a color from the list
     return itemColors.getOrElse(index % itemColors.size) { Color.Gray }
 }
-
 
 @Preview
 @Composable

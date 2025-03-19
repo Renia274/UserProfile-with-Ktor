@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
@@ -27,12 +28,14 @@ fun CustomBottomBar(
     onItemSelected: (Int) -> Unit,
     backgroundColor: Color = Color.White,
     barHeight: Dp = 64.dp,
-    iconSize: Dp = 24.dp
+    iconSize: Dp = 24.dp,
+    modifier: Modifier
 ) {
     BottomNavigation(
         modifier = Modifier
             .background(backgroundColor)
             .height(barHeight)
+            .fillMaxWidth()
     ) {
         bottomNavigationItems.forEachIndexed { index, item ->
             BottomNavigationItem(
