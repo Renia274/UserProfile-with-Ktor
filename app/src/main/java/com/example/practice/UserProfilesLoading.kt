@@ -1,6 +1,5 @@
 package com.example.practice
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
@@ -39,8 +39,6 @@ import com.example.practice.screens.userprofile.profile.components.CustomCountDo
 import com.example.practice.screens.userprofile.profile.components.SignOutDialog
 import com.example.practice.screens.userprofile.profile.components.UserProfileItem
 import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.mutableIntStateOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +54,7 @@ fun UserProfilesLoading(
 ) {
     var isShowingEdit by remember { mutableStateOf(false) }
     var showSignOutDialog by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by remember { mutableStateOf(0) }
 
     val timerState by timerViewModel.stateFlow.collectAsState()
     val timeLeft = timerState.timeLeft
@@ -80,116 +78,124 @@ fun UserProfilesLoading(
             .fillMaxSize()
             .background(mainBackgroundColor)
     ) {
-        // Main content with bottom padding
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 64.dp) // Space for bottom navigation
+            modifier = Modifier.fillMaxSize()
         ) {
-            TopAppBar(
-                title = { Text(text = topAppBarTitle) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showSignOutDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Sign out"
-                        )
-                    }
-                    IconButton(onClick = { onNavigate("info") }) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "Info"
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(
+            // Main content area with weight
+            Box(
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .padding(end = 16.dp),
-                horizontalArrangement = Arrangement.End
+                    .padding(bottom = 64.dp) // Prevent content overlap
             ) {
-                CustomCountDownTimer(timerViewModel = timerViewModel)
-            }
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    TopAppBar(
+                        title = { Text(text = topAppBarTitle) },
+                        navigationIcon = {
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "Back"
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { showSignOutDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.ExitToApp,
+                                    contentDescription = "Sign out"
+                                )
+                            }
+                            IconButton(onClick = { onNavigate("info") }) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Info"
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp),
-                verticalAlignment = Alignment.Top
-            ) {
-                if (selectedIndex in userProfilesValue.indices && !isShowingEdit) {
-                    UserProfileItem(
-                        userProfile = userProfilesValue[selectedIndex],
-                        onEditClick = { isShowingEdit = true },
-                        isEditScreen = isShowingEdit,
-                        onSaveProfession = { updatedProfession ->
-                            viewModel.saveProfession(
-                                userProfilesValue[selectedIndex].imageResId,
-                                updatedProfession
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        CustomCountDownTimer(timerViewModel = timerViewModel)
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        if (selectedIndex in userProfilesValue.indices && !isShowingEdit) {
+                            UserProfileItem(
+                                userProfile = userProfilesValue[selectedIndex],
+                                onEditClick = { isShowingEdit = true },
+                                isEditScreen = isShowingEdit,
+                                onSaveProfession = { updatedProfession ->
+                                    viewModel.saveProfession(
+                                        userProfilesValue[selectedIndex].imageResId,
+                                        updatedProfession
+                                    )
+                                },
+                                onInterestsSelected = { selectedInterests ->
+                                    viewModel.saveInterests(
+                                        userProfilesValue[selectedIndex].imageResId,
+                                        selectedInterests
+                                    )
+                                },
+                                viewModel = viewModel
                             )
-                        },
-                        onInterestsSelected = { selectedInterests ->
-                            viewModel.saveInterests(
-                                userProfilesValue[selectedIndex].imageResId,
-                                selectedInterests
+                        } else {
+                            EditProfile(
+                                userProfiles = userProfilesValue,
+                                onBackNavigate = { isShowingEdit = false },
+                                isEditScreen = isShowingEdit,
+                                viewModel = viewModel
                             )
-                        },
-                        viewModel = viewModel
-                    )
-                } else {
-                    EditProfile(
-                        userProfiles = userProfilesValue,
-                        onBackNavigate = { isShowingEdit = false },
-                        isEditScreen = isShowingEdit,
-                        viewModel = viewModel
-                    )
+                        }
+                    }
                 }
             }
 
-            if (showSignOutDialog) {
-                SignOutDialog(
-                    viewModel = credentialsViewModel,
-                    onSignOut = {
-                        credentialsViewModel.performSignOut()
-                        showSignOutDialog = false
-                        onNavigate("usernamePasswordLogin")
-                    },
-                    onDismiss = { showSignOutDialog = false }
-                )
-            }
+            CustomBottomBar(
+                bottomNavigationItems = listOf(
+                    BottomNavItem("Main", R.drawable.ic_back, "main"),
+                    BottomNavItem("Edit", R.drawable.ic_edit, "edit"),
+                    BottomNavItem("Chat", R.drawable.ic_chat, "chat"),
+                    BottomNavItem("Settings", R.drawable.ic_settings, "settings")
+                ),
+                selectedIndex = selectedIndex,
+                onItemSelected = { index ->
+                    selectedIndex = index
+                    when (index) {
+                        0 -> onNavigate("main")
+                        1 -> onNavigate("edit")
+                        2 -> onNavigate("chat")
+                        3 -> onNavigate("settings")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = mainBackgroundColor
+            )
         }
 
-        // Bottom Navigation
-        CustomBottomBar(
-            bottomNavigationItems = listOf(
-                BottomNavItem("Edit", R.drawable.ic_edit, "edit"),
-                BottomNavItem("Chat", R.drawable.ic_chat, "messaging"),
-                BottomNavItem("Settings", R.drawable.ic_settings, "settings")
-            ),
-            selectedIndex = selectedIndex,
-            onItemSelected = { index ->
-                selectedIndex = index
-                when (index) {
-                    0 -> onNavigate("edit")
-                    1 -> onNavigate("messaging")
-                    2 -> onNavigate("settings")
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            backgroundColor = mainBackgroundColor
-        )
+        if (showSignOutDialog) {
+            SignOutDialog(
+                viewModel = credentialsViewModel,
+                onSignOut = {
+                    credentialsViewModel.performSignOut()
+                    showSignOutDialog = false
+                    onNavigate("usernamePasswordLogin")
+                },
+                onDismiss = { showSignOutDialog = false }
+            )
+        }
     }
 }
