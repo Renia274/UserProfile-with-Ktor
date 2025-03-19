@@ -1,8 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlinx-serialization")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -40,17 +39,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
         kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
@@ -123,7 +122,7 @@ dependencies {
     //HILT DI
     implementation("com.google.dagger:hilt-android:2.48.1")
     testImplementation("org.testng:testng:6.9.6")
-    kapt("com.google.dagger:hilt-compiler:2.48.1")
+    ksp("com.google.dagger:hilt-compiler:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
 
@@ -141,7 +140,7 @@ dependencies {
     //Room
     implementation ("androidx.room:room-runtime:2.6.1")
     annotationProcessor( "androidx.room:room-compiler:2.6.1")
-    kapt( "androidx.room:room-compiler:2.6.1")
+    ksp( "androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
 
 
