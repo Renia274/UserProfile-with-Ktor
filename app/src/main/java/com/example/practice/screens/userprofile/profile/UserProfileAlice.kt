@@ -33,8 +33,6 @@ import com.example.practice.screens.userprofile.profile.components.UserProfileBu
 import com.example.practice.screens.userprofile.profile.components.UserProfileImage
 import com.example.practice.ui.theme.PracticeTheme
 import kotlinx.coroutines.delay
-import com.example.practice.navigation.bottom.navItems.BottomNavItem
-import com.example.practice.screens.userprofile.profile.components.CustomBottomBar
 
 @Composable
 fun UserProfileAlice(
@@ -54,7 +52,6 @@ fun UserProfileAlice(
     var isInterestsDropDownListVisible by remember { mutableStateOf(false) }
 
     var isDelayApplied by remember { mutableStateOf(false) }
-    var selectedBottomNavIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(key1 = Unit) {
         if (!isDelayApplied) {
@@ -70,7 +67,6 @@ fun UserProfileAlice(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                // Bottom padding to ensure content doesn't overlap with bottom bar
                 .padding(bottom = 65.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -159,7 +155,6 @@ fun UserProfileAliceContent(userProfile: UserData, isEditScreen: Boolean, darkMo
         }
 
         if (!isEditScreen) {
-            // Grid should take available space but not need scrolling
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
